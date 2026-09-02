@@ -13,6 +13,18 @@
 {{-- Page content --}}
 @section('content')
 
+    @php
+        // Floating-licenses addon (master switch in Admin > Settings > General):
+        // active floating allocations for this user, shown in the Licenses pane.
+        $floatingLicenseAllocations = (($snipeSettings->floating_licenses_enabled ?? '0') == '1')
+            ? \SnipeIt\FloatingLicenses\Models\FloatingLicenseAllocation::active()
+                ->where('user_id', $user->id)
+                ->with('license')
+                ->orderBy('allocated_at', 'desc')
+                ->get()
+            : collect();
+    @endphp
+
     <x-container columns="2">
 
         @if ($user->deleted_at!='')
@@ -29,7 +41,7 @@
                 <x-slot:tabnav>
                     <x-tabs.details-tab/>
                     <x-tabs.asset-tab count="{{ $user->assets()->AssetsForShow()->count() }}"/>
-                    <x-tabs.license-tab count="{{ $user->licenses()->count() }}"/>
+                    <x-tabs.license-tab count="{{ $user->licenses()->count() + $floatingLicenseAllocations->count() }}"/>
                     <x-tabs.accessory-tab count="{{ $user->accessories()->count() }}"/>
                     <x-tabs.consumable-tab count="{{ $user->consumables()->count() }}"/>
                     <x-tabs.maintenance-tab count="{{ $user->assignedMaintenances()->count() }}"/>
@@ -325,7 +337,7 @@
 
                     </x-tabs.pane>
 
-                    <x-tabs.pane name="licenses" :count="$user->licenses()->count()">
+                    <x-tabs.pane name="licenses" :count="$user->licenses()->count() + $floatingLicenseAllocations->count()">
 
                         @can('checkin', \App\Models\License::class)
                         <x-slot:table_header>{{ trans('general.licenses') }}</x-slot:table_header>
@@ -365,6 +377,7 @@
                                         <th scope="col" class="hidden-print">{{ trans('general.id') }}</th>
                                     @endcan
                                     <th scope="col">{{ trans('general.name') }}</th>
+                                    <th scope="col">{{ trans('floating-licenses::floating.license_type') }}</th>
                                     <th scope="col">{{ trans('admin/licenses/form.license_key') }}</th>
                                     <th scope="col" data-footer-formatter="sumFormatter" data-fieldname="purchase_cost">{{ trans('general.purchase_cost') }}</th>
                                     <th scope="col">{{ trans('admin/licenses/form.purchase_order') }}</th>
@@ -382,6 +395,9 @@
                                         @endcan
                                         <td class="col-md-4">
                                             {!! $license->present()->nameUrl() !!}
+                                        </td>
+                                        <td>
+                                            {{ trans('floating-licenses::floating.type_fixed') }}
                                         </td>
                                         <td class="col-md-4">
                                             @can('viewKeys', $license)
@@ -403,6 +419,40 @@
                                             @can('update', $license)
                                                 <a href="{{ route('licenses.checkin', $license->pivot->id, ['backto'=>'user']) }}" class="btn bg-purple btn-sm hidden-print">{{ trans('general.checkin') }}</a>
                                             @endcan
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                {{-- Floating-licenses addon: active floating allocations for this user --}}
+                                @foreach ($floatingLicenseAllocations as $allocation)
+                                    <tr>
+                                        @can('checkin', \App\Models\License::class)
+                                        <td class="hidden-print">
+                                            <input type="checkbox" class="user-license-seat-checkbox hidden-print" form="userLicenseBulkCheckinForm" name="ids[]" value="floating:{{ $allocation->id }}">
+                                        </td>
+                                        @endcan
+                                        <td class="col-md-4">
+                                            {!! $allocation->license?->present()->nameUrl() !!}
+                                        </td>
+                                        <td>
+                                            <span class="label label-info">{{ trans('floating-licenses::floating.type_floating') }}</span>
+                                        </td>
+                                        <td class="col-md-4">
+                                            ------------
+                                        </td>
+                                        <td class="col-md-2">
+                                            {{ Helper::formatCurrencyOutput($allocation->allocated_cost) }}
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="hidden-print col-md-2">
+                                            {{-- mirrors the release handler's authorization:
+                                                 own allocation OR release permission --}}
+                                            @if (($allocation->user_id === auth()->id()) || Gate::allows('floating_licenses.release'))
+                                                <form method="POST" action="{{ route('floating-licenses.allocations.release', $allocation) }}" style="display:inline">
+                                                    @csrf
+                                                    <button type="submit" class="btn bg-purple btn-sm hidden-print">{{ trans('general.checkin') }}</button>
+                                                </form>
+                                            @endif
                                         </td>
                                     </tr>
                                 @endforeach
@@ -621,7 +671,7 @@
                         @endif
 
                         @can('checkout', \App\Models\Asset::class)
-                            @if (($user->assets()->whereNull('deleted_at')->count() + $user->accessories()->count() + $user->licenses()->count()) > 0)
+                            @if (($user->assets()->whereNull('deleted_at')->count() + $user->accessories()->count() + $user->licenses()->count() + $floatingLicenseAllocations->count()) > 0)
                                 <a href="{{ route('users.transfer.show', $user) }}" class="btn btn-sm btn-theme hidden-print" data-tooltip="true" data-title="{{ trans('admin/users/general.transfer.button_tooltip') }}">
                                     <x-icon type="transfer" class="fa-fw"/>
                                 </a>

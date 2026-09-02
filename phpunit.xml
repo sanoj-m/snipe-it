@@ -16,6 +16,9 @@
     <testsuite name="Feature">
       <directory suffix="Test.php">./tests/Feature</directory>
     </testsuite>
+    <testsuite name="FloatingLicenses">
+      <directory suffix="Test.php">./packages/floating-licenses/tests</directory>
+    </testsuite>
   </testsuites>
   <php>
     <env name="APP_ENV" value="testing"/>

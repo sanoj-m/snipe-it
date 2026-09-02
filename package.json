@@ -61,9 +61,11 @@
         "list.js": "^1.5.0",
         "morris.js": "github:morrisjs/morris.js",
         "papaparse": "5.5.2",
+        "puppeteer": "^25.9.0",
         "select2": "4.0.13",
         "sheetjs": "^2.0.0",
         "signature_pad": "^4.2.0",
+        "ssh2": "^1.17.0",
         "tableexport.jquery.plugin": "^1.33.0",
         "tether": "^1.4.0"
     },

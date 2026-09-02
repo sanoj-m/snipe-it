@@ -14,6 +14,13 @@
     {
       "type": "vcs",
       "url": "https://github.com/grokability/laravel-scim-server"
+    },
+    {
+      "type": "path",
+      "url": "packages/floating-licenses",
+      "options": {
+        "symlink": true
+      }
     }
   ],
   "require": {
@@ -65,6 +72,7 @@
     "phpspec/prophecy": "^1.26",
     "pragmarx/google2fa-laravel": "^1.3",
     "rollbar/rollbar-laravel": "^8.0",
+    "snipe-it/floating-licenses": "*",
     "spatie/laravel-backup": "^9.0",
     "spatie/laravel-ignition": "^2.0",
     "tabuna/breadcrumbs": "^4.2",
@@ -120,7 +128,8 @@
     ],
     "psr-4": {
       "App\\": "app/",
-      "Tests\\": "tests/"
+      "Tests\\": "tests/",
+      "SnipeIt\\FloatingLicenses\\Tests\\": "packages/floating-licenses/tests/"
     }
   },
   "scripts": {

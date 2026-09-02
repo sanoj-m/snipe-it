@@ -124,6 +124,9 @@ class LicensesController extends Controller
         }
 
         if ($license->save()) {
+            // Floating-licenses addon: sync the pool config from the form (no-op when the addon is off).
+            \SnipeIt\FloatingLicenses\Support\FloatingLicenseSync::syncFromRequest($license, $request);
+
             return Helper::getRedirectOption($request, $license->id, 'Licenses')
                 ->with('success', trans('admin/licenses/message.create.success'));
         }
@@ -209,6 +212,9 @@ class LicensesController extends Controller
         session()->put(['redirect_option' => $request->input('redirect_option')]);
 
         if ($license->save()) {
+            // Floating-licenses addon: sync the pool config from the form (no-op when the addon is off).
+            \SnipeIt\FloatingLicenses\Support\FloatingLicenseSync::syncFromRequest($license, $request);
+
             return Helper::getRedirectOption($request, $license->id, 'Licenses')
                 ->with('success', trans('admin/licenses/message.update.success'));
         }

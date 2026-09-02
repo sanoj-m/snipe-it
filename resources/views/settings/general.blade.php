@@ -201,6 +201,14 @@
                                     help_text="{!! trans('admin/settings/general.shortcuts_help_text') !!}"
                                 />
 
+                                <!-- Floating Licenses addon master switch -->
+                                <x-form.checkbox-row
+                                    name="floating_licenses_enabled"
+                                    :label="trans('floating-licenses::floating.settings_enable_label')"
+                                    :item="$setting"
+                                    :help_text="trans('floating-licenses::floating.settings_enable_help')"
+                                />
+
                                 <!-- Archived in List -->
                                 <x-form.checkbox-row
                                     name="show_archived_in_list"
