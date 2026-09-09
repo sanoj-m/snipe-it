@@ -19,10 +19,14 @@ class LicensesTransformer
         // [floating-licenses addon] BEGIN — core seat math ignores floating
         // allocations, so recompute avail/percent for licenses with a
         // floating pool. Two grouped queries for the whole page (no N+1).
+        $floatingLicenseIds = [];
+        $floatingConfigs = collect();
+        $activeCounts = collect();
         if (\SnipeIt\FloatingLicenses\Support\FloatingLicenseSync::isEnabled()) {
             $licenseIds = collect($array)->pluck('id')->all();
-            $floatingLicenseIds = \SnipeIt\FloatingLicenses\Models\FloatingLicenseConfig::whereIn('license_id', $licenseIds)
-                ->pluck('license_id')->all();
+            $floatingConfigs = \SnipeIt\FloatingLicenses\Models\FloatingLicenseConfig::whereIn('license_id', $licenseIds)
+                ->get()->keyBy('license_id');
+            $floatingLicenseIds = $floatingConfigs->keys()->all();
 
             if ($floatingLicenseIds !== []) {
                 $activeCounts = \SnipeIt\FloatingLicenses\Models\FloatingLicenseAllocation::whereIn('license_id', $floatingLicenseIds)
@@ -50,6 +54,28 @@ class LicensesTransformer
         }
         // [floating-licenses addon] END
 
+        // License type column: floating when the license has an explicit
+        // floating pool config, fixed otherwise.
+        foreach ($array as &$row) {
+            $row['license_type'] = in_array($row['id'], $floatingLicenseIds, true)
+                ? trans('floating-licenses::floating.type_floating')
+                : trans('floating-licenses::floating.type_fixed');
+
+            // Per User Cost: floating licenses divide the pool's total cost
+            // across the users currently drawing from it; fixed licenses pay
+            // the per-seat purchase cost.
+            $config = $floatingConfigs->get($row['id']);
+            if ($config) {
+                $active = (int) ($activeCounts[$row['id']] ?? 0);
+                $row['per_user_cost'] = ($config->total_cost && $active > 0)
+                    ? Helper::formatCurrencyOutput(round(((float) $config->total_cost) / $active, 2))
+                    : null;
+            } else {
+                $row['per_user_cost'] = $row['purchase_cost'];
+            }
+        }
+        unset($row);
+
         return (new DatatablesTransformer)->transformDatatables($array, $total);
     }
 
@@ -73,9 +99,16 @@ class LicensesTransformer
             'purchase_date' => Helper::getFormattedDateObject($license->purchase_date, 'date'),
             'termination_date' => Helper::getFormattedDateObject($license->termination_date, 'date'),
             'expiration_date' => Helper::getFormattedDateObject($license->expiration_date, 'date'),
+            'perpetual' => (bool) $license->perpetual,
             'depreciation' => ($license->depreciation) ? ['id' => (int) $license->depreciation->id, 'name' => e($license->depreciation->name)] : null,
             'purchase_cost' => Helper::formatCurrencyOutput($license->purchase_cost),
             'purchase_cost_numeric' => $license->purchase_cost,
+            // purchase_cost is the per-unit (per seat) price; the total cost
+            // of the license is unit price × seats.
+            'unit_cost' => Helper::formatCurrencyOutput($license->purchase_cost),
+            'total_cost' => is_numeric($license->purchase_cost)
+                ? Helper::formatCurrencyOutput(round(((float) $license->purchase_cost) * (int) $license->seats, 2))
+                : null,
             'notes' => Helper::parseEscapedMarkedownInline($license->notes),
             'seats' => (int) $license->seats,
             'free_seats_count' => (int) $license->free_seats_count - $unreassignable,

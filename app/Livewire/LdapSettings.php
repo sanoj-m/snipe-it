@@ -172,6 +172,8 @@ class LdapSettings extends Component
     // Step 4: Sync + defaults
     public bool $ldap_pw_sync = false;
 
+    public bool $ldap_deactivate_missing = false;
+
     public ?int $ldap_default_group = null;
 
     public string $custom_forgot_pass_url = '';
@@ -301,6 +303,7 @@ class LdapSettings extends Component
         $this->ldap_invert_active_flag = (bool) $setting->ldap_invert_active_flag;
 
         $this->ldap_pw_sync = (bool) $setting->ldap_pw_sync;
+        $this->ldap_deactivate_missing = (bool) $setting->ldap_deactivate_missing;
         $this->ldap_default_group = $setting->ldap_default_group ? (int) $setting->ldap_default_group : null;
         $this->custom_forgot_pass_url = (string) $setting->custom_forgot_pass_url;
     }
@@ -1050,6 +1053,7 @@ class LdapSettings extends Component
         $setting = Setting::getSettings();
         $setting->ldap_enabled = '1';
         $setting->ldap_pw_sync = $this->ldap_pw_sync ? '1' : '0';
+        $setting->ldap_deactivate_missing = $this->ldap_deactivate_missing ? '1' : '0';
         $setting->ldap_default_group = $this->ldap_default_group;
         $setting->custom_forgot_pass_url = $this->custom_forgot_pass_url;
 

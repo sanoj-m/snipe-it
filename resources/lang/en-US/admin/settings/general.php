@@ -221,6 +221,8 @@ return [
     'ldap_filter' => 'LDAP Filter',
     'ldap_pw_sync' => 'Cache LDAP Passwords',
     'ldap_pw_sync_help' => 'Uncheck this box if you do not wish to keep LDAP passwords cached as local hashed passwords. Disabling this means that your users may not be able to login if your LDAP server is unreachable for some reason.',
+    'ldap_deactivate_missing' => 'Deactivate Users Missing from LDAP',
+    'ldap_deactivate_missing_help' => 'When enabled, every LDAP sync deactivates (sets "can login" to no) any LDAP-imported user who no longer appears in the sync results - for example accounts disabled in AD or moved to an OU outside your sync scope. Users are never deleted; their history and assignments are kept.',
     'ldap_username_field' => 'Username Field',
     'ldap_display_name' => 'Display Name Field',
     'ldap_display_name_help' => 'If you have a separate displayName field in your LDAP/AD, map it here and it will be used for displaying users within Snipe-IT.',

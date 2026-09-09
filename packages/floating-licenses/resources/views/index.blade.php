@@ -12,6 +12,11 @@
             <div class="box-header with-border">
                 <h3 class="box-title">{{ trans('floating-licenses::floating.title') }}</h3>
                 <div class="box-tools pull-right">
+                    @can('view', \App\Models\License::class)
+                    <a href="{{ route('floating-licenses.licenses.export-full') }}" class="btn btn-sm btn-default">
+                        <x-icon type="download" class="fa-fw"/> {{ trans('floating-licenses::floating.export_full') }}
+                    </a>
+                    @endcan
                     @can('floating_licenses.manage')
                     <a href="{{ route('floating-licenses.create') }}" class="btn btn-sm btn-primary">
                         {{ trans('floating-licenses::floating.enable') }}

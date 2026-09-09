@@ -214,17 +214,17 @@
                 <x-info-panel :infoPanelObj="$license" img_path="{{ app('licenses_upload_url') }}" :qr_code_url="route('qr_code/common', ['object_type' => 'licenses', 'id' => $license->id])">
 
                     {{-- Floating-licenses addon: info rows inside the license info list --}}
-                    @if ($floatingConfig)
-                        <x-info-element icon_type="licenses" title="{{ trans('floating-licenses::floating.license_type') }}">
-                            {{ trans('floating-licenses::floating.license_type') }}
-                            <span class="pull-right">
-                                {{ $explicitFloatingConfig ? trans('floating-licenses::floating.type_floating') : trans('floating-licenses::floating.type_fixed') }}
-                                @if ($floatingStats['over_allocated'])
-                                    <span class="label label-warning" data-tooltip="true" title="{{ trans('floating-licenses::floating.over_allocated_label', ['assigned' => $floatingStats['active'], 'pool' => $floatingStats['pool_size'], 'excess' => $floatingStats['excess']]) }}">+{{ $floatingStats['excess'] }}</span>
-                                @endif
-                            </span>
-                        </x-info-element>
+                    <x-info-element icon_type="licenses" title="{{ trans('floating-licenses::floating.license_type') }}">
+                        {{ trans('floating-licenses::floating.license_type') }}
+                        <span class="pull-right">
+                            {{ $explicitFloatingConfig ? trans('floating-licenses::floating.type_floating') : trans('floating-licenses::floating.type_fixed') }}
+                            @if ($floatingConfig && $floatingStats['over_allocated'])
+                                <span class="label label-warning" data-tooltip="true" title="{{ trans('floating-licenses::floating.over_allocated_label', ['assigned' => $floatingStats['active'], 'pool' => $floatingStats['pool_size'], 'excess' => $floatingStats['excess']]) }}">+{{ $floatingStats['excess'] }}</span>
+                            @endif
+                        </span>
+                    </x-info-element>
 
+                    @if ($floatingConfig)
                         <x-info-element icon_type="seats" title="{{ trans('floating-licenses::floating.pool_size') }}">
                             {{ trans('floating-licenses::floating.pool_size') }}
                             <span class="pull-right">{{ $floatingStats['pool_size'] }}</span>
@@ -260,30 +260,71 @@
                         <x-button.checkout permission="checkout" :item="$license" :route="route('licenses.checkout', $license->id)" />
 
                         {{-- Floating-licenses addon: bulk user actions dropdown --}}
-                        @if ($floatingMasterOn && (Gate::allows('floating_licenses.allocate') || Gate::allows('floating_licenses.release')))
+                        @if (($floatingMasterOn && (Gate::allows('floating_licenses.allocate') || Gate::allows('floating_licenses.release'))) || Gate::allows('view', $license) || Gate::allows('checkout', $license))
                             <div class="dropdown" style="display: inline-block;">
                                 <button type="button" class="btn btn-primary btn-sm dropdown-toggle hidden-print" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <x-icon type="users" class="fa-fw"/>
                                     {{ trans('floating-licenses::floating.bulk_actions') }} <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu">
-                                    @can('floating_licenses.allocate')
+                                    @if ($floatingMasterOn)
+                                        @can('floating_licenses.allocate')
+                                            <li>
+                                                <a href="{{ route('floating-licenses.license.bulk-add.form', $license) }}">
+                                                    {{ trans('floating-licenses::floating.bulk_add') }}
+                                                </a>
+                                            </li>
+                                        @endcan
+                                        @can('floating_licenses.release')
+                                            <li>
+                                                <a href="{{ route('floating-licenses.license.bulk-remove.form', $license) }}">
+                                                    {{ trans('floating-licenses::floating.bulk_remove') }}
+                                                </a>
+                                            </li>
+                                        @endcan
+                                    @endif
+                                    @can('view', $license)
                                         <li>
-                                            <a href="{{ route('floating-licenses.license.bulk-add.form', $license) }}">
-                                                {{ trans('floating-licenses::floating.bulk_add') }}
+                                            <a href="{{ route('floating-licenses.license.users-export', $license) }}">
+                                                {{ trans('floating-licenses::floating.export_users') }}
                                             </a>
                                         </li>
                                     @endcan
-                                    @can('floating_licenses.release')
+                                    @can('checkout', $license)
                                         <li>
-                                            <a href="{{ route('floating-licenses.license.bulk-remove.form', $license) }}">
-                                                {{ trans('floating-licenses::floating.bulk_remove') }}
+                                            <a href="#" data-toggle="modal" data-target="#importLicenseUsersModal">
+                                                {{ trans('floating-licenses::floating.import_users') }}
                                             </a>
                                         </li>
                                     @endcan
                                 </ul>
                             </div>
                         @endif
+
+                        @can('checkout', $license)
+                            {{-- Floating-licenses addon: per-license user CSV import modal --}}
+                            <div class="modal fade" id="importLicenseUsersModal" tabindex="-1" role="dialog" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <form method="POST" action="{{ route('floating-licenses.license.users-import', $license) }}" enctype="multipart/form-data">
+                                            @csrf
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                                <h4 class="modal-title">{{ trans('floating-licenses::floating.import_users') }}</h4>
+                                            </div>
+                                            <div class="modal-body">
+                                                <p class="help-block">{{ trans('floating-licenses::floating.import_users_help') }}</p>
+                                                <input type="file" name="user_list" accept=".csv,.txt" required>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-default" data-dismiss="modal">{{ trans('button.cancel') }}</button>
+                                                <button type="submit" class="btn btn-primary">{{ trans('floating-licenses::floating.import_users') }}</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        @endcan
 
                         @can('checkout', $license)
 

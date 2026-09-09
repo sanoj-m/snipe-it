@@ -27,7 +27,7 @@ class LicenseFormSyncTest extends TestCase
 
         $this->assertNotNull($config);
         $this->assertEquals(17, $config->pool_size, 'Pool size must come from licenses.seats');
-        $this->assertEquals(3500.0, (float) $config->total_cost, 'Total cost must come from licenses.purchase_cost');
+        $this->assertEquals(3500.0 * 17, (float) $config->total_cost, 'Total cost must be per-unit purchase_cost × seats');
         $this->assertEquals(FloatingLicenseConfig::COST_MODE_ACTIVE_USER, $config->cost_mode);
         $this->assertTrue($config->allow_over_allocation);
         $this->assertNull($config->lease_duration_minutes, 'Durations default to null');
@@ -64,7 +64,7 @@ class LicenseFormSyncTest extends TestCase
 
         $config->refresh();
         $this->assertEquals(42, $config->pool_size);
-        $this->assertEquals(999.0, (float) $config->total_cost);
+        $this->assertEquals(999.0 * 42, (float) $config->total_cost, 'Total cost must be per-unit purchase_cost × seats');
         $this->assertEquals(FloatingLicenseConfig::COST_MODE_ACTIVE_USER, $config->cost_mode, 'Stored cost mode survives when the request omits it');
         $this->assertFalse($config->allow_over_allocation);
     }
@@ -126,7 +126,7 @@ class LicenseFormSyncTest extends TestCase
 
         $this->assertNotNull($config);
         $this->assertEquals(17, $config->pool_size);
-        $this->assertEquals(3500.0, (float) $config->total_cost);
+        $this->assertEquals(3500.0 * 17, (float) $config->total_cost, 'Total cost must be per-unit purchase_cost × seats');
         $this->assertEquals(FloatingLicenseConfig::COST_MODE_ACTIVE_USER, $config->cost_mode);
         $this->assertTrue($config->allow_over_allocation);
     }
@@ -209,25 +209,14 @@ class LicenseFormSyncTest extends TestCase
             'The resolver must not persist anything while the master switch is off');
     }
 
-    public function test_config_resolver_lazily_creates_and_persists_default_config_when_master_on()
+    public function test_config_resolver_returns_null_when_no_config_even_with_master_on()
     {
         $license = License::factory()->create(['seats' => 17, 'purchase_cost' => 3500]);
 
-        $config = FloatingLicenseSync::configForLicense($license);
-
-        $this->assertNotNull($config);
-        $this->assertTrue($config->exists, 'The default config must be persisted');
-        $this->assertEquals(17, $config->pool_size);
-        $this->assertEquals(3500.0, (float) $config->total_cost);
-        $this->assertEquals(FloatingLicenseConfig::COST_MODE_ACTIVE_USER, $config->cost_mode);
-        $this->assertTrue($config->allow_over_allocation);
-        $this->assertNull($config->lease_duration_minutes);
-        $this->assertNull($config->idle_timeout_minutes);
-
-        $this->assertTrue(
-            FloatingLicenseSync::configForLicense($license)->is($config),
-            'A second resolution must return the persisted config, not create another'
-        );
+        $this->assertNull(FloatingLicenseSync::configForLicense($license),
+            'Floating is strictly opt-in per license: no config must ever be lazily created');
+        $this->assertEquals(0, FloatingLicenseConfig::where('license_id', $license->id)->count(),
+            'The resolver must not persist anything');
     }
 
     public function test_config_resolver_returns_existing_config_unchanged()

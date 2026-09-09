@@ -157,6 +157,48 @@ class ImportLicenseTest extends ImportDataTestCase implements TestsPermissionsRe
     }
 
     #[Test]
+    public function imports_perpetual_license_and_clears_expiration_date(): void
+    {
+        $importFileBuilder = ImportFileBuilder::new([
+            'perpetual' => 'TRUE',
+            'expirationDate' => '2030-05-05',
+        ]);
+
+        $import = Import::factory()->license()->create(['file_path' => $importFileBuilder->saveToImportsDirectory()]);
+
+        $this->actingAsForApi(User::factory()->superuser()->create());
+        $this->importFileResponse(['import' => $import->id])->assertOk();
+
+        $newLicense = License::query()
+            ->where('serial', $importFileBuilder->firstRow()['serialNumber'])
+            ->sole();
+
+        $this->assertTrue($newLicense->perpetual);
+        $this->assertNull($newLicense->expiration_date, 'A perpetual import row must clear the expiration date');
+    }
+
+    #[Test]
+    public function imports_non_perpetual_license_and_keeps_expiration_date(): void
+    {
+        $importFileBuilder = ImportFileBuilder::new([
+            'perpetual' => 'FALSE',
+            'expirationDate' => '2030-05-05',
+        ]);
+
+        $import = Import::factory()->license()->create(['file_path' => $importFileBuilder->saveToImportsDirectory()]);
+
+        $this->actingAsForApi(User::factory()->superuser()->create());
+        $this->importFileResponse(['import' => $import->id])->assertOk();
+
+        $newLicense = License::query()
+            ->where('serial', $importFileBuilder->firstRow()['serialNumber'])
+            ->sole();
+
+        $this->assertFalse($newLicense->perpetual);
+        $this->assertEquals('2030-05-05', $newLicense->expiration_date->toDateString());
+    }
+
+    #[Test]
     public function will_not_create_new_company_when_company_exists(): void
     {
         $importFileBuilder = ImportFileBuilder::times(4)->replace(['companyName' => Str::random()]);

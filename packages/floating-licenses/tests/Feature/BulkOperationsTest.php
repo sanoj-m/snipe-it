@@ -125,12 +125,12 @@ class BulkOperationsTest extends TestCase
     }
 
     /**
-     * Master switch ON means every license behaves floating: a license with
-     * no explicit config gets one lazily created (seats = pool, purchase_cost
-     * = total, active_user spread, over-allocation on) and bulk-add creates
-     * floating allocations instead of core seat checkouts.
+     * Floating is strictly opt-in: a license with no explicit config is a
+     * standard seat-based license even with the master switch ON, so
+     * bulk-add claims core seats (and runs out) rather than creating
+     * floating allocations.
      */
-    public function test_bulk_add_license_without_config_creates_floating_allocations_with_cost_spread()
+    public function test_bulk_add_license_without_config_does_core_seat_checkout()
     {
         $license = License::factory()->create(['seats' => 2, 'purchase_cost' => 300]);
         $allocator = $this->createUserWithFloatingPermissions(['floating_licenses.allocate']);
@@ -142,32 +142,14 @@ class BulkOperationsTest extends TestCase
             ->post(route('floating-licenses.license.bulk-add', $license), [
                 'user_ids' => $users->pluck('id')->all(),
             ])
-            ->assertRedirect(route('licenses.show', $license))
-            ->assertSessionHas('success');
+            ->assertRedirect(route('licenses.show', $license));
 
-        $config = FloatingLicenseConfig::where('license_id', $license->id)->first();
-        $this->assertNotNull($config, 'A default config must be lazily created and persisted');
-        $this->assertEquals(2, $config->pool_size);
-        $this->assertEquals(300.0, (float) $config->total_cost);
-        $this->assertEquals(FloatingLicenseConfig::COST_MODE_ACTIVE_USER, $config->cost_mode);
-        $this->assertTrue($config->allow_over_allocation);
+        $this->assertEquals(0, FloatingLicenseConfig::where('license_id', $license->id)->count(),
+            'No config may be lazily created');
+        $this->assertEquals(0, FloatingLicenseAllocation::where('license_id', $license->id)->count());
 
-        // Over-allocated: 3 users on a 2-seat pool, cost spread across all 3.
-        $this->assertEquals(
-            3,
-            FloatingLicenseAllocation::where('license_id', $license->id)->active()->count()
-        );
-        foreach ($users as $user) {
-            $this->assertDatabaseHas('floating_license_allocations', [
-                'license_id' => $license->id,
-                'user_id' => $user->id,
-                'status' => 'active',
-                'allocated_cost' => 100.0,
-            ]);
-        }
-
-        // No core seat checkouts may happen under master-on.
-        $this->assertEquals(0, LicenseSeat::where('license_id', $license->id)->whereNotNull('assigned_to')->count());
+        // 2 seats for 3 users: two checkouts, one failure.
+        $this->assertEquals(2, LicenseSeat::where('license_id', $license->id)->whereNotNull('assigned_to')->count());
     }
 
     public function test_bulk_remove_checks_in_core_seats()

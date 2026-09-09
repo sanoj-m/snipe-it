@@ -2,6 +2,11 @@
 
 use Illuminate\Support\Facades\Route;
 use SnipeIt\FloatingLicenses\Http\Controllers\FloatingLicenseController;
+use SnipeIt\FloatingLicenses\Http\Controllers\LicenseUsersController;
+
+Route::get('/licenses/export-full', [LicenseUsersController::class, 'exportFull'])->name('floating-licenses.licenses.export-full');
+Route::get('/licenses/{license}/users-export', [LicenseUsersController::class, 'exportUsers'])->name('floating-licenses.license.users-export');
+Route::post('/licenses/{license}/users-import', [LicenseUsersController::class, 'importUsers'])->name('floating-licenses.license.users-import');
 
 Route::group(['prefix' => 'floating-licenses', 'as' => 'floating-licenses.'], function () {
     Route::get('/', [FloatingLicenseController::class, 'index'])->name('index');

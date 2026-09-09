@@ -133,6 +133,13 @@
                     input_div_class="col-md-4"
                 />
 
+                <x-form.checkbox-row
+                    name="perpetual"
+                    :label="trans('admin/licenses/form.perpetual')"
+                    :item="$item"
+                    :help_text="trans('admin/licenses/form.perpetual_help')"
+                />
+
                 <x-form.row
                     :label="trans('admin/licenses/form.termination_date')"
                     name="termination_date"
@@ -249,4 +256,24 @@
 
     </x-container>
 
+@stop
+
+@section('moar_scripts')
+    <script nonce="{{ csrf_token() }}">
+        $(function () {
+            var $perpetual = $('input[name="perpetual"][type="checkbox"]');
+            var $expiration = $('input[name="expiration_date"]');
+
+            function toggleExpirationForPerpetual() {
+                var isPerpetual = $perpetual.is(':checked');
+                $expiration.prop('disabled', isPerpetual);
+                if (isPerpetual) {
+                    $expiration.val('');
+                }
+            }
+
+            $perpetual.on('change', toggleExpirationForPerpetual);
+            toggleExpirationForPerpetual();
+        });
+    </script>
 @stop

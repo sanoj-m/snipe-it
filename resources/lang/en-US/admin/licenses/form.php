@@ -10,6 +10,8 @@ return [
     'maintained' => 'Maintained',
     'name' => 'Software Name',
     'no_depreciation' => 'Do Not Depreciate',
+    'perpetual' => 'Perpetual License',
+    'perpetual_help' => 'Perpetual licenses never expire: the expiration date is ignored and cleared on save.',
     'purchase_order' => 'Purchase Order Number',
     'reassignable' => 'Reassignable',
     'remaining_seats' => 'Remaining Seats',

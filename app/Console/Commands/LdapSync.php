@@ -463,6 +463,14 @@ class LdapSync extends Command
 
                 $summary[] = $missing_item;
             }
+        } elseif (Setting::getSettings()->ldap_deactivate_missing == '1') {
+            // Milder alternative to --delete, configured in the LDAP settings
+            // wizard: users that vanish from the sync results (disabled in AD,
+            // moved to an out-of-scope OU) get activated=0 instead of being
+            // deleted, so their history and asset assignments stay intact.
+            foreach (Ldap::deactivateUsersMissingFromLdap($seen_ldap_usernames) as $deactivated_item) {
+                $summary[] = $deactivated_item;
+            }
         }
 
         if ($this->option('summary')) {

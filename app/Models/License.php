@@ -63,6 +63,7 @@ class License extends Depreciable
         'category_id' => 'integer',
         'company_id' => 'integer',
         'requestable' => 'boolean',
+        'perpetual' => 'boolean',
     ];
 
     protected $rules = [
@@ -79,6 +80,7 @@ class License extends Depreciable
         'termination_date' => 'date_format:Y-m-d|nullable|max:10',
         'min_amt' => 'numeric|nullable|gte:0',
         'requestable' => 'nullable|boolean',
+        'perpetual' => 'nullable|boolean',
     ];
 
     /**
@@ -98,6 +100,7 @@ class License extends Depreciable
         'name',
         'notes',
         'order_number',
+        'perpetual',
         'purchase_cost',
         'purchase_date',
         'purchase_order',
@@ -215,6 +218,14 @@ class License extends Depreciable
             $value = null;
         }
         $this->attributes['requestable'] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public function setPerpetualAttribute($value)
+    {
+        if ($value == '') {
+            $value = null;
+        }
+        $this->attributes['perpetual'] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
     /**
@@ -427,6 +438,10 @@ class License extends Depreciable
 
     public function isExpired(): bool
     {
+        if ($this->perpetual) {
+            return false;
+        }
+
         $day = now()->startOfDay();
 
         $expired = $this->expiration_date && $this->asDateTime($this->expiration_date)->startofDay()->lessThanOrEqualTo($day);

@@ -5,6 +5,7 @@ namespace SnipeIt\FloatingLicenses;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
+use SnipeIt\FloatingLicenses\Console\ConvertFloatingLicensesToStandard;
 use SnipeIt\FloatingLicenses\Console\ExpireFloatingAllocations;
 
 class FloatingLicensesServiceProvider extends ServiceProvider
@@ -38,6 +39,7 @@ class FloatingLicensesServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->commands([
                 ExpireFloatingAllocations::class,
+                ConvertFloatingLicensesToStandard::class,
             ]);
 
             $this->publishes([

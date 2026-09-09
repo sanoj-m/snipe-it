@@ -21,6 +21,9 @@ class Kernel extends ConsoleKernel
             $schedule->command('snipeit:expected-checkin')->daily();
             $schedule->command('snipeit:upcoming-audits')->daily();
         }
+        if (Setting::getSettings()?->ldap_enabled == '1') {
+            $schedule->command('snipeit:ldap-sync')->daily();
+        }
         $schedule->command('snipeit:backup')->weekly();
         $schedule->command('backup:clean')->daily();
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();

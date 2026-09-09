@@ -131,21 +131,17 @@ Keys (each pool can override all of them individually):
 
 ## Usage
 
-### Master switch ON means EVERY license behaves floating
+### Floating is strictly opt-in per license
 
-When `floating_licenses_enabled` is on, a license without an explicit pool
-config still behaves floating: `FloatingLicenseSync::configForLicense()`
-lazily creates AND persists a default config from the license's own
-attributes (`seats` = pool size, `purchase_cost` = total cost,
-`cost_mode = active_user`, `allow_over_allocation = true`, no durations), so
-the total cost is spread across all assigned users. Bulk-add on such a
-license creates floating allocations (never core seat checkouts). With the
-master switch OFF, bulk routes are 403 and the assignment layer falls back to
-normal core seat checkout for config-less licenses.
-
-The per-license "Floating / Concurrent" checkbox on the license edit form
-still exists to customize cost mode / over-allocation, and to have the config
-survive the master switch being turned off later.
+The master switch (`floating_licenses_enabled`) only gates the feature
+globally (UI sections, package pages and API). It does NOT turn individual
+licenses floating on its own: a license behaves floating only when an admin
+has explicitly enabled it on that license's edit form (the **Floating /
+Concurrent** checkbox, off by default), which persists a pool config.
+`FloatingLicenseSync::configForLicense()` never creates a config implicitly;
+licenses without one are plain fixed-seat licenses everywhere — checkout,
+bulk-add, view page, transformers. With the master switch OFF, the package
+web routes are 403 and every license behaves as a core seat-based license.
 
 ### Enable floating on a license
 
@@ -159,6 +155,33 @@ and a warning is shown.
 
 Alternatively, the standalone **Floating Licenses** pages
 (`/floating-licenses`) still allow managing pools directly.
+
+### Convert floating licenses back to standard (bulk)
+
+`php artisan floating-licenses:convert-to-standard` converts every floating
+license into a standard seat-based license while keeping all assigned users:
+each active allocation becomes a core seat checkout (seats are expanded
+automatically when more users are assigned than the seat count), the
+allocations are marked released for history, and the pool config is removed.
+Licenses whose name contains `rhino` (case-insensitive) are skipped by
+default — override with `--except=`. Preview everything first with
+`--dry-run`.
+
+### Per-license user export / import
+
+On a license's view page, the **Bulk User Actions** dropdown offers
+**Export assigned users (CSV)** (both seat checkouts and floating
+allocations, with an `assignment_type` column) and **Import users (CSV)**
+(upload a file with one username or email per line; floating licenses
+allocate pool slots, standard licenses claim seats; unknown identifiers and
+seat exhaustion are reported in the result flash).
+
+### Master export
+
+The **Export full (with users)** button on the Floating Licenses index page
+(`/floating-licenses`) downloads one CSV containing every license with its
+full information (company, product key, seats, cost, dates, manufacturer,
+category, floating yes/no + pool size) plus one row per assigned user.
 
 ### License view page integration
 
@@ -231,7 +254,8 @@ flash reporting added/removed, skipped, and failed counts.
 
 ## Cost modes
 
-Each pool carries a `total_cost` (the license's `purchase_cost`) and snapshots
+Each pool carries a `total_cost` (the license's per-unit `purchase_cost`
+multiplied by its seat count / pool size) and snapshots
 a per-allocation `allocated_cost` that is recalculated whenever the set of
 active allocations changes.
 

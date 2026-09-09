@@ -2,13 +2,11 @@
 
 namespace SnipeIt\FloatingLicenses\Tests\Feature;
 
-use App\Models\Actionlog;
 use App\Models\License;
 use App\Models\User;
 use Carbon\Carbon;
 use SnipeIt\FloatingLicenses\Exceptions\PoolExhaustedException;
 use SnipeIt\FloatingLicenses\Models\FloatingLicenseAllocation;
-use SnipeIt\FloatingLicenses\Models\FloatingLicenseConfig;
 use SnipeIt\FloatingLicenses\Services\FloatingLicenseService;
 use SnipeIt\FloatingLicenses\Tests\TestCase;
 

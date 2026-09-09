@@ -600,6 +600,30 @@ class LdapWizardTest extends TestCase
             ->assertHasErrors(['custom_forgot_pass_url']);
     }
 
+    public function test_step4_persists_ldap_deactivate_missing(): void
+    {
+        $this->actAsSuperuser();
+        $this->ensureSetting(['ldap_deactivate_missing' => 0]);
+
+        Livewire::test(LdapSettings::class)
+            ->set('highestStepReached', 4)
+            ->set('currentStep', 4)
+            ->set('ldap_default_group', null)
+            ->set('ldap_deactivate_missing', true)
+            ->call('saveAndAdvance');
+
+        $this->assertSame('1', Setting::getSettings()->ldap_deactivate_missing);
+    }
+
+    public function test_mount_hydrates_ldap_deactivate_missing(): void
+    {
+        $this->actAsSuperuser();
+        $this->ensureSetting(['ldap_deactivate_missing' => 1]);
+
+        Livewire::test(LdapSettings::class)
+            ->assertSet('ldap_deactivate_missing', true);
+    }
+
     // === disableLdap =======================================================
 
     public function test_disable_ldap_flips_flag_and_redirects(): void

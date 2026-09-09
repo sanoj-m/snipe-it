@@ -218,6 +218,9 @@ class LicensesController extends Controller
         $this->authorize('create', License::class);
         $license = new License;
         $license->fill($request->all());
+        if ($license->perpetual) {
+            $license->expiration_date = null;
+        }
         $license->created_by = auth()->id();
         $license->company_id = Company::getIdForCurrentUser($request->input('company_id'));
 
@@ -263,6 +266,9 @@ class LicensesController extends Controller
 
         $license = License::findOrFail($id);
         $license->fill($request->all());
+        if ($license->perpetual) {
+            $license->expiration_date = null;
+        }
         $license->company_id = Company::getIdForCurrentUser($request->input('company_id'));
 
         if ($license->save()) {

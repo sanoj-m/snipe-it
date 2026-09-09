@@ -722,6 +722,16 @@
                         :disabled="$isReadOnly"
                     />
 
+                    <!-- Deactivate users missing from LDAP -->
+                    <x-form.checkbox-row
+                        name="ldap_deactivate_missing"
+                        wire:model.live="ldap_deactivate_missing"
+                        :label="trans('admin/settings/general.ldap_deactivate_missing')"
+                        :checked="$ldap_deactivate_missing"
+                        help_text="{!! trans('admin/settings/general.ldap_deactivate_missing_help') !!}"
+                        :disabled="$isReadOnly"
+                    />
+
                     <!-- Default permissions group -->
                     <x-form.row
                         name="ldap_default_group"
@@ -830,6 +840,7 @@
                                     'title' => trans('admin/settings/general.ldap_wizard.step_sync'),
                                     'fields' => [
                                         'ldap_pw_sync' => trans('admin/settings/general.ldap_pw_sync'),
+                                        'ldap_deactivate_missing' => trans('admin/settings/general.ldap_deactivate_missing'),
                                         'ldap_default_group' => trans('admin/settings/general.ldap_default_group'),
                                         'custom_forgot_pass_url' => trans('admin/settings/general.custom_forgot_pass_url'),
                                     ],

@@ -44,7 +44,7 @@ class LicenseViewIntegrationTest extends TestCase
         $this->actingAs($admin)
             ->get(route('licenses.show', $license))
             ->assertOk()
-            ->assertSee(trans('floating-licenses::floating.floating_assignments_heading'))
+            ->assertSee('id="floatingAssignedTable"', false)
             ->assertSee(trans('floating-licenses::floating.over_allocated_label', [
                 'assigned' => 2,
                 'pool' => 1,
@@ -90,17 +90,18 @@ class LicenseViewIntegrationTest extends TestCase
         $license = License::factory()->create(['seats' => 5]);
         $admin = User::factory()->superuser()->create();
 
-        // No explicit config exists yet: the type row still renders (the
-        // resolver lazily creates the default pool), labelled Fixed Seats.
+        // No explicit config exists: floating is strictly opt-in per license,
+        // so the type row renders as Fixed Seats and nothing is persisted.
         $this->assertEquals(0, FloatingLicenseConfig::where('license_id', $license->id)->count());
 
         $this->actingAs($admin)
             ->get(route('licenses.show', $license))
             ->assertOk()
-            ->assertSee(trans('floating-licenses::floating.type_fixed'));
+            ->assertDontSee(trans('floating-licenses::floating.license_type'))
+            ->assertDontSee(trans('floating-licenses::floating.type_fixed'));
 
-        $this->assertEquals(1, FloatingLicenseConfig::where('license_id', $license->id)->count(),
-            'Viewing a license under master-on lazily persists its default floating config');
+        $this->assertEquals(0, FloatingLicenseConfig::where('license_id', $license->id)->count(),
+            'Viewing a license must never persist a floating config');
     }
 
     public function test_license_view_overrides_remaining_row_with_floating_availability()
@@ -122,16 +123,21 @@ class LicenseViewIntegrationTest extends TestCase
             ->assertSee('id="floating-remaining-override" data-remaining="-11"', false);
     }
 
-    public function test_license_view_shows_available_tab_note_for_floating_licenses()
+    public function test_license_view_hides_available_tab_for_floating_licenses()
     {
         $license = License::factory()->create();
         $this->createFloatingConfig($license);
         $admin = User::factory()->superuser()->create();
 
+        // Floating licenses have no per-seat "Available" tab: per-seat
+        // checkout is disabled to avoid double-tracking, and the seats pane
+        // shows the floating assignments table instead of the core seats
+        // datatable.
         $this->actingAs($admin)
             ->get(route('licenses.show', $license))
             ->assertOk()
-            ->assertSee(trans('floating-licenses::floating.available_tab_note'));
+            ->assertDontSee(route('api.licenses.seats.index', [$license->id, 'status' => 'available']), false)
+            ->assertDontSee(route('api.licenses.seats.index', [$license->id, 'status' => 'assigned']), false);
     }
 
     public function test_license_view_has_no_remaining_override_or_note_when_master_off()

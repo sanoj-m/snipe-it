@@ -495,6 +495,7 @@ class Importer extends Component
             'min_amt' => trans('general.min_amt'),
             'notes' => trans('general.notes'),
             'order_number' => trans('general.order_number'),
+            'perpetual' => trans('admin/licenses/form.perpetual'),
             'purchase_cost' => trans('general.purchase_cost'),
             'purchase_date' => trans('general.purchase_date'),
             'purchase_order' => trans('admin/licenses/form.purchase_order'),

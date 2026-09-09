@@ -106,6 +106,7 @@ abstract class Importer
         'asset_model' => 'model name',
         'model_number' => 'model number',
         'order_number' => 'order number',
+        'perpetual' => 'perpetual',
         'purchase_cost' => 'purchase cost',
         'purchase_date' => 'purchase date',
         'purchase_order' => 'purchase order',

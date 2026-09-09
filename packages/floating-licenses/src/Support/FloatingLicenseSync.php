@@ -21,49 +21,23 @@ class FloatingLicenseSync
     /**
      * Resolve the floating pool config for a license.
      *
-     * Returns the persisted config when one exists. When the master switch is
-     * on and no config exists yet, a default config is lazily created AND
-     * persisted from the license's own attributes (seats = pool size,
-     * purchase_cost = total cost, active_user cost spread, over-allocation
-     * on) — master switch on means every license behaves floating, unless a
-     * soft-deleted config marks it as explicitly disabled. Returns
-     * null when the master switch is off and no config exists.
+     * Returns the persisted config when one exists, null otherwise. Floating
+     * is strictly opt-in per license: a config is only created when an admin
+     * checks the floating checkbox on the license edit form
+     * (syncFromRequest()). The master switch gates the feature globally via
+     * isEnabled() but never turns individual licenses floating on its own.
      */
     public static function configForLicense(License $license): ?FloatingLicenseConfig
     {
-        $config = FloatingLicenseConfig::where('license_id', $license->id)->first();
-
-        if ($config) {
-            return $config;
-        }
-
-        if (! self::isEnabled()) {
-            return null;
-        }
-
-        // A soft-deleted config means floating was explicitly disabled on this
-        // license — do not lazily recreate it (syncFromRequest() revives the
-        // trashed record if the user re-enables floating via the edit form).
-        if (FloatingLicenseConfig::onlyTrashed()->where('license_id', $license->id)->exists()) {
-            return null;
-        }
-
-        return FloatingLicenseConfig::create([
-            'license_id' => $license->id,
-            'pool_size' => (int) $license->seats,
-            'total_cost' => is_numeric($license->purchase_cost) ? (float) $license->purchase_cost : null,
-            'cost_mode' => FloatingLicenseConfig::COST_MODE_ACTIVE_USER,
-            'allow_over_allocation' => true,
-            'lease_duration_minutes' => null,
-            'idle_timeout_minutes' => null,
-        ]);
+        return FloatingLicenseConfig::where('license_id', $license->id)->first();
     }
 
     /**
      * Sync a license's floating config from the license create/edit form.
      *
      * The license's own attributes are the source of truth: seats = pool size,
-     * purchase_cost = total cost. Called from LicensesController::store() and
+     * purchase_cost = per-unit (per seat) price, so the pool's total cost is
+     * purchase_cost × seats. Called from LicensesController::store() and
      * ::update() right after the license is saved; a no-op when the master
      * switch is off.
      */
@@ -78,7 +52,11 @@ class FloatingLicenseSync
             $config = FloatingLicenseConfig::withTrashed()->firstOrNew(['license_id' => $license->id]);
 
             $config->pool_size = (int) $license->seats;
-            $config->total_cost = is_numeric($license->purchase_cost) ? (float) $license->purchase_cost : null;
+            // purchase_cost is the per-unit (per seat) price; the pool's total
+            // cost is unit price multiplied by the number of seats.
+            $config->total_cost = is_numeric($license->purchase_cost)
+                ? round(((float) $license->purchase_cost) * $config->pool_size, 2)
+                : null;
             $config->cost_mode = in_array($request->input('floating_cost_mode'), [
                 FloatingLicenseConfig::COST_MODE_POOL_SLOT,
                 FloatingLicenseConfig::COST_MODE_ACTIVE_USER,

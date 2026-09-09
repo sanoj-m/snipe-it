@@ -20,14 +20,11 @@ class BulkUserAssignment
     /**
      * Bulk-assign a license to a set of users.
      *
-     * When the master switch is on, EVERY license behaves floating:
-     * FloatingLicenseSync::configForLicense() lazily creates a default pool
-     * (seats = pool size, active_user cost spread, over-allocation on), so
-     * each user gets an active allocation. Only when the master switch is off
-     * and no pool config exists does this fall back to the exact core
-     * seat-checkout mechanism (free seat claimed under a row lock,
-     * CheckoutableCheckedOut fired — same as
-     * LicenseCheckoutController::bulkFulfillStore()).
+     * Floating is strictly opt-in: only licenses with a persisted pool config
+     * (FloatingLicenseSync::configForLicense()) allocate floating seats here.
+     * Every other license falls back to the exact core seat-checkout
+     * mechanism (free seat claimed under a row lock, CheckoutableCheckedOut
+     * fired — same as LicenseCheckoutController::bulkFulfillStore()).
      *
      * @param  int[]  $userIds
      * @return array{added: int, skipped: int, failed: int}
@@ -71,7 +68,7 @@ class BulkUserAssignment
                 continue;
             }
 
-            // Fixed-seat fallback (master switch off): core seat checkout.
+            // Fixed-seat fallback (no floating config): core seat checkout.
             $alreadyAssigned = LicenseSeat::where('license_id', $license->id)
                 ->where('assigned_to', $user->id)
                 ->whereNull('deleted_at')
@@ -83,30 +80,68 @@ class BulkUserAssignment
                 continue;
             }
 
-            $seat = DB::transaction(function () use ($license, $user): ?LicenseSeat {
-                $seat = $license->freeSeat(lock: true);
-
-                if (! $seat) {
-                    return null;
-                }
-
-                $seat->assigned_to = $user->id;
-                $seat->created_by = auth()->id();
-
-                return $seat->save() ? $seat : null;
-            });
-
-            if (! $seat) {
+            if (! $this->assignSeatToUser($license, $user)) {
                 $failed++;
 
                 continue;
             }
 
-            event(new CheckoutableCheckedOut($seat, $user, auth()->user(), trans('floating-licenses::floating.log.bulk_checkout')));
             $added++;
         }
 
         return ['added' => $added, 'skipped' => $skipped, 'failed' => $failed];
+    }
+
+    /**
+     * Claim a free license_seats row for a user under a row lock and fire
+     * the core checkout event — the same mechanism the web checkout flow
+     * uses. Returns the saved seat, or null when no seat was free or the
+     * save failed. Shared by addUsers(), the CSV user import, and the
+     * floating-to-standard conversion command.
+     */
+    public function assignSeatToUser(License $license, User $user, bool $allowUnreassignable = false): ?LicenseSeat
+    {
+        // CLI contexts (conversion command) have no authenticated user; fall
+        // back to the first admin account for created_by / the event actor,
+        // mirroring core's `auth()->id() ?: 1` convention.
+        $actor = auth()->user() ?? User::orderBy('id')->first();
+
+        $seat = DB::transaction(function () use ($license, $user, $actor, $allowUnreassignable): ?LicenseSeat {
+            $seat = $license->freeSeat(lock: true);
+
+            // Conversion fallback: a non-reassignable license accumulates
+            // "burned" (unreassignable) but unassigned seat rows. When the
+            // caller opts in, claim one of those so the user keeps their
+            // assignment; the flag stays set, preserving the burn-on-checkin
+            // semantics for future checkins.
+            if (! $seat && $allowUnreassignable) {
+                $seat = $license->licenseseats()
+                    ->whereNull('deleted_at')
+                    ->where('unreassignable_seat', '=', true)
+                    ->whereNull('assigned_to')
+                    ->whereNull('asset_id')
+                    ->orderBy('id', 'asc')
+                    ->lockForUpdate()
+                    ->first();
+            }
+
+            if (! $seat) {
+                return null;
+            }
+
+            $seat->assigned_to = $user->id;
+            $seat->created_by = $actor?->id;
+
+            return $seat->save() ? $seat : null;
+        });
+
+        if (! $seat) {
+            return null;
+        }
+
+        event(new CheckoutableCheckedOut($seat, $user, $actor, trans('floating-licenses::floating.log.bulk_checkout')));
+
+        return $seat;
     }
 
     /**

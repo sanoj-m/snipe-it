@@ -240,4 +240,64 @@ class UpdateLicenseTest extends TestCase
 
         $this->assertEquals($before, $after, 'A spurious log entry was created for a no-op update');
     }
+
+    public function test_perpetual_checkbox_clears_expiration_date()
+    {
+        $admin = User::factory()->superuser()->create();
+        $license = License::factory()->create([
+            'seats' => 5,
+            'expiration_date' => '2030-01-01',
+        ]);
+
+        $this->actingAs($admin)
+            ->put(route('licenses.update', $license->id), [
+                'name' => $license->name,
+                'seats' => 5,
+                'category_id' => $license->category_id,
+                'expiration_date' => '2030-01-01',
+                'perpetual' => '1',
+            ])
+            ->assertStatus(302);
+
+        $license->refresh();
+        $this->assertTrue($license->perpetual);
+        $this->assertNull($license->expiration_date, 'Perpetual licenses must not carry an expiration date');
+        $this->assertFalse($license->isExpired());
+    }
+
+    public function test_perpetual_license_with_past_expiration_is_not_expired()
+    {
+        $license = License::factory()->create([
+            'expiration_date' => '2020-01-01',
+            'perpetual' => 1,
+        ]);
+
+        $this->assertFalse($license->isExpired(), 'A perpetual license must never count as expired');
+
+        $license->perpetual = false;
+        $this->assertTrue($license->isExpired());
+    }
+
+    public function test_unchecking_perpetual_keeps_expiration_date()
+    {
+        $admin = User::factory()->superuser()->create();
+        $license = License::factory()->create([
+            'seats' => 5,
+            'perpetual' => 1,
+            'expiration_date' => null,
+        ]);
+
+        $this->actingAs($admin)
+            ->put(route('licenses.update', $license->id), [
+                'name' => $license->name,
+                'seats' => 5,
+                'category_id' => $license->category_id,
+                'expiration_date' => '2031-05-05',
+            ])
+            ->assertStatus(302);
+
+        $license->refresh();
+        $this->assertFalse($license->perpetual);
+        $this->assertEquals('2031-05-05', $license->expiration_date->format('Y-m-d'));
+    }
 }

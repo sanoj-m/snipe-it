@@ -634,4 +634,40 @@ class Ldap extends Model
 
         return $results;
     }
+
+    /**
+     * Deactivate LDAP-imported users that were not seen in the current sync
+     * results (e.g. disabled in AD and excluded by the LDAP filter, or moved
+     * to an OU outside the sync scope). Returns summary rows in the same
+     * shape LdapSync uses for its --delete output.
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public static function deactivateUsersMissingFromLdap(array $seenUsernames): array
+    {
+        $summary = [];
+
+        $missing_users = User::where('ldap_import', 1)
+            ->where('activated', 1)
+            ->whereNotIn('username', $seenUsernames)
+            ->get();
+
+        foreach ($missing_users as $missing_user) {
+            $missing_user->activated = 0;
+            $saved = $missing_user->save();
+
+            $summary[] = [
+                'id' => $missing_user->id,
+                'username' => $missing_user->username,
+                'first_name' => $missing_user->first_name,
+                'last_name' => $missing_user->last_name,
+                'email' => $missing_user->email,
+                'createorupdate' => $saved ? 'deactivated' : 'error',
+                'status' => $saved ? 'success' : 'error',
+                'note' => $saved ? 'deactivated_missing_from_ldap' : 'could_not_deactivate',
+            ];
+        }
+
+        return $summary;
+    }
 }

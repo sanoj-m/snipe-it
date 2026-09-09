@@ -37,28 +37,28 @@ class FloatingLicenseService
                     throw new PoolExhaustedException($lockedConfig);
                 }
 
-            $now = Carbon::now();
+                $now = Carbon::now();
 
-            $allocation = new FloatingLicenseAllocation;
-            $allocation->license_id = $lockedConfig->license_id;
-            $allocation->user_id = $user->id;
-            $allocation->asset_id = $asset?->id;
-            $allocation->status = FloatingLicenseAllocation::STATUS_ACTIVE;
-            $allocation->allocated_at = $now;
-            $allocation->last_seen_at = $now;
-            // A null lease duration means the allocation never expires.
-            $allocation->expires_at = $lockedConfig->lease_duration_minutes
-                ? $now->copy()->addMinutes($lockedConfig->lease_duration_minutes)
-                : null;
-            $allocation->notes = $notes;
-            $allocation->save();
+                $allocation = new FloatingLicenseAllocation;
+                $allocation->license_id = $lockedConfig->license_id;
+                $allocation->user_id = $user->id;
+                $allocation->asset_id = $asset?->id;
+                $allocation->status = FloatingLicenseAllocation::STATUS_ACTIVE;
+                $allocation->allocated_at = $now;
+                $allocation->last_seen_at = $now;
+                // A null lease duration means the allocation never expires.
+                $allocation->expires_at = $lockedConfig->lease_duration_minutes
+                    ? $now->copy()->addMinutes($lockedConfig->lease_duration_minutes)
+                    : null;
+                $allocation->notes = $notes;
+                $allocation->save();
 
-            $this->writeAuditLog($lockedConfig->license_id, $user->id, 'floating.allocate',
-                trans('floating-licenses::floating.log.allocate', ['id' => $allocation->id]));
+                $this->writeAuditLog($lockedConfig->license_id, $user->id, 'floating.allocate',
+                    trans('floating-licenses::floating.log.allocate', ['id' => $allocation->id]));
 
-            $this->recalculateCosts($lockedConfig);
+                $this->recalculateCosts($lockedConfig);
 
-            return $allocation->refresh();
+                return $allocation->refresh();
             });
         } catch (PoolExhaustedException $e) {
             // Log the denial AFTER the transaction has rolled back, otherwise
