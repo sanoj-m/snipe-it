@@ -1215,3 +1215,11 @@ body .sidebar-menu > li > a > .pull-right-container > .fa {
     font-size: 10px;
     margin-top: 3px;
 }
+
+/* treeview child <li> elements get a leftover dark block from upstream —
+   kill it so the submenu sits on the sidebar surface */
+body .sidebar-menu .treeview-menu > li,
+body .sidebar-menu .treeview-menu > li:hover,
+body .sidebar-menu .treeview-menu > li.active {
+    background-color: transparent !important;
+}
