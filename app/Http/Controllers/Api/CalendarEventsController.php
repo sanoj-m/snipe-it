@@ -8,6 +8,7 @@ use App\Models\CalendarEvent;
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Unified read endpoint for the calendar page. Queries the
@@ -54,13 +55,27 @@ class CalendarEventsController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $this->authorizeAnySource($request);
+        $this->authorizeAnySource();
 
         [$rangeStart, $rangeEnd] = $this->resolveRange($request);
         $eventTypes = $this->resolveEventTypes($request);
         $limit = $this->resolveLimit($request);
 
-        $baseQuery = $this->buildBaseQuery($rangeStart, $rangeEnd, $eventTypes);
+        // Pre-filter the raw query to source types the caller can
+        // view at all. This keeps `total` (and therefore the widget's
+        // "+N more" label) from counting rows the per-row policy
+        // check below would strip anyway. Without this cap a scoped
+        // viewer sees inflated remaining-count labels (e.g. "+26 more"
+        // when only 2 events in the window are actually viewable to
+        // them). Per-row FMCS / location checks still run inside
+        // filterAuthorizedRows so this is only a coarse first pass.
+        $viewableSourceTypes = array_values(array_filter(
+            CalendarEvent::sourceModels(),
+            fn (string $sourceClass) => Gate::allows('view', $sourceClass),
+        ));
+
+        $baseQuery = $this->buildBaseQuery($rangeStart, $rangeEnd, $eventTypes)
+            ->whereIn('source_type', $viewableSourceTypes);
         $total = (clone $baseQuery)->count();
         $rows = $baseQuery->orderBy('start')->limit($limit)->get();
 
@@ -84,20 +99,12 @@ class CalendarEventsController extends Controller
 
     /**
      * Base gate: viewer must be able to view AT LEAST ONE registered
-     * HasCalendarEvents source model. Source list comes from
-     * CalendarEvent::sourceModels() so a new adopter of the trait is
-     * picked up automatically. Per-row policy checks inside
+     * HasCalendarEvents source model. Per-row policy checks inside
      * buildEvents() handle the actual event-level scoping.
      */
-    protected function authorizeAnySource(Request $request): void
+    protected function authorizeAnySource(): void
     {
-        $viewer = $request->user();
-        foreach (CalendarEvent::sourceModels() as $sourceClass) {
-            if ($viewer?->can('view', $sourceClass)) {
-                return;
-            }
-        }
-        abort(403);
+        $this->authorize('canViewUsersAndCheckoutables');
     }
 
     /**

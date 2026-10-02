@@ -43,6 +43,7 @@ use App\Livewire\Importer;
 use App\Mail\CheckoutComponentMail;
 use App\Models\MaintenanceType;
 use App\Models\ReportTemplate;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Tabuna\Breadcrumbs\Trail;
 
@@ -128,6 +129,13 @@ Route::group(['middleware' => 'auth'], function () {
     ]);
 
     Route::post('categories/bulk/delete', [BulkCategoriesController::class, 'destroy'])->name('categories.bulk.delete');
+
+    Route::post('categories/bulk/edit', [BulkCategoriesController::class, 'edit'])
+        ->name('categories.bulk.edit')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('categories.index', route('categories.index'))
+            ->push(trans('general.bulk_edit'), route('categories.index')));
+
+    Route::post('categories/bulk/save', [BulkCategoriesController::class, 'update'])->name('categories.bulk.save');
 
     /*
     * Labels
@@ -328,6 +336,42 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'authorize:superuser
 
     Route::post('slack', [SettingsController::class, 'postSlack'])
         ->name('settings.slack.save');
+
+    Route::get('adapters', [SettingsController::class, 'getAdapters'])
+        ->name('settings.adapters.index')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('settings.index')
+            ->push(trans('admin/settings/sync_adapters.title'), route('settings.adapters.index')));
+
+    Route::post('adapters', [SettingsController::class, 'postCreateAdapterInstance'])
+        ->name('settings.adapters.create');
+
+    Route::post('adapters/{instance}', [SettingsController::class, 'postAdapterConfig'])
+        ->name('settings.adapters.save')
+        ->missing(fn () => abort(404));
+
+    Route::post('adapters/{instance}/sync', [SettingsController::class, 'postAdapterSync'])
+        ->name('settings.adapters.sync')
+        ->missing(fn () => abort(404));
+
+    Route::post('adapters/{instance}/push', [SettingsController::class, 'postAdapterPush'])
+        ->name('settings.adapters.push')
+        ->missing(fn () => abort(404));
+
+    Route::post('adapters/{instance}/refresh-groups', [SettingsController::class, 'postAdapterRefreshGroups'])
+        ->name('settings.adapters.refresh_groups')
+        ->missing(fn () => abort(404));
+
+    Route::post('adapters/{instance}/refresh-custom-fields', [SettingsController::class, 'postAdapterRefreshCustomFields'])
+        ->name('settings.adapters.refresh_custom_fields')
+        ->missing(fn () => abort(404));
+
+    Route::post('adapters/{instance}/clone', [SettingsController::class, 'postCloneAdapterInstance'])
+        ->name('settings.adapters.clone')
+        ->missing(fn () => abort(404));
+
+    Route::delete('adapters/{instance}', [SettingsController::class, 'deleteAdapterInstance'])
+        ->name('settings.adapters.destroy')
+        ->missing(fn () => abort(404));
 
     Route::get('asset_tags', [SettingsController::class, 'getAssetTags'])
         ->name('settings.asset_tags.index')
@@ -780,18 +824,40 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
     Route::get(
         'activity', [ReportsController::class, 'getActivityReport'])
         ->name('reports.activity')
-        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
-            ->push(trans('general.reports'), route('reports.index'))
-            ->push(trans('general.activity_report'), route('reports.activity')));
+        // Scoped viewers reach this page through the dashboard Recent
+        // Activity widget's View-all button but do not hold reports.view,
+        // so a "Reports" middle crumb linking to reports.index would 403
+        // on click. Emit it only when the caller can reach reports.index.
+        // Trail has no ->when() helper, so use a plain if inside a
+        // multi-line closure.
+        ->breadcrumbs(function (Trail $trail) {
+            $trail->parent('home');
+            if (Gate::allows('reports.view')) {
+                $trail->push(trans('general.reports'), route('reports.index'));
+            }
+            $trail->push(trans('general.activity_report'), route('reports.activity'));
+
+            return $trail;
+        });
 
     Route::post('activity', [ReportsController::class, 'postActivityReport'])
         ->name('reports.activity.post');
 
     Route::get('unaccepted_assets/{deleted?}', [ReportsController::class, 'getAssetAcceptanceReport'])
         ->name('reports/unaccepted_assets')
-        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
-            ->push(trans('general.reports'), route('reports.index'))
-            ->push(trans('general.unaccepted_asset_report'), route('reports/unaccepted_assets')));
+        // Same reasoning as reports.activity above: scoped viewers
+        // arrive via the Needs Attention widget's link and would 403
+        // if we exposed a "Reports" middle crumb linking to
+        // reports.index.
+        ->breadcrumbs(function (Trail $trail) {
+            $trail->parent('home');
+            if (Gate::allows('reports.view')) {
+                $trail->push(trans('general.reports'), route('reports.index'));
+            }
+            $trail->push(trans('general.unaccepted_asset_report'), route('reports/unaccepted_assets'));
+
+            return $trail;
+        });
 
     Route::post('unaccepted_assets/sent_reminder', [ReportsController::class, 'sentAssetAcceptanceReminder'])
         ->name('reports/unaccepted_assets_sent_reminder');
@@ -923,6 +989,7 @@ Route::group(['middleware' => 'web'], function () {
     Route::get('{object_type}/{id}/qr_code',
         [QrCodeController::class, 'show']
     )->name('qr_code/common')
+        ->middleware('auth')
         ->where(['object_type' => 'accessories|assets|hardware|licenses|locations|models|companies|components|consumables|users']);
 
     /**

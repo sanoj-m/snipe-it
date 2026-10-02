@@ -271,9 +271,19 @@ class ReportsController extends Controller
      */
     public function getActivityReport(): View
     {
-        $this->authorize('reports.view');
+        // Two entry points to this page:
+        //   - reports.view holders reach it through the main Reports
+        //     nav and get the full endpoint (api.activity.index) with
+        //     search / filter / sort intact and the CSV export button.
+        //   - Scoped viewers (canViewUsersAndCheckoutables but no
+        //     activity.view) reach it via the dashboard Recent
+        //     Activity widget's View-all button. The blade points
+        //     them at api.dashboard.activity (narrow, type-filtered)
+        //     and hides admin-shaped UI via $canManageReports.
+        $hasReportsView = Gate::allows('reports.view');
+        abort_unless($hasReportsView || Gate::allows('canViewUsersAndCheckoutables'), 403);
 
-        return view('reports/activity');
+        return view('reports/activity', ['canManageReports' => $hasReportsView]);
     }
 
     /**
@@ -286,11 +296,34 @@ class ReportsController extends Controller
     public function postActivityReport(Request $request): StreamedResponse
     {
         ini_set('max_execution_time', 12000);
-        $this->authorize('reports.view');
+        // Two entry points, same as getActivityReport() above:
+        //   - reports.view holders get the full unfiltered CSV.
+        //   - Scoped viewers arriving via the dashboard widget's
+        //     View-all + Download can export a CSV of what they'd see
+        //     on the page (item_type / target_type they can view).
+        $hasReportsView = Gate::allows('reports.view');
+        abort_unless($hasReportsView || Gate::allows('canViewUsersAndCheckoutables'), 403);
+
+        // Build the viewable-type filter once so the streaming chunk
+        // callback below can add it without recomputing per chunk.
+        // Only applied when the caller lacks reports.view. Mirrors
+        // Api\DashboardController::activity so the CSV export shows
+        // the same row set the page shows for scoped viewers.
+        $viewableTypeFilter = null;
+        if (! $hasReportsView) {
+            $candidateTypes = array_merge(
+                \App\Models\CalendarEvent::sourceModels(),
+                [\App\Models\Accessory::class, \App\Models\Consumable::class, \App\Models\Component::class],
+            );
+            $viewableTypeFilter = array_values(array_filter(
+                $candidateTypes,
+                fn ($class) => Gate::allows('view', $class),
+            ));
+        }
 
         $this->disableDebugbar();
 
-        $response = new StreamedResponse(function () {
+        $response = new StreamedResponse(function () use ($viewableTypeFilter) {
             Log::debug('Starting streamed response');
             Log::debug('CSV escaping is set to: '.config('app.escape_formulas'));
 
@@ -322,6 +355,10 @@ class ReportsController extends Controller
             Log::debug('Added headers: '.$executionTime);
 
             $actionlogs = Actionlog::with('item', 'user', 'target', 'location', 'adminuser')
+                ->when($viewableTypeFilter !== null, fn ($q) => $q->where(function ($inner) use ($viewableTypeFilter) {
+                    $inner->whereIn('item_type', $viewableTypeFilter)
+                        ->orWhereIn('target_type', $viewableTypeFilter);
+                }))
                 ->orderBy('created_at', 'DESC')
                 ->chunk(500, function ($actionlogs) use ($handle) {
                     $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
@@ -759,7 +796,13 @@ class ReportsController extends Controller
 
             $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
             Log::debug('Starting headers: '.$executionTime);
-            fputcsv($handle, $header);
+            // Formula-escape the header before writing. Custom-field
+            // names are attacker-editable via the customfields
+            // permission and carry no character filter, so a header
+            // cell like "=cmd|'/c calc.exe'!A1" would evaluate as a
+            // formula on a reports.view user's workstation.
+            $headerFormatter = new EscapeFormula('`');
+            fputcsv($handle, $headerFormatter->escapeRecord($header));
             $executionTime = microtime(true) - $_SERVER['REQUEST_TIME_FLOAT'];
             Log::debug('Added headers: '.$executionTime);
 
@@ -1359,7 +1402,21 @@ class ReportsController extends Controller
      */
     public function getAssetAcceptanceReport($deleted = false): View
     {
-        $this->authorize('reports.view');
+        // Reports.view still opens the full report with reminder /
+        // delete actions. Non-report checkoutable viewers reach this
+        // page from the dashboard's Needs Attention widget, where an
+        // "Unaccepted acceptances" row is shown to anyone who can
+        // view at least one checkoutable type. Without widening
+        // here, that link 403s for scoped viewers. The list is
+        // filtered per-viewer below (viewable types + FMCS), and
+        // the reminder / delete action buttons stay gated behind
+        // reports.view in the blade so this widening is read-only.
+        $hasReportsView = Gate::allows('reports.view');
+        $viewableAcceptanceTypes = array_filter(
+            [Asset::class, LicenseSeat::class, Accessory::class, Component::class, Consumable::class],
+            fn (string $type) => Gate::allows('view', $type === LicenseSeat::class ? License::class : $type),
+        );
+        abort_unless($hasReportsView || $viewableAcceptanceTypes !== [], 403);
 
         $this->disableDebugbar();
 
@@ -1387,6 +1444,15 @@ class ReportsController extends Controller
 
         $itemsForReport = $query->get()
             ->filter(fn ($unaccepted) => $unaccepted->checkoutable)
+            // Type filter for scoped-viewer access. Only show
+            // acceptances whose checkoutable type this viewer can
+            // read. Skipped for reports.view holders since they see
+            // every type on the report by definition (matches
+            // pre-widen behavior). Scoped viewers get their own
+            // types, matching pendingAcceptancesCount in
+            // App\Livewire\NeedsAttention::mount().
+            ->filter(fn ($unaccepted) => $hasReportsView
+                || in_array($unaccepted->checkoutable::class, $viewableAcceptanceTypes, true))
             // FMCS scope, mirrors sentAssetAcceptanceReminder + deleteAssetAcceptance.
             // CheckoutAcceptance has no company_id column and does not use
             // CompanyableTrait / CompanyableChildTrait, so it is not covered
@@ -1398,7 +1464,9 @@ class ReportsController extends Controller
             ->filter(fn ($unaccepted) => $this->currentUserCanAccessAcceptance($unaccepted))
             ->map(fn ($unaccepted) => Checkoutable::fromAcceptance($unaccepted));
 
-        return view('reports/unaccepted_assets', compact('itemsForReport', 'showDeleted'));
+        $canManageAcceptances = $hasReportsView;
+
+        return view('reports/unaccepted_assets', compact('itemsForReport', 'showDeleted', 'canManageAcceptances'));
     }
 
     /**
@@ -1590,8 +1658,6 @@ class ReportsController extends Controller
             ->filter(fn ($unaccepted) => $this->currentUserCanAccessAcceptance($unaccepted))
             ->map(fn ($unaccepted) => Checkoutable::fromAcceptance($unaccepted));
 
-        $rows = [];
-
         $header = [
             trans('general.date'),
             trans('general.type'),
@@ -1604,7 +1670,6 @@ class ReportsController extends Controller
         ];
 
         $header = array_map('trim', $header);
-        $rows[] = implode(',', $header);
 
         // Formula-escape data rows using the same helper + setting as the
         // sibling exports in this file. Row values (company / category /
@@ -1616,30 +1681,38 @@ class ReportsController extends Controller
         // by every other export in ReportsController.
         $formatter = new EscapeFormula('`');
 
+        // Build the CSV via fputcsv so cells containing commas, quotes,
+        // or newlines get RFC 4180 quoted rather than concatenated into
+        // the row/record stream. The prior implode(',') + implode("\n")
+        // approach let a mid-cell newline become a real record break,
+        // dropping the second half of the cell onto its own line where
+        // EscapeFormula's leading-character check no longer applied.
+        $handle = fopen('php://temp', 'r+');
+        fputcsv($handle, $header);
+
         foreach ($itemsForReport as $item) {
+            $row = [
+                $item->acceptance->created_at,
+                $item->type,
+                $item->plain_text_company,
+                $item->plain_text_category,
+                $item->plain_text_model,
+                $item->plain_text_name,
+                $item->asset_tag,
+                $item->acceptance->assignedto ? $item->acceptance->assignedto->display_name : trans('admin/reports/general.deleted_user'),
+            ];
 
-            if ($item != null) {
-
-                $row = [];
-                $row[] = str_replace(',', '', $item->acceptance->created_at);
-                $row[] = str_replace(',', '', $item->type);
-                $row[] = str_replace(',', '', $item->plain_text_company);
-                $row[] = str_replace(',', '', $item->plain_text_category);
-                $row[] = str_replace(',', '', $item->plain_text_model);
-                $row[] = str_replace(',', '', $item->plain_text_name);
-                $row[] = str_replace(',', '', $item->asset_tag);
-                $row[] = str_replace(',', '', ($item->acceptance->assignedto) ? $item->acceptance->assignedto->display_name : trans('admin/reports/general.deleted_user'));
-
-                if (config('app.escape_formulas') !== false) {
-                    $row = $formatter->escapeRecord($row);
-                }
-
-                $rows[] = implode(',', $row);
+            if (config('app.escape_formulas') !== false) {
+                $row = $formatter->escapeRecord($row);
             }
+
+            fputcsv($handle, $row);
         }
 
-        // spit out a csv
-        $csv = implode("\n", $rows);
+        rewind($handle);
+        $csv = stream_get_contents($handle);
+        fclose($handle);
+
         $response = response()->make($csv, 200);
         $response->header('Content-Type', 'text/csv');
         $response->header('Content-disposition', 'attachment;filename=report.csv');

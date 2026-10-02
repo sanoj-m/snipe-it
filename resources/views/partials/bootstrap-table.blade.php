@@ -2416,6 +2416,15 @@
             }
 
             if (value) {
+                // Row carries available_actions.view when the user
+                // can see the show page for this record. Render as
+                // plain text (no link) when they can't, so clicking
+                // through does not 403. Transformers that don't emit
+                // the flag stay linked for back-compat since undefined
+                // is not === false.
+                if (row && row.available_actions && row.available_actions.view === false) {
+                    return '<span style="white-space:nowrap;">' + tag_icon + value + '</span>';
+                }
                 return '<span style="white-space:nowrap;">' + tag_icon + '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '">' + value + '</a></span>';
             }
         };
@@ -2518,6 +2527,16 @@
                     var tag_icon = '<i class="fa-solid fa-square" style="color: ' + value.tag_color + ';" aria-hidden="true"></i>';
                 } else {
                     var tag_icon = '';
+                }
+
+                // Same viewable-flag treatment as
+                // polymorphicItemFormatter and genericRowLinkFormatter.
+                // A scoped viewer's Recent Activity row that names an
+                // admin / target / user they cannot reach must render
+                // as plain text so the click does not 403. Values
+                // without a viewable key stay linked for back-compat.
+                if (value.viewable === false) {
+                    return '<nobr>' + tag_icon + ' ' + value.name + '</nobr>';
                 }
 
                 return '<nobr>'+ tag_icon + ' <a href="{{ config('app.url') }}/' + polymorphicItemFormatterDest + dest + '/' + value.id + '">' + value.name + '</a></span>';
@@ -2715,6 +2734,17 @@
             // Show as strikethrough if it's been deleted
             if (value.deleted_at && value.deleted_at != '') {
                 return '<nobr><span class="text-muted" data-tooltip="true" title="{{ trans('general.deleted') }} ' + value.type + '"><del><i class="' + item_icon + ' fa-fw"></i> ' + value.name + '</del></span></nobr>';
+            }
+
+            // Render as plain text (no link) when the caller cannot
+            // view the underlying record. Prevents 403 click-throughs
+            // from the dashboard's recent-activity row for scoped
+            // viewers who see actionlogs on types they can't drill
+            // into. ActionlogsTransformer emits viewable=false for
+            // those. Transformers that don't emit the flag stay
+            // linked for back-compat since undefined is not === false.
+            if (value.viewable === false) {
+                return '<nobr><span data-tooltip="true" title="' + value.type + '"><i class="' + item_icon + ' fa-fw"></i> ' + value.name + '</span></nobr>';
             }
 
             return '<nobr><a href="{{ config('app.url') }}/' + item_destination +'/' + value.id + '" data-tooltip="true" title="' + value.type + '"><i class="' + item_icon + ' fa-fw"></i> ' + value.name + '</a></nobr>';
@@ -3089,11 +3119,26 @@
     // Checkouts need the license ID, checkins need the specific seat ID
 
     function licenseSeatInOutFormatter(value, row) {
+
+        // [floating-licenses addon] BEGIN — floating allocations check in
+        // via a POST to the addon's release route, not the seat checkin URL.
+        if (row.floating_release_url) {
+            if (row.available_actions.checkin === true) {
+                return '<form method="POST" action="' + row.floating_release_url + '" style="display:inline">'
+                    + '<input type="hidden" name="_token" value="{{ csrf_token() }}">'
+                    + '<button type="submit" class="btn btn-sm bg-purple" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</button>'
+                    + '</form>';
+            }
+            return '';
+        }
+        // [floating-licenses addon] END
+
+        var backto = row.checkin_backto ? '/' + row.checkin_backto : '';
         if (row.disabled && (row.assigned_user || row.assigned_asset)) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin" class="btn btn-sm bg-purple" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
+            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin' + backto + '" class="btn btn-sm bg-purple" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
         }
         if (row.disabled) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin" class="btn btn-sm bg-maroon btn-checkout disabled" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkout') }}</a>';
+            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin' + backto + '" class="btn btn-sm bg-maroon btn-checkout disabled" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkout') }}</a>';
         }
         // The user is allowed to check the license seat out and it's available
         if ((row.available_actions.checkout === true) && (row.user_can_checkout === true) && ((!row.assigned_asset) && (!row.assigned_user))) {
@@ -3102,7 +3147,7 @@
 
         // The user is allowed to check the license seat in and it's available
         if ((row.available_actions.checkin === true) && ((row.assigned_asset) || (row.assigned_user))) {
-            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
+            return '<a href="{{ config('app.url') }}/licenses/' + row.id + '/checkin' + backto + '" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
         }
 
     }
@@ -3116,6 +3161,12 @@
             destination = 'maintenance-types';
         }
         return function (value, row) {
+
+            // Optional row.checkin_backto lets the caller redirect
+            // back to a context page (e.g. a user detail view) after
+            // a checkin action. Segment appended to the URL to match
+            // the /{destination}/{id}/checkin/{backto?} route.
+            var backto = row.checkin_backto ? '/' + row.checkin_backto : '';
 
             // The user is allowed to check items out, AND the item is deployable
             if ((row.available_actions.checkout == true) && (row.user_can_checkout == true) && ((!row.asset_id) && (!row.assigned_to))) {
@@ -3136,9 +3187,9 @@
             // The user is allowed to check items in
             } else if (row.available_actions.checkin == true)  {
                 if (row.assigned_to) {
-                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '/checkin" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
+                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.id + '/checkin' + backto + '" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
                 } else if (row.assigned_pivot_id) {
-                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.assigned_pivot_id + '/checkin" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
+                    return '<a href="{{ config('app.url') }}/' + destination + '/' + row.assigned_pivot_id + '/checkin' + backto + '" class="btn btn-sm bg-purple btn-checkin" data-tooltip="true" title="{{ trans('general.checkin_tooltip') }}">{{ trans('general.checkin') }}</a>';
                 }
 
             }
@@ -3999,7 +4050,7 @@
     }
 
     function linkNumberToUserAssetsFormatter(value, row) {
-        return linkToUserSectionBasedOnCount(value, row.id, 'asset');
+        return linkToUserSectionBasedOnCount(value, row.id, 'assets');
     }
 
     function linkNumberToUserLicensesFormatter(value, row) {

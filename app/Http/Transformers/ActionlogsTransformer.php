@@ -212,6 +212,12 @@ class ActionlogsTransformer
                 'name' => e($actionlog->item->display_name) ?? null,
                 'type' => e($actionlog->itemType()),
                 'serial' => $itemSerial,
+                // Per-row view flag consumed by polymorphicItemFormatter
+                // to render the name as plain text when the caller
+                // cannot reach the show controller for this record.
+                // Without it, clicking through a scoped viewer's
+                // recent-activity row 403s on the target page.
+                'viewable' => Gate::allows('view', $actionlog->item),
             ] : null,
             'location' => ($actionlog->location) ? [
                 'id' => (int) $actionlog->location->id,
@@ -228,17 +234,26 @@ class ActionlogsTransformer
                 'name' => e($actionlog->adminuser->display_name) ?? null,
                 'first_name' => e($actionlog->adminuser->first_name),
                 'last_name' => e($actionlog->adminuser->last_name),
+                // Per-row view flag consumed by
+                // genericColumnObjLinkFormatter to render the actor
+                // as plain text when the caller cannot reach the
+                // user show page. Same reasoning as item.viewable /
+                // target.viewable above.
+                'viewable' => Gate::allows('view', $actionlog->adminuser),
             ] : null,
             'created_by' => ($actionlog->adminuser) ? [
                 'id' => (int) $actionlog->adminuser->id,
                 'name' => e($actionlog->adminuser->display_name),
                 'first_name' => e($actionlog->adminuser->first_name),
                 'last_name' => e($actionlog->adminuser->last_name),
+                'viewable' => Gate::allows('view', $actionlog->adminuser),
             ] : null,
             'target' => ($actionlog->target) ? [
                 'id' => (int) $actionlog->target->id,
                 'name' => e($actionlog->target->display_name) ?? null,
                 'type' => e($actionlog->targetType()),
+                // See item.viewable above for shape reasoning.
+                'viewable' => Gate::allows('view', $actionlog->target),
             ] : null,
             'quantity' => $this->getQuantity($actionlog),
             // action_logs.order_number was replaced by action_logs.order_item_id
@@ -397,6 +412,33 @@ class ActionlogsTransformer
             $clean_meta['companies']['new'] = $resolveCompanyNames($clean_meta['companies']['new']);
             $clean_meta[trans('general.companies')] = $clean_meta['companies'];
             unset($clean_meta['companies']);
+        }
+        if (array_key_exists('groups', $clean_meta)) {
+            // groups meta is a list of {id, name} snapshots taken at
+            // write time. The name is the load-bearing bit: it
+            // preserves what the group was called at the moment the
+            // change happened, so a later rename or delete doesn't
+            // rewrite history. clean_field() ran e(json_encode()) on
+            // the arrays, so we have to htmlspecialchars_decode the
+            // JSON string before json_decode can read the escaped
+            // quotes back. The companies handler above sidesteps this
+            // because its ids are plain integers with no quoted
+            // strings inside the JSON.
+            $renderGroupSnapshot = function ($rawValue): string {
+                $entries = json_decode(htmlspecialchars_decode((string) $rawValue, ENT_QUOTES), true);
+                if (empty($entries) || ! is_array($entries)) {
+                    return trans('general.unassigned');
+                }
+
+                return collect($entries)
+                    ->map(fn ($entry) => is_array($entry) && isset($entry['name']) ? e($entry['name']) : trans('general.deleted'))
+                    ->join(', ');
+            };
+
+            $clean_meta['groups']['old'] = $renderGroupSnapshot($clean_meta['groups']['old']);
+            $clean_meta['groups']['new'] = $renderGroupSnapshot($clean_meta['groups']['new']);
+            $clean_meta[trans('general.groups')] = $clean_meta['groups'];
+            unset($clean_meta['groups']);
         }
         if (array_key_exists('supplier_id', $clean_meta)) {
 

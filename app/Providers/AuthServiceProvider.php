@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Models\Accessory;
 use App\Models\Asset;
 use App\Models\AssetModel;
+use App\Models\CalendarEvent;
 use App\Models\Category;
 use App\Models\CheckoutRequest;
 use App\Models\Company;
@@ -46,6 +47,7 @@ use App\Policies\SupplierPolicy;
 use App\Policies\UserPolicy;
 use Carbon\CarbonInterval;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Laravel\Passport\Console\ClientCommand;
 use Laravel\Passport\Console\InstallCommand;
@@ -89,6 +91,8 @@ class AuthServiceProvider extends ServiceProvider
      * Register any authentication / authorization services.
      *
      * @return void
+     *
+     * @SuppressWarnings("PHPMD.UnusedFormalParameter")
      */
     public function boot()
     {
@@ -105,6 +109,20 @@ class AuthServiceProvider extends ServiceProvider
         Passport::personalAccessTokensExpireIn(CarbonInterval::years($expirationYears));
 
         Passport::cookie(config('passport.cookie_name'));
+
+        // Federated identity: a provider-agnostic OIDC bearer guard, layered
+        // alongside Passport via the `auth:oidc,api` multi-guard. Inert until
+        // config('oidc.enabled') is true, so this is purely additive.
+        // `$name` is unused: Laravel fixes the driver-closure signature as
+        // ($app, $name, $config), and the guard is named by config/auth.php.
+        Auth::extend('oidc', function ($app, $name, array $config) {
+            return new \App\Auth\OidcGuard(
+                Auth::createUserProvider($config['provider']),
+                $app['request'],
+                $app->make(\App\Services\Oidc\OidcTokenValidator::class),
+                $app->make(\App\Services\Oidc\OidcUserResolver::class),
+            );
+        });
 
         /**
          * BEFORE ANYTHING ELSE
@@ -203,6 +221,38 @@ class AuthServiceProvider extends ServiceProvider
                 || $user->can('checkout', Consumable::class)
                 || $user->can('checkout', Component::class)
                 || $user->can('checkout', License::class);
+        });
+
+        // True when the user has any read access to a "fleet item or
+        // person" the app treats as first-class inventory. Powers the
+        // calendar sidenav gate, the dashboard's coarse admission
+        // gate, and the widened lookup-endpoint gates on Companies /
+        // Locations / Categories / Recent Activity.
+        //
+        // Two source lists are combined: HasCalendarEvents adopters
+        // (Asset, License, Maintenance, User, CheckoutRequest) so a
+        // new adopter of the trait is picked up automatically for
+        // calendar surfaces. Plus the three primary checkoutables
+        // (Accessory, Consumable, Component) that are NOT
+        // HasCalendarEvents adopters today but are still first-class
+        // inventory types. Without the second list, an accessory-only
+        // viewer would fail this gate despite the name implying they
+        // shouldn't, and the calendar sidebar would still render an
+        // empty calendar for them safely since those three don't (yet)
+        // publish calendar events.
+        Gate::define('canViewUsersAndCheckoutables', function ($user) {
+            foreach (CalendarEvent::sourceModels() as $sourceClass) {
+                if ($user->can('view', $sourceClass)) {
+                    return true;
+                }
+            }
+            foreach ([Accessory::class, Consumable::class, Component::class] as $sourceClass) {
+                if ($user->can('view', $sourceClass)) {
+                    return true;
+                }
+            }
+
+            return false;
         });
 
         Gate::define('assets.view.encrypted_custom_fields', function ($user) {

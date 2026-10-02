@@ -880,11 +880,22 @@ class Helper
             ->havingRaw('(qty - checkouts_count) < (min_amt + ?)', [$alert_threshold])
             ->get();
 
+        // Components are checked out with a per-assignment quantity
+        // stored on the components_assets pivot (assigned_qty), NOT
+        // one row per unit. withCount() would count assignment rows
+        // and produce a wrong "remaining" ("qty - 1" instead of "qty
+        // - N" for a single pivot row that shipped N units). Match
+        // Component::numCheckedOut() by summing pivot.assigned_qty
+        // through the unconstrainedAssets relation, which also drops
+        // CompanyableScope so cross-company checkouts count against
+        // stock the same way the model method does. coalesce() maps
+        // "no assignments" (SUM returns NULL) back to 0 so the
+        // havingRaw comparison stays numeric.
         $components = Component::select('id', 'name', 'qty', 'min_amt')
-            ->withCount('assets as sum_unconstrained_assets')
+            ->withSum('unconstrainedAssets as sum_unconstrained_assets', 'components_assets.assigned_qty')
             ->whereNotNull('min_amt')
             ->groupBy('components.id', 'components.name', 'components.qty', 'components.min_amt')
-            ->havingRaw('(qty - sum_unconstrained_assets) < (min_amt + ?)', [$alert_threshold])
+            ->havingRaw('(qty - COALESCE(sum_unconstrained_assets, 0)) < (min_amt + ?)', [$alert_threshold])
             ->get();
 
         $asset_models = AssetModel::select('id', 'name', 'min_amt')
@@ -942,7 +953,7 @@ class Helper
         }
 
         foreach ($components as $component) {
-            $avail = $component->qty - $component->sum_unconstrained_assets;
+            $avail = $component->qty - ($component->sum_unconstrained_assets ?? 0);
             $percent = $component->qty > 0
                 ? number_format((($avail / $component->qty) * 100), 0)
                 : 100;
@@ -1795,12 +1806,31 @@ class Helper
 
         $url = str_replace(["\r", "\n"], '', $url);
 
-        $parts = parse_url($url);
+        // Normalize backslashes to forward slashes before parsing, so that a malicious input like
+        // https:\\evil.com\@example.com\@evil.com\@example.com
+        // doesn't get parsed as a same-origin URL.
+        $normalized = str_replace('\\', '/', $url);
+
+        $parts = parse_url($normalized);
         if ($parts === false) {
             return null;
         }
 
         if (isset($parts['scheme']) && ! in_array(strtolower($parts['scheme']), ['http', 'https'], true)) {
+            return null;
+        }
+
+        // Same-origin redirects never legitimately carry credentials.
+        // Reject any input where parse_url extracted a userinfo component,
+        // closing further parser-differential variants that hide the real
+        // authority behind an `@`.
+        if (isset($parts['user']) || isset($parts['pass'])) {
+            return null;
+        }
+
+        // Reject scheme-only URLs with no authority (e.g. "https:evil.com",
+        // "https:/evil.com", "http:@evil.com").
+        if (isset($parts['scheme']) && !isset($parts['host'])) {
             return null;
         }
 
@@ -1812,6 +1842,30 @@ class Helper
         }
 
         return $url;
+    }
+
+    /**
+     * Emission-side replacement for Laravel's redirect()->intended().
+     *
+     * Laravel's redirect()->intended() pulls session('url.intended') and
+     * hands it straight to redirect()->to() with no host validation. The
+     * write-side sanitize we perform in SamlController::acs and similar
+     * places is defense-in-depth, but any writer that skips it (or any
+     * parser-differential bypass of Helper::sameOriginUrl at write time)
+     * leaves an open-redirect surface. This helper reads url.intended,
+     * runs it through sameOriginUrl at emission, and falls back to the
+     * caller-supplied default whenever the stored value is missing or
+     * fails the guard. Every controller that previously called
+     * redirect()->intended(...) directly should call this instead.
+     */
+    public static function safeIntended(?string $default = null): RedirectResponse
+    {
+        $default ??= '/';
+
+        $intended = session()->pull('url.intended');
+        $target = self::sameOriginUrl($intended) ?? $default;
+
+        return redirect()->to($target);
     }
 
     public static function getRedirectOption($request, $id, $table, $item_id = null): RedirectResponse

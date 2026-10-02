@@ -254,6 +254,7 @@ class Asset extends Depreciable
         'category' => ['name'],
         'manufacturer' => ['name'],
         'assigned_to' => ['name'],
+        'externalSource' => ['primary_mac', 'primary_ip', 'os', 'os_version'],
     ];
 
     /**
@@ -613,7 +614,7 @@ class Asset extends Depreciable
      * @param  Carbon  $checkout_at
      * @param  Carbon  $expected_checkin
      * @param  string  $note
-     * @param  null  $name
+     * @param  string|null  $name
      * @return bool
      *
      * @since  [v3.0]
@@ -1206,6 +1207,18 @@ class Asset extends Depreciable
     }
 
     /**
+     * Sync-adapter side row: identity (source + external_id) plus
+     * last-known network / OS inventory (primary MAC / IP / OS /
+     * OS version / last seen). Nullable relation: only assets that
+     * have been synced from an adapter have a row. Detail view +
+     * assets table render these fields when the relation is present.
+     */
+    public function externalSource()
+    {
+        return $this->hasOne(AssetExternalSource::class);
+    }
+
+    /**
      * Establishes the asset -> aupplier relationship
      *
      * @author [A. Gianotto] [<snipe@snipe.net>]
@@ -1745,6 +1758,19 @@ class Asset extends Depreciable
     }
 
     /**
+     * Query builder scope for Assets whose asset_eol_date is in the past. Used by
+     * the NeedsAttention dashboard tile count and the hardware/past-eol view.
+     *
+     * @return \Illuminate\Database\Query\Builder Modified query builder
+     */
+    public function scopePastEol($query)
+    {
+        return $query->whereNotNull('assets.asset_eol_date')
+            ->where('assets.asset_eol_date', '<', Carbon::now()->format('Y-m-d'))
+            ->NotArchived();
+    }
+
+    /**
      * Query builder scope for Assets that are due for auditing OR overdue, based on the assets.next_audit_date
      * and settings.audit_warning_days.
      *
@@ -2185,6 +2211,32 @@ class Asset extends Depreciable
     public function scopeOrderCompany($query, $order)
     {
         return $query->leftJoin('companies as company_sort', 'assets.company_id', '=', 'company_sort.id')->orderBy('company_sort.name', $order);
+    }
+
+    /**
+     * Sort by a sync-adapter external-source column (primary_mac,
+     * primary_ip, os, os_version, last_seen). LeftJoin so unsynced
+     * assets sort as nulls rather than dropping out. Join is on the
+     * unique asset_id index in asset_external_sources, so cost is
+     * an index lookup per row.
+     *
+     * Column argument is whitelisted by the caller (AssetsController's
+     * sort switch) so it's never user-controlled at this layer, but
+     * we still validate against the known column set as defense-in-
+     * depth against a caller regression.
+     */
+    public function scopeOrderExternalSource($query, string $order, string $column)
+    {
+        if (! in_array($column, ['primary_mac', 'primary_ip', 'os', 'os_version', 'last_seen'], true)) {
+            return $query;
+        }
+
+        return $query->leftJoin(
+            'asset_external_sources as ext_src_sort',
+            'assets.id',
+            '=',
+            'ext_src_sort.asset_id',
+        )->orderBy('ext_src_sort.'.$column, $order);
     }
 
     /**

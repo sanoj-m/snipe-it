@@ -244,7 +244,11 @@
 
 @section('moar_scripts')
     @can('files', $location)
-        @include ('modals.upload-file', ['item_type' => 'locations', 'item_id' => $location->id])
+        <x-modals.upload-file item-type="locations" :item-id="$location->id" />
+    @endcan
+
+    @can('checkout', \App\Models\Accessory::class)
+        <x-modals.adjust-quantity />
     @endcan
 
     @include ('partials.bootstrap-table')

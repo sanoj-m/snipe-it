@@ -12,8 +12,10 @@ use App\Http\Transformers\StatuslabelsTransformer;
 use App\Models\Asset;
 use App\Models\Setting;
 use App\Models\Statuslabel;
+use App\Rules\CssColor;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class StatuslabelsController extends Controller
 {
@@ -101,6 +103,8 @@ class StatuslabelsController extends Controller
             return response()->json(Helper::formatStandardApiResponse('error', null, ['type' => ['Status label type is required.']]));
         }
 
+        $request->validate(['color' => ['nullable', new CssColor]]);
+
         $statuslabel = new Statuslabel;
         $statuslabel->fill($request->all());
 
@@ -165,6 +169,9 @@ class StatuslabelsController extends Controller
             return response()->json(Helper::formatStandardApiResponse('error', null, 'Status label type is required.'));
         }
 
+        // See color-validation comment in store() above.
+        $request->validate(['color' => ['nullable', new CssColor]]);
+
         $statuslabel->fill($request->all());
 
         $statusType = Statuslabel::getStatuslabelTypesForDB($request->input('type'));
@@ -221,7 +228,8 @@ class StatuslabelsController extends Controller
      */
     public function getAssetCountByStatuslabel(): array
     {
-        $this->authorize('view', Statuslabel::class);
+        
+        abort_unless(Gate::allows('view', Statuslabel::class) || Gate::allows('view', Asset::class), 403);
 
         if (Setting::getSettings()->show_archived_in_list == 0) {
             $statuslabels = Statuslabel::withCount('assets')->where('archived', '0')->get();
@@ -254,7 +262,11 @@ class StatuslabelsController extends Controller
      */
     public function getAssetCountByMetaStatus(): array
     {
-        $this->authorize('view', Statuslabel::class);
+        // Dashboard pie-chart data: asset counts bucketed by meta
+        // status type (RTD / deployed / archived / pending /
+        // undeployable). Same widening rationale as
+        // getAssetCountByStatuslabel() above.
+        abort_unless(Gate::allows('view', Statuslabel::class) || Gate::allows('view', Asset::class), 403);
 
         $total['rtd']['label'] = trans('general.ready_to_deploy');
         $total['rtd']['count'] = Asset::RTD()->count();
