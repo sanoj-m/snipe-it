@@ -605,3 +605,72 @@ html[data-theme='dark'] body.login-page .has-feedback .form-control {
     background-color: var(--k-surface);
     color: var(--k-text);
 }
+
+/* --------------------------------------------------------------------------
+   Tenant-var repairs: Settings > Branding paints .dropdown-menu, pagination,
+   toolbar buttons and labels with --main-theme-color (white) in BOTH modes.
+   Reclaim those surfaces for dark mode.
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .dropdown-menu,
+html[data-theme='dark'] body .dropdown-menu > li,
+html[data-theme='dark'] body .navbar-nav .open > a,
+html[data-theme='dark'] body .navbar-nav > li > a {
+    background-color: var(--k-surface) !important;
+    color: var(--k-text) !important;
+}
+
+html[data-theme='dark'] body .dropdown-menu > li > a:hover {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+html[data-theme='dark'] body .pagination > li > a,
+html[data-theme='dark'] body .pagination > li > span {
+    background-color: var(--k-surface) !important;
+    border-color: var(--k-border) !important;
+    color: var(--k-text) !important;
+}
+
+html[data-theme='dark'] body .pagination > .active > a,
+html[data-theme='dark'] body .pagination > .active > a:hover,
+html[data-theme='dark'] body .pagination > li > a:hover {
+    background-color: var(--k-accent-tint) !important;
+    border-color: var(--k-accent) !important;
+    color: var(--k-accent) !important;
+}
+
+html[data-theme='dark'] body .fixed-table-toolbar .btn,
+html[data-theme='dark'] body .fixed-table-toolbar .btn-default,
+html[data-theme='dark'] body .bootstrap-table .toolbar .btn {
+    background-color: var(--k-surface) !important;
+    border-color: var(--k-border) !important;
+    color: var(--k-text-muted) !important;
+}
+
+html[data-theme='dark'] body .fixed-table-toolbar .btn:hover {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+/* navbar search input */
+html[data-theme='dark'] body .main-header .navbar .form-control,
+html[data-theme='dark'] body .navbar-form .form-control {
+    background-color: var(--k-hover-tint);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+/* block footer buttons ("View All" slabs) stay dark */
+html[data-theme='dark'] body .btn-block,
+html[data-theme='dark'] body .box-footer .btn-default {
+    background-color: var(--k-hover-tint) !important;
+    border-color: var(--k-border) !important;
+    color: var(--k-text) !important;
+}
+
+/* status pills painted white-on-white by tenant vars */
+html[data-theme='dark'] body .label-default,
+html[data-theme='dark'] body .label-default:hover {
+    background-color: color-mix(in srgb, var(--k-text-muted) 18%, transparent) !important;
+    color: var(--k-text-muted) !important;
+}

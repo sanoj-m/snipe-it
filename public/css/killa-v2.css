@@ -713,7 +713,7 @@ body .label {
     text-shadow: none;
 }
 
-body .label-default { background-color: color-mix(in srgb, var(--k-text-muted) var(--k-tint-alpha-soft), transparent); color: var(--k-text-muted); }
+body .label-default { background-color: color-mix(in srgb, var(--k-text-muted) var(--k-tint-alpha-soft), transparent); color: var(--k-text-muted) !important; }
 body .label-primary { background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent); color: var(--k-accent); }
 body .label-success { background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha-soft), transparent); color: var(--k-success); }
 body .label-info { background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha-soft), transparent); color: var(--k-info); }
