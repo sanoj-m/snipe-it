@@ -83,8 +83,8 @@
                     <tr>
                         <td>{{ (array_key_exists('id', $entry)) ?  $entry['id'] : '' }}</td>
                         <td>{{ $entry['username'] }}</td>
-                        <td>{{ $entry['display_name'] }}</td>
-                        <td>{{ $entry['employee_num'] }}</td>
+                        <td>{{ (array_key_exists('display_name', $entry)) ? $entry['display_name'] : '' }}</td>
+                        <td>{{ (array_key_exists('employee_num', $entry)) ? $entry['employee_num'] : '' }}</td>
                         <td>{{ $entry['first_name'] }}</td>
                         <td>{{ $entry['last_name'] }}</td>
                         <td>{{ $entry['email'] }}</td>
