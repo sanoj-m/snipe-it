@@ -1039,3 +1039,46 @@ body .nav-tabs-custom > .nav-tabs > li.active > a .pull-right.badge {
     background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent) !important;
     color: var(--k-accent) !important;
 }
+
+/* --------------------------------------------------------------------------
+   Navbar dropdown links: per-user nav_link_color (#FFFFFF) paints these
+   white-on-white. Force readable colors regardless of tenant/user vars.
+   -------------------------------------------------------------------------- */
+body .navbar-nav > li > .dropdown-menu > li > a,
+body .navbar-nav > li > .dropdown-menu > li > a:link,
+body .navbar-nav > li > .dropdown-menu > li > a:visited,
+body .navbar-nav > li .dropdown-menu .user-header,
+body .navbar-nav > li .dropdown-menu .user-body a,
+body .navbar-nav > li .dropdown-menu .user-footer a,
+body .navbar-nav > li .dropdown-menu .menu > li > a {
+    background-color: transparent !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > li > .dropdown-menu > li > a:hover,
+body .navbar-nav > li .dropdown-menu .menu > li > a:hover {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-accent) !important;
+}
+
+body .navbar-nav > li > .dropdown-menu > li > a .fas,
+body .navbar-nav > li > .dropdown-menu > li > a .far,
+body .navbar-nav > li > .dropdown-menu > li > a .fa {
+    color: var(--k-text-muted) !important;
+}
+
+/* light-mode treeview submenu panel (was still dark) */
+body .sidebar-menu .treeview-menu,
+body .main-sidebar .sidebar-menu > li > .treeview-menu {
+    background: var(--k-sidebar-hover, var(--k-hover-tint));
+}
+
+body .sidebar-menu .treeview-menu > li > a {
+    color: var(--k-sidebar-text);
+}
+
+body .sidebar-menu .treeview-menu > li > a:hover,
+body .sidebar-menu .treeview-menu > li.active > a {
+    color: var(--k-accent);
+    background: transparent;
+}
