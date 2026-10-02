@@ -622,6 +622,24 @@ body .btn:focus-visible {
     outline-offset: 2px;
 }
 
+/* Snipe-IT's .btn-theme is painted with the tenant header color (now white)
+   — re-point it at the accent so it reads as the primary action. */
+body .btn-theme,
+body .btn-theme:link,
+body .btn-theme:visited {
+    background-color: var(--k-accent) !important;
+    border-color: var(--k-accent) !important;
+    color: #ffffff !important;
+}
+
+body .btn-theme:hover,
+body .btn-theme:focus,
+body .btn-theme:active {
+    background-color: var(--k-accent-hover) !important;
+    border-color: var(--k-accent-hover) !important;
+    color: #ffffff !important;
+}
+
 /* Semantic action buttons: tinted, quiet variants instead of AdminLTE's
    loud solid fills. Snipe-IT uses btn-info/warning/danger + bg-purple/
    bg-maroon for row actions (checkin, edit, delete...). Upstream
