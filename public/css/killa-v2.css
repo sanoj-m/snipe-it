@@ -622,22 +622,23 @@ body .btn:focus-visible {
     outline-offset: 2px;
 }
 
-/* Snipe-IT's .btn-theme is painted with the tenant header color (now white)
-   — re-point it at the accent so it reads as the primary action. */
+/* Snipe-IT's .btn-theme is painted with the tenant header color (now white,
+   i.e. white-on-white) — re-point it at the quiet default button treatment
+   (it is used for toolbar/Go buttons everywhere, so accent is too loud). */
 body .btn-theme,
 body .btn-theme:link,
 body .btn-theme:visited {
-    background-color: var(--k-accent) !important;
-    border-color: var(--k-accent) !important;
-    color: #ffffff !important;
+    background-color: var(--k-surface) !important;
+    border: 1px solid var(--k-border) !important;
+    color: var(--k-text) !important;
 }
 
 body .btn-theme:hover,
 body .btn-theme:focus,
 body .btn-theme:active {
-    background-color: var(--k-accent-hover) !important;
-    border-color: var(--k-accent-hover) !important;
-    color: #ffffff !important;
+    background-color: var(--k-hover-tint) !important;
+    border-color: var(--k-border) !important;
+    color: var(--k-accent) !important;
 }
 
 /* Semantic action buttons: tinted, quiet variants instead of AdminLTE's
