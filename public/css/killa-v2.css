@@ -102,6 +102,10 @@ html[data-theme='dark'] {
     --k-accent-tint: #3a2220;
     --k-accent-focus: rgba(240, 87, 75, 0.4);
     --k-accent-ring: rgba(240, 87, 75, 0.18);
+    --k-success: #3fbf88;
+    --k-warning: #e0a63a;
+    --k-danger: #e06052;
+    --k-info: #4a90c2;
     --k-tile-teal: #2aa5a7;
     --k-tile-maroon: #e06052;
     --k-tile-orange: #e09a3a;
@@ -182,8 +186,11 @@ body .main-header .navbar {
 }
 
 body .main-header .navbar .nav > li > a,
+body .main-header .navbar .nav > li > a:link,
+body .main-header .navbar .nav > li > a:visited,
 body .main-header .navbar .sidebar-toggle {
-    color: var(--k-navbar-text);
+    background-color: transparent !important;
+    color: var(--k-navbar-text) !important;
     transition: color var(--k-motion), background-color var(--k-motion);
 }
 
@@ -512,6 +519,11 @@ body .box-header .box-title {
     font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--k-text);
+}
+
+body .box-header .box-title a,
+body .box-header .box-title a:hover {
+    color: inherit;
 }
 
 body .box-body {
