@@ -14,6 +14,8 @@
 
     {{-- stylesheets --}}
     <link rel="stylesheet" href="{{ url(mix('css/dist/all.css')) }}">
+    {{-- [killa-v2] theme layer --}}
+    <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}">
 
     @include('partials.theme-mode-tenant-vars')
 
