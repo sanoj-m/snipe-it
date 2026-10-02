@@ -7,7 +7,7 @@ nothing else, etc makes for a really awkward display view --}}
 
     <div class="col-lg-2 col-xs-6">
         <a href="{{ route('hardware.index') }}">
-            <div class="dashboard small-box bg-teal">
+            <div class="dashboard small-box k-tile bg-teal">
                 <div class="inner">
                     <h3>{{ number_format(\App\Models\Asset::AssetsForShow()->count()) }}</h3>
                     <p>{{ trans('general.assets') }}</p>
@@ -25,7 +25,7 @@ nothing else, etc makes for a really awkward display view --}}
 
     <div class="col-lg-2 col-xs-6">
         <a href="{{ route('licenses.index') }}" aria-hidden="true">
-            <div class="dashboard small-box bg-maroon">
+            <div class="dashboard small-box k-tile bg-maroon">
                 <div class="inner">
                     <h3>{{ number_format($counts['license']) }}</h3>
                     <p>{{ trans('general.licenses') }}</p>
@@ -43,7 +43,7 @@ nothing else, etc makes for a really awkward display view --}}
 
     <div class="col-lg-2 col-xs-6">
         <a href="{{ route('accessories.index') }}">
-            <div class="dashboard small-box bg-orange">
+            <div class="dashboard small-box k-tile bg-orange">
                 <div class="inner">
                     <h3>{{ number_format($counts['accessory']) }}</h3>
                     <p>{{ trans('general.accessories') }}</p>
@@ -61,7 +61,7 @@ nothing else, etc makes for a really awkward display view --}}
 
     <div class="col-lg-2 col-xs-6">
         <a href="{{ route('consumables.index') }}">
-            <div class="dashboard small-box bg-purple">
+            <div class="dashboard small-box k-tile bg-purple">
                 <div class="inner">
                     <h3>{{ number_format($counts['consumable']) }}</h3>
                     <p>{{ trans('general.consumables') }}</p>
@@ -79,7 +79,7 @@ nothing else, etc makes for a really awkward display view --}}
 
     <div class="col-lg-2 col-xs-6">
         <a href="{{ route('components.index') }}">
-            <div class="dashboard small-box bg-yellow">
+            <div class="dashboard small-box k-tile bg-yellow">
                 <div class="inner">
                     <h3>{{ number_format($counts['component']) }}</h3>
                     <p>{{ trans('general.components') }}</p>
@@ -97,7 +97,7 @@ nothing else, etc makes for a really awkward display view --}}
 
     <div class="col-lg-2 col-xs-6">
         <a href="{{ route('users.index') }}">
-            <div class="dashboard small-box bg-light-blue">
+            <div class="dashboard small-box k-tile bg-light-blue">
                 <div class="inner">
                     <h3>{{ number_format($counts['user']) }}</h3>
                     <p>{{ trans('general.people') }}</p>

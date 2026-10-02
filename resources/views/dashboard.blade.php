@@ -159,7 +159,7 @@
     function isDark() {
         return document.documentElement.getAttribute('data-theme') === 'dark';
     }
-    Chart.defaults.global.defaultFontColor = isDark() ? '#cccccc' : '#666666';
+    Chart.defaults.global.defaultFontColor = isDark() ? '#cbd5e1' : '#4b5563';
 
     // ---------------------------
     // - ASSET STATUS CHART -

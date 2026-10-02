@@ -36,6 +36,8 @@
 
     {{-- stylesheets --}}
     <link rel="stylesheet" href="{{ url(mix('css/dist/all.css')) }}">
+    {{-- [killa-v2] theme layer: plain committed stylesheet, no build step. Loads after all.css so it wins the cascade; tenant branding vars below still override brand colors. --}}
+    <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}">
 
     {{-- page level css --}}
     @stack('css')

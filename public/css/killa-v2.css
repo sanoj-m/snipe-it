@@ -1,0 +1,334 @@
+/* ==========================================================================
+   Killa Asset v2 "Atelier" theme layer
+   Plain committed stylesheet (no build step). Loaded once in
+   layouts/default.blade.php AFTER css/dist/all.css so it wins the cascade
+   against AdminLTE 2 / Bootstrap 3 by source order + body prefixing.
+   All values come from the token blocks below — no stray hex elsewhere.
+   ========================================================================== */
+
+:root {
+    /* surfaces & text */
+    --k-bg: #f4f6f8;
+    --k-surface: #ffffff;
+    --k-border: #e3e7eb;
+    --k-text: #1f2933;
+    --k-text-muted: #6b7280;
+    --k-hover-tint: #f0f2f5;
+
+    /* brand */
+    --k-accent: #E63B2E;
+    --k-accent-hover: #c93024;
+    --k-accent-tint: #fdeceb;
+    --k-accent-focus: rgba(230, 59, 46, 0.4);
+
+    /* muted semantics */
+    --k-success: #2f9e6e;
+    --k-warning: #b97d10;
+    --k-danger: #c0392b;
+    --k-info: #2470a0;
+
+    /* small-box icon colors (mapped from AdminLTE bg-* signal classes) */
+    --k-tile-teal: #0f8b8d;
+    --k-tile-maroon: #c0392b;
+    --k-tile-orange: #d97706;
+    --k-tile-purple: #7c5cbf;
+    --k-tile-yellow: #b97d10;
+    --k-tile-light-blue: #2470a0;
+
+    /* shape & depth */
+    --k-radius: 6px;
+    --k-radius-sm: 4px;
+    --k-radius-lg: 8px;
+    --k-shadow-1: 0 1px 2px rgba(16, 24, 40, 0.06);
+
+    /* spacing grid (4px base) */
+    --k-space-1: 4px;
+    --k-space-2: 8px;
+    --k-space-3: 12px;
+    --k-space-4: 16px;
+    --k-space-5: 20px;
+    --k-space-6: 24px;
+
+    /* type */
+    --k-font: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Dark theme: darker surface tokens, same structure. */
+html[data-theme='dark'] {
+    --k-bg: #15181c;
+    --k-surface: #1e2329;
+    --k-border: #31383f;
+    --k-text: #e5e9ee;
+    --k-text-muted: #9aa3ad;
+    --k-hover-tint: #262c33;
+    --k-accent: #f0574b;
+    --k-accent-hover: #f46a5f;
+    --k-accent-tint: #3a2220;
+    --k-accent-focus: rgba(240, 87, 75, 0.4);
+    --k-tile-teal: #2aa5a7;
+    --k-tile-maroon: #e06052;
+    --k-tile-orange: #e09a3a;
+    --k-tile-purple: #9a80d4;
+    --k-tile-yellow: #d19a2b;
+    --k-tile-light-blue: #4a90c2;
+    --k-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Base
+   -------------------------------------------------------------------------- */
+body {
+    background-color: var(--k-bg);
+    font-family: var(--k-font);
+    color: var(--k-text);
+}
+
+body .wrapper,
+body .content-wrapper,
+body .right-side {
+    background-color: var(--k-bg);
+}
+
+/* --------------------------------------------------------------------------
+   Panels (.box)
+   -------------------------------------------------------------------------- */
+body .box {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-top: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: var(--k-shadow-1);
+    margin-bottom: var(--k-space-6);
+}
+
+body .box.box-solid,
+body .box.box-primary,
+body .box.box-info,
+body .box.box-success,
+body .box.box-warning,
+body .box.box-danger {
+    border-top: 1px solid var(--k-border);
+}
+
+body .box-header.with-border {
+    border-bottom: 1px solid var(--k-border);
+    padding: var(--k-space-4) var(--k-space-5);
+}
+
+body .box-header .box-title {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: normal;
+    color: var(--k-text);
+}
+
+body .box-body {
+    padding: var(--k-space-5);
+}
+
+body .box-tools .btn-box-tool {
+    color: var(--k-text-muted);
+}
+
+body .box-tools .btn-box-tool:hover {
+    color: var(--k-accent);
+    background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard stat tiles (.small-box) — unified quiet tiles; the AdminLTE
+   bg-* class stays only as the color signal for the icon.
+   -------------------------------------------------------------------------- */
+body .small-box {
+    background: var(--k-surface) !important;
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: var(--k-shadow-1);
+    color: var(--k-text);
+}
+
+body .small-box .inner {
+    padding: var(--k-space-4) var(--k-space-5);
+}
+
+body .small-box .inner h3 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--k-text);
+}
+
+body .small-box .inner p {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted);
+}
+
+body .small-box .icon {
+    font-size: 40px;
+    top: var(--k-space-3);
+    right: var(--k-space-4);
+    opacity: 0.9;
+}
+
+body .small-box.bg-teal .icon { color: var(--k-tile-teal); }
+body .small-box.bg-maroon .icon { color: var(--k-tile-maroon); }
+body .small-box.bg-orange .icon { color: var(--k-tile-orange); }
+body .small-box.bg-purple .icon { color: var(--k-tile-purple); }
+body .small-box.bg-yellow .icon { color: var(--k-tile-yellow); }
+body .small-box.bg-light-blue .icon { color: var(--k-tile-light-blue); }
+
+body .small-box-footer {
+    background: transparent;
+    border-top: 1px solid var(--k-border);
+    color: var(--k-text-muted);
+    padding: var(--k-space-2) var(--k-space-5);
+}
+
+body .small-box:hover .small-box-footer,
+body .small-box-footer:hover {
+    background: transparent;
+    color: var(--k-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Tabs & tables
+   -------------------------------------------------------------------------- */
+body .nav-tabs-custom {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: var(--k-shadow-1);
+}
+
+body .nav-tabs-custom > .nav-tabs {
+    border-bottom: 1px solid var(--k-border);
+}
+
+body .nav-tabs-custom > .nav-tabs > li.active > a {
+    border-left-color: transparent;
+    border-right-color: transparent;
+    color: var(--k-text);
+    font-weight: 600;
+}
+
+body .nav-tabs-custom > .nav-tabs > li > a:hover {
+    color: var(--k-accent);
+    background: transparent;
+}
+
+body .table > thead > tr > th {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted);
+    border-bottom: 1px solid var(--k-border);
+}
+
+body .table > tbody > tr > td,
+body .table > tbody > tr > th {
+    border-top: 1px solid var(--k-border);
+}
+
+body .table-hover > tbody > tr:hover {
+    background-color: var(--k-hover-tint);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons
+   -------------------------------------------------------------------------- */
+body .btn {
+    border-radius: var(--k-radius-sm);
+    background-image: none;
+    box-shadow: none;
+}
+
+body .btn-default {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+body .btn-default:hover,
+body .btn-default:focus {
+    background-color: var(--k-hover-tint);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+body .btn-primary {
+    background-color: var(--k-accent);
+    border-color: var(--k-accent);
+}
+
+body .btn-primary:hover,
+body .btn-primary:active,
+body .btn-primary:focus {
+    background-color: var(--k-accent-hover);
+    border-color: var(--k-accent-hover);
+}
+
+body .btn:focus-visible {
+    outline: 2px solid var(--k-accent-focus);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Header & sidebar
+   -------------------------------------------------------------------------- */
+body .main-header .navbar {
+    background-color: var(--main-theme-color, var(--k-surface));
+}
+
+body .main-sidebar,
+body .left-side {
+    background-color: var(--k-surface);
+}
+
+body .sidebar-menu > li > a {
+    border-left: 3px solid transparent;
+}
+
+body .sidebar-menu > li > a:hover {
+    background: var(--k-hover-tint);
+}
+
+body .sidebar-menu > li.active > a {
+    border-left: 3px solid var(--k-accent);
+    background: var(--k-accent-tint);
+    color: var(--k-text);
+}
+
+body .main-header .logo {
+    font-family: var(--k-font);
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Footer
+   -------------------------------------------------------------------------- */
+body .main-footer {
+    border-top: 1px solid var(--k-border);
+    background: var(--k-surface);
+    color: var(--k-text-muted);
+    font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   Login
+   -------------------------------------------------------------------------- */
+body .login-box {
+    margin: 8% auto 0;
+}
+
+body .login-box-body {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-lg);
+    box-shadow: var(--k-shadow-1);
+    padding: var(--k-space-6);
+}
+
+body .login-logo a {
+    color: var(--k-text);
+}
