@@ -194,7 +194,7 @@ class Helper
 
         if ($index >= $total_colors) {
 
-            Log::info('Status label count is '.$index.' and exceeds the allowed count of '.$total_colors.');
+            Log::info('Status label count is '.$index.' and exceeds the allowed count of '.$total_colors.'.');
             // patch fix for array key overflow (color count starts at 1, array starts at 0)
             $index = $index - $total_colors - 1;
 
