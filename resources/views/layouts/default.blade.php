@@ -42,6 +42,11 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700&display=swap">
     {{-- [killa-v2] theme layer: plain committed stylesheet, no build step. Loads after all.css so it wins the cascade; tenant branding vars below still override brand colors. --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-forms.css') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-tables.css') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-widgets.css') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-overlays.css') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-dark.css') }}">
 
     {{-- page level css --}}
     @stack('css')
