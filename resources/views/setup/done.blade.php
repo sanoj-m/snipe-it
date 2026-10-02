@@ -19,7 +19,7 @@
     <div class="col-md-12">
 
         <p>
-            If you're already familiar with Snipe-IT, you can get started right away by <strong><a href="{{ config('app.url') }}">heading right to your dashboard</a></strong>, or if it's your first time using Snipe-IT, you can check out some of the useful resources below:
+            If you're already familiar with Killa Asset, you can get started right away by <strong><a href="{{ config('app.url') }}">heading right to your dashboard</a></strong>, or if it's your first time using Killa Asset, you can check out some of the useful resources below:
         </p>
         <div class="well well-sm">
             <div class="row">
@@ -53,25 +53,13 @@
 
             <p>
                 If you plan on using SCIM or LDAP syncing to keep your user lists up to date with your directory services,
-                make sure the username format for any users imported via CSV matches your directory service username format to avoid duplicating users in Snipe-IT.
+                make sure the username format for any users imported via CSV matches your directory service username format to avoid duplicating users in Killa Asset.
             </p>
         </div>
 
         <p>
-            Don't forget to join our communities! You can find us on:
+            For documentation and helpful resources, see the links above.
         </p>
-
-            <ul>
-                <li><i class="fa-brands fa-github fa-fw"></i> <a href="https://github.com/grokability/snipe-it" target="_blank">Github <x-icon type="external-link" /></a></li>
-                <li><i class="fa-brands fa-discord fa-fw"></i> <a href="https://discord.gg/yZFtShAcKk" target="_blank">Discord <x-icon type="external-link" /></a></li>
-                <li><i class="fa-brands fa-bluesky fa-fw"></i> <a href="https://bsky.app/profile/snipeitapp.com" target="_blank">Bluesky <x-icon type="external-link" /></a></li>
-                <li><i class="fa-brands fa-mastodon fa-fw"></i> <a href="https://hachyderm.io/@grokability" target="_blank">Mastodon <x-icon type="external-link" /></a></li>
-                <li><i class="fa-solid fa-square-rss fa-fw"></i> Our blog at <a href="https://grokstar.dev" target="_blank">Grokstar.Dev <x-icon type="external-link" /></a></li>
-            </ul>
-
-            <p>
-                Subscribe on Github for notifications about new releases. (We recommend selecting "Releases Only" for most users - the repo can get noisy.)
-            </p>
 
     </div>
 

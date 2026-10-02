@@ -24,7 +24,7 @@ class GeneratePersonalAccessToken extends Command
      *
      * @var string
      */
-    protected $description = 'This console command allows you to generate Personal API tokens to be used with the Snipe-IT JSON REST API on behalf of a user.';
+    protected $description = 'This console command allows you to generate Personal API tokens to be used with the Killa Asset JSON REST API on behalf of a user.';
 
     /**
      * The token repository implementation.

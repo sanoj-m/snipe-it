@@ -967,20 +967,6 @@
                 <div class="hidden-xs pull-left">
                     <div class="pull-left footer-links">
                          {!! trans('general.footer_credit') !!}
-
-                        <a target="_blank" href="https://bsky.app/profile/snipeitapp.com" rel="noopener" data-tooltip="true" data-title="Join us on Bluesky">
-                            <i class="fa-brands fa-square-bluesky fa-fw"></i>
-                        </a>
-                        <a target="_blank" href="https://github.com/grokability/snipe-it/" rel="noopener" data-tooltip="true" data-title="Join us on Github">
-                            <i class="fa-brands fa-square-github fa-fw"></i>
-                        </a>
-                        <a target="_blank" href="https://hachyderm.io/@grokability" rel="noopener" data-tooltip="true" data-title="Join us on Mastodon">
-                            <i class="fa-brands fa-mastodon fa-fw"></i>
-                        </a>
-                        <a target="_blank" href="https://discord.gg/yZFtShAcKk" rel="noopener" data-tooltip="true" data-title="Join us on Discord">
-                            <i class="fa-brands fa-discord fa-fw"></i>
-                        </a>
-
                     </div>
                     <div class="pull-right">
                     @if ($snipeSettings->version_footer!='off')
@@ -1002,8 +988,6 @@
                             <a target="_blank" class="label label-default"
                                href="https://snipe-it.readme.io/docs/overview"
                                rel="noopener">{{ trans('general.user_manual') }}</a>
-                            <a target="_blank" class="label label-default" href="https://snipeitapp.com/support/"
-                               rel="noopener">{{ trans('general.bug_report') }}</a>
                         @endif
                     @endif
 
