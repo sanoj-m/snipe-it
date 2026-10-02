@@ -610,6 +610,98 @@ body .btn:focus-visible {
     outline-offset: 2px;
 }
 
+/* Semantic action buttons: tinted, quiet variants instead of AdminLTE's
+   loud solid fills. Snipe-IT uses btn-info/warning/danger + bg-purple/
+   bg-maroon for row actions (checkin, edit, delete...). Upstream
+   overrides.less uses !important for white text on these, so we must too. */
+body .btn-info,
+body .btn.bg-purple,
+body .btn.bg-light-blue {
+    background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha), transparent) !important;
+    border-color: color-mix(in srgb, var(--k-info) 30%, transparent) !important;
+    color: var(--k-info) !important;
+}
+
+body .btn-info:hover,
+body .btn.bg-purple:hover,
+body .btn.bg-light-blue:hover,
+body .btn-info:focus,
+body .btn.bg-purple:focus,
+body .btn.bg-light-blue:focus {
+    background-color: color-mix(in srgb, var(--k-info) 22%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-info) 40%, transparent) !important;
+    color: var(--k-info) !important;
+}
+
+body .btn-warning,
+body .btn.bg-orange {
+    background-color: color-mix(in srgb, var(--k-warning) var(--k-tint-alpha), transparent) !important;
+    border-color: color-mix(in srgb, var(--k-warning) 30%, transparent) !important;
+    color: var(--k-warning) !important;
+}
+
+body .btn-warning:hover,
+body .btn.bg-orange:hover,
+body .btn-warning:focus,
+body .btn.bg-orange:focus {
+    background-color: color-mix(in srgb, var(--k-warning) 22%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-warning) 40%, transparent) !important;
+    color: var(--k-warning) !important;
+}
+
+body .btn-danger,
+body .btn.bg-maroon,
+body .btn.bg-red {
+    background-color: color-mix(in srgb, var(--k-danger) var(--k-tint-alpha), transparent) !important;
+    border-color: color-mix(in srgb, var(--k-danger) 30%, transparent) !important;
+    color: var(--k-danger) !important;
+}
+
+body .btn-danger:hover,
+body .btn.bg-maroon:hover,
+body .btn.bg-red:hover,
+body .btn-danger:focus,
+body .btn.bg-maroon:focus,
+body .btn.bg-red:focus {
+    background-color: color-mix(in srgb, var(--k-danger) 22%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-danger) 40%, transparent) !important;
+    color: var(--k-danger) !important;
+}
+
+body .btn-success,
+body .btn.bg-green,
+body .btn.bg-olive {
+    background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha), transparent) !important;
+    border-color: color-mix(in srgb, var(--k-success) 30%, transparent) !important;
+    color: var(--k-success) !important;
+}
+
+body .btn-success:hover,
+body .btn.bg-green:hover,
+body .btn.bg-olive:hover,
+body .btn-success:focus,
+body .btn.bg-green:focus,
+body .btn.bg-olive:focus {
+    background-color: color-mix(in srgb, var(--k-success) 22%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-success) 40%, transparent) !important;
+    color: var(--k-success) !important;
+}
+
+/* checkin buttons (bg-purple) keep their own semantic hue */
+body .btn.bg-purple,
+body .btn.bg-purple:hover,
+body .btn.bg-purple:focus {
+    background-color: color-mix(in srgb, var(--k-tile-purple) var(--k-tint-alpha), transparent) !important;
+    border-color: color-mix(in srgb, var(--k-tile-purple) 30%, transparent) !important;
+    color: var(--k-tile-purple) !important;
+}
+
+body .btn.bg-purple:hover,
+body .btn.bg-purple:focus {
+    background-color: color-mix(in srgb, var(--k-tile-purple) 22%, transparent) !important;
+}
+
+
 /* --------------------------------------------------------------------------
    Badges / labels: tinted pills instead of solid fills
    -------------------------------------------------------------------------- */
