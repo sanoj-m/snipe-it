@@ -469,3 +469,30 @@ body .fix-sticky table thead {
         border-color: var(--k-print-border);
     }
 }
+
+/* --------------------------------------------------------------------------
+   Density repairs: clamp long cell content instead of letting it bleed into
+   neighboring columns (visible on dense tables like Assets), and stop
+   per-cell backgrounds from fighting the row zebra.
+   -------------------------------------------------------------------------- */
+body .fixed-table-body .table > tbody > tr > td,
+body .fixed-table-body .table > thead > tr > th {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body .fixed-table-body .table > tbody > tr > td > * {
+    vertical-align: middle;
+}
+
+/* keep cell backgrounds transparent so the row stripe reads evenly */
+body .table > tbody > tr > td,
+body .table-striped > tbody > tr:nth-of-type(odd) > td,
+body .table-striped > tbody > tr:nth-of-type(even) > td {
+    background-color: transparent !important;
+}
+
+body .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--k-table-stripe);
+}
