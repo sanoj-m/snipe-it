@@ -1,1 +1,587 @@
-/* killa-v2-widgets.css — see skills/killa-design/SKILL.md. Tokens in killa-v2.css. */
+/* ==========================================================================
+   Killa Asset v2 "Atelier" — WIDGETS layer
+   Dashboard widgets (recent-activity, today-calendar FullCalendar skin,
+   assets-by-status chart panel, low-stock, needs-attention), .direct-chat,
+   activity feeds, .timeline, user-panel, info panels, progress bars, and
+   the wells/jumbotron/panels leftovers.
+   Plain committed stylesheet (no build step). Loaded after killa-v2.css and
+   killa-v2-tables.css in layouts/default.blade.php. All values come from
+   killa-v2.css tokens (var(--k-*)); no raw hex outside the token blocks.
+   Layout mechanics (flex equalization, compact scroll caps) live in
+   overrides.less — this file only skins.
+   ========================================================================== */
+
+/* component-scoped tokens (light) */
+:root {
+    --k-progress-track: #e9ecef;
+    --k-chat-bubble: #f3f4f6;
+}
+
+html[data-theme='dark'] {
+    --k-progress-track: #262c33;
+    --k-chat-bubble: #262c33;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard widget grid: boxes stretch to equalized column heights
+   (flex machinery is in overrides.less; this keeps visuals consistent)
+   -------------------------------------------------------------------------- */
+body .dashboard-row-eq > [class*="col-"] > .box {
+    display: flex;
+    flex-direction: column;
+}
+
+body .dashboard-row-eq > [class*="col-"] > .box > .box-body {
+    flex: 1 1 auto;
+}
+
+body .dashboard-row-compact > [class*="col-"] > .box > .box-body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--k-border) transparent;
+}
+
+/* widget empty states (bootstrap-table no-results row) */
+body .box .fixed-table-container .no-records-found td {
+    color: var(--k-text-muted);
+    font-size: 12.5px;
+}
+
+/* --------------------------------------------------------------------------
+   Needs Attention list (.dashboard-attention-list)
+   -------------------------------------------------------------------------- */
+body .dashboard-attention-list > .list-group-item {
+    background: transparent;
+    border: none;
+    padding: 0;
+}
+
+body .dashboard-attention-list > .list-group-item > a {
+    color: var(--k-text);
+    border-radius: var(--k-radius-sm);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .dashboard-attention-list > .list-group-item > a:hover {
+    background-color: var(--k-hover-tint);
+    color: var(--k-accent);
+    text-decoration: none;
+}
+
+body .dashboard-attention-list > .list-group-item > a > .fa,
+body .dashboard-attention-list > .list-group-item > a > .fas,
+body .dashboard-attention-list > .list-group-item > a > .fa-solid,
+body .dashboard-attention-list > .list-group-item > a > svg {
+    color: var(--k-text-muted);
+    transition: color var(--k-motion);
+}
+
+body .dashboard-attention-list > .list-group-item > a:hover > .fa,
+body .dashboard-attention-list > .list-group-item > a:hover > .fas,
+body .dashboard-attention-list > .list-group-item > a:hover > .fa-solid,
+body .dashboard-attention-list > .list-group-item > a:hover > svg {
+    color: var(--k-accent);
+}
+
+body .dashboard-attention-list .dashboard-attention-label {
+    font-weight: 500;
+}
+
+body .dashboard-attention-list .dashboard-attention-count {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+    color: var(--k-accent);
+    font-weight: 600;
+    font-size: 11px;
+    border-radius: var(--k-radius-pill);
+    text-shadow: none;
+}
+
+/* generic badge (AdminLTE .badge) quiet treatment */
+body .badge {
+    background-color: color-mix(in srgb, var(--k-text-muted) var(--k-tint-alpha-soft), transparent);
+    color: var(--k-text-muted);
+    font-weight: 600;
+    text-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Unbordered list groups inside panels (info panels, widget lists)
+   -------------------------------------------------------------------------- */
+body .list-group-item {
+    background-color: var(--k-surface);
+    border-color: var(--k-border-soft);
+    color: var(--k-text);
+    transition: background-color var(--k-motion);
+}
+
+body .list-group-unbordered > .list-group-item {
+    background: transparent;
+    border-left: none;
+    border-right: none;
+    border-top-color: var(--k-border-soft);
+}
+
+body a.list-group-item {
+    color: var(--k-text);
+}
+
+body a.list-group-item:hover,
+body a.list-group-item:focus {
+    background-color: var(--k-row-hover);
+    color: var(--k-accent);
+}
+
+body .list-group-item > .text-muted,
+body .list-group-item .text-muted {
+    color: var(--k-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   FullCalendar skin (dashboard today-widget + /calendar page)
+   Map FC's own CSS vars onto the Killa tokens so every view inherits.
+   -------------------------------------------------------------------------- */
+body .fc {
+    --fc-border-color: var(--k-border-soft);
+    --fc-page-bg-color: var(--k-surface);
+    --fc-neutral-bg-color: var(--k-table-head-bg);
+    --fc-neutral-text-color: var(--k-text);
+    --fc-list-event-hover-bg-color: var(--k-row-hover);
+    --fc-today-bg-color: var(--k-accent-ring);
+    --fc-event-border-color: var(--k-accent);
+    --fc-button-bg-color: var(--k-surface);
+    --fc-button-border-color: var(--k-border);
+    --fc-button-text-color: var(--k-text);
+    --fc-button-hover-bg-color: var(--k-hover-tint);
+    --fc-button-hover-border-color: var(--k-border);
+    --fc-button-active-bg-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
+    --fc-button-active-border-color: var(--k-accent);
+    font-family: var(--k-font);
+    color: var(--k-text);
+}
+
+body .fc .fc-toolbar-title {
+    font-family: var(--k-font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--k-text);
+}
+
+body .fc .fc-col-header-cell,
+body .fc .fc-list-day-cushion {
+    background: var(--k-table-head-bg);
+}
+
+body .fc .fc-col-header-cell-cushion {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted);
+}
+
+body .fc .fc-daygrid-day-number,
+body .fc .fc-timegrid-axis-cushion,
+body .fc .fc-timegrid-slot-label-cushion,
+body .fc .fc-list-day-text,
+body .fc .fc-list-day-side-text {
+    color: var(--k-text-muted);
+}
+
+body .fc .fc-daygrid-day-number {
+    font-size: 12px;
+    font-weight: 500;
+}
+
+body .fc .fc-list-day-text,
+body .fc .fc-list-day-side-text {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+body .fc a {
+    color: var(--k-text);
+    transition: color var(--k-motion);
+}
+
+body .fc a:hover {
+    color: var(--k-accent);
+}
+
+body .fc .fc-list-event-title,
+body .fc .fc-list-event-time {
+    color: var(--k-text);
+}
+
+body .fc .fc-list-event-time {
+    color: var(--k-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+body .fc .fc-list-empty {
+    background: var(--k-surface);
+    color: var(--k-text-muted);
+    font-size: 12.5px;
+}
+
+/* FC buttons: match the quiet .btn-default treatment */
+body .fc .fc-button-primary {
+    background-color: var(--k-surface);
+    border: 1px solid var(--k-border);
+    color: var(--k-text);
+    border-radius: var(--k-radius-sm);
+    font-weight: 500;
+    text-transform: none;
+    box-shadow: none;
+    transition: background-color var(--k-motion), border-color var(--k-motion), color var(--k-motion);
+}
+
+body .fc .fc-button-primary:hover,
+body .fc .fc-button-primary:focus {
+    background-color: var(--k-hover-tint);
+    border-color: var(--k-border);
+    color: var(--k-text);
+    box-shadow: none;
+}
+
+body .fc .fc-button-primary:not(:disabled).fc-button-active,
+body .fc .fc-button-primary:not(:disabled):active {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
+    border-color: var(--k-accent);
+    color: var(--k-accent);
+    box-shadow: none;
+}
+
+body .fc .fc-button-primary:disabled {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text-muted);
+    opacity: 0.6;
+}
+
+body .fc .fc-button:focus-visible {
+    outline: 2px solid var(--k-accent-focus);
+    outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   Assets-by-status chart panel
+   -------------------------------------------------------------------------- */
+body .dashboard-chart-body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body .dashboard-chart-body .chart-responsive {
+    width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   user-panel (sidebar identity block)
+   -------------------------------------------------------------------------- */
+body .user-panel {
+    border-bottom: 1px solid var(--k-sidebar-border);
+}
+
+body .user-panel > .image > img {
+    border: 2px solid var(--k-sidebar-border);
+}
+
+body .user-panel > .info {
+    font-weight: 600;
+    color: var(--k-sidebar-text-active);
+}
+
+body .user-panel > .info > a {
+    color: var(--k-sidebar-text);
+    font-weight: 400;
+    transition: color var(--k-motion);
+}
+
+body .user-panel > .info > a:hover {
+    color: var(--k-accent);
+}
+
+/* --------------------------------------------------------------------------
+   AdminLTE info-box tiles (.info-box)
+   -------------------------------------------------------------------------- */
+body .info-box {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: none;
+    min-height: 80px;
+}
+
+body .info-box-icon {
+    background: transparent;
+    border-right: 1px solid var(--k-border-soft);
+    border-top-left-radius: var(--k-radius);
+    border-bottom-left-radius: var(--k-radius);
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    color: var(--k-text-muted);
+}
+
+body .info-box-content {
+    color: var(--k-text);
+}
+
+body .info-box-text {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted);
+}
+
+body .info-box-number {
+    font-family: var(--k-font-display);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--k-text);
+}
+
+body .info-box .progress {
+    background: var(--k-progress-track);
+}
+
+/* --------------------------------------------------------------------------
+   Progress bars & progress groups
+   -------------------------------------------------------------------------- */
+body .progress,
+body .progress.sm,
+body .progress.xs,
+body .progress.xxs {
+    background: var(--k-progress-track);
+    border-radius: var(--k-radius-pill);
+    box-shadow: none;
+    overflow: hidden;
+}
+
+body .progress-bar {
+    background-image: none;
+    box-shadow: none;
+    border-radius: var(--k-radius-pill);
+    transition: width var(--k-motion);
+}
+
+body .progress-bar-primary { background-color: var(--k-accent); }
+body .progress-bar-success { background-color: var(--k-success); }
+body .progress-bar-info { background-color: var(--k-info); }
+body .progress-bar-warning { background-color: var(--k-warning); }
+body .progress-bar-danger { background-color: var(--k-danger); }
+
+body .progress-group .progress-text {
+    font-weight: 500;
+    color: var(--k-text);
+}
+
+body .progress-group .progress-number {
+    color: var(--k-text);
+    font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   Wells / jumbotron / Bootstrap panels (leftovers)
+   -------------------------------------------------------------------------- */
+body .well,
+body .well.well-sm,
+body .well.well-lg {
+    background: var(--k-table-head-bg);
+    border: 1px solid var(--k-border-soft);
+    border-radius: var(--k-radius-sm);
+    box-shadow: none;
+    color: var(--k-text);
+}
+
+body .jumbotron {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    color: var(--k-text);
+}
+
+body .panel {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: none;
+}
+
+body .panel > .panel-heading,
+body .panel-heading {
+    background: var(--k-table-head-bg);
+    border-bottom: 1px solid var(--k-border);
+    border-top-left-radius: var(--k-radius);
+    border-top-right-radius: var(--k-radius);
+    color: var(--k-text);
+    font-weight: 600;
+}
+
+body .panel > .panel-footer,
+body .panel-footer {
+    background: transparent;
+    border-top: 1px solid var(--k-border-soft);
+    border-bottom-left-radius: var(--k-radius);
+    border-bottom-right-radius: var(--k-radius);
+    color: var(--k-text-muted);
+}
+
+body .panel-title {
+    color: var(--k-text);
+    font-family: var(--k-font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+}
+
+body .panel-body {
+    color: var(--k-text);
+}
+
+body .panel-default { border-color: var(--k-border); }
+body .panel-primary,
+body .panel-info,
+body .panel-success,
+body .panel-warning,
+body .panel-danger { border-color: var(--k-border); }
+
+body .panel-primary > .panel-heading,
+body .panel-info > .panel-heading,
+body .panel-success > .panel-heading,
+body .panel-warning > .panel-heading,
+body .panel-danger > .panel-heading {
+    background: var(--k-table-head-bg);
+    border-bottom-color: var(--k-border);
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   .direct-chat (AdminLTE chat widget)
+   -------------------------------------------------------------------------- */
+body .direct-chat .box-body {
+    border-bottom-right-radius: var(--k-radius);
+    border-bottom-left-radius: var(--k-radius);
+}
+
+body .direct-chat-messages {
+    padding: var(--k-space-4);
+}
+
+body .direct-chat-msg {
+    margin-bottom: var(--k-space-4);
+}
+
+body .direct-chat-text {
+    background: var(--k-chat-bubble);
+    border: 1px solid var(--k-border-soft);
+    border-radius: var(--k-radius-chip);
+    color: var(--k-text);
+    padding: var(--k-space-2) var(--k-space-3);
+}
+
+body .direct-chat-text::before,
+body .direct-chat-text::after {
+    border-color: transparent var(--k-chat-bubble) transparent transparent;
+}
+
+body .direct-chat-msg.right .direct-chat-text {
+    background: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+    border-color: color-mix(in srgb, var(--k-accent) 25%, transparent);
+    color: var(--k-text);
+}
+
+body .direct-chat-msg.right .direct-chat-text::before,
+body .direct-chat-msg.right .direct-chat-text::after {
+    border-color: transparent transparent transparent color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+}
+
+body .direct-chat-name {
+    font-weight: 600;
+    color: var(--k-text);
+}
+
+body .direct-chat-timestamp {
+    color: var(--k-text-muted);
+    font-variant-numeric: tabular-nums;
+}
+
+body .direct-chat-img {
+    border: 1px solid var(--k-border);
+    border-radius: 50%;
+}
+
+body .direct-chat-contacts {
+    background: var(--k-sidebar-bg);
+    color: var(--k-sidebar-text);
+}
+
+body .direct-chat-contacts .contacts-list > li {
+    border-bottom: 1px solid var(--k-sidebar-border);
+}
+
+body .direct-chat-contacts .contacts-list-name {
+    color: var(--k-sidebar-text-active);
+}
+
+body .direct-chat-contacts .contacts-list-date,
+body .direct-chat-contacts .contacts-list-msg {
+    color: var(--k-sidebar-text);
+}
+
+/* --------------------------------------------------------------------------
+   .timeline (activity feeds)
+   -------------------------------------------------------------------------- */
+body .timeline::before {
+    background: var(--k-border);
+    width: 2px;
+}
+
+body .timeline > li > .timeline-item {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: none;
+    color: var(--k-text);
+}
+
+body .timeline > li > .timeline-item > .timeline-header {
+    border-bottom: 1px solid var(--k-border-soft);
+    color: var(--k-text);
+    font-weight: 500;
+}
+
+body .timeline > li > .timeline-item > .timeline-header > a {
+    color: var(--k-accent);
+    font-weight: 600;
+}
+
+body .timeline > li > .timeline-item > .time,
+body .timeline > li > .timeline-item > .timeline-footer {
+    color: var(--k-text-muted);
+}
+
+body .timeline > li > .fa,
+body .timeline > li > .fas,
+body .timeline > li > .glyphicon,
+body .timeline > li > .ion {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    color: var(--k-text-muted);
+    box-shadow: none;
+}
+
+body .timeline > .time-label > span {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-pill);
+    color: var(--k-text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: 4px var(--k-space-3);
+}

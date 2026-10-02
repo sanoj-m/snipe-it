@@ -1,1 +1,618 @@
-/* killa-v2-overlays.css — see skills/killa-design/SKILL.md. Tokens in killa-v2.css. */
+/* ==========================================================================
+   Killa Asset v2 "Atelier" — OVERLAYS domain
+   Modals, dropdown menus, select2 dropdown layer, popovers, tooltips,
+   datepicker/daterangepicker popups, alerts & callouts.
+   Plain committed stylesheet loaded after all.css + killa-v2.css.
+   All selectors body-prefixed; tokens come from killa-v2.css.
+   ========================================================================== */
+
+:root {
+    /* overlay-specific tokens */
+    --k-overlay-bg: rgba(16, 24, 40, 0.45);
+    --k-popover-width: 276px;
+    --k-tooltip-bg: #1f2933;
+    --k-tooltip-text: #f9fafb;
+    --k-overlay-header-bg: #f9fafb;
+}
+
+html[data-theme='dark'] {
+    --k-overlay-bg: rgba(0, 0, 0, 0.6);
+    --k-tooltip-bg: #2a2f37;
+    --k-tooltip-text: #e5e9ee;
+    --k-overlay-header-bg: #1f232a;
+}
+
+/* --------------------------------------------------------------------------
+   Modal
+   -------------------------------------------------------------------------- */
+body .modal-content {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: var(--k-shadow-lg);
+    color: var(--k-text);
+}
+
+body .modal-backdrop,
+body .modal-backdrop.in {
+    background-color: var(--k-overlay-bg);
+    opacity: 1;
+}
+
+body .modal-backdrop.fade {
+    opacity: 0;
+}
+
+body .modal-backdrop.fade.in {
+    opacity: 1;
+}
+
+body .modal-header {
+    padding: var(--k-space-4) var(--k-space-5);
+    border-bottom: 1px solid var(--k-border-soft);
+    border-radius: var(--k-radius) var(--k-radius) 0 0;
+    background: var(--k-overlay-header-bg);
+    min-height: 0;
+}
+
+body .modal-header .modal-title,
+body .modal-header h4 {
+    font-family: var(--k-font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--k-text);
+    margin: 0;
+}
+
+body .modal-header .close {
+    color: var(--k-text-muted);
+    opacity: 1;
+    text-shadow: none;
+    font-weight: 400;
+    transition: color var(--k-motion);
+}
+
+body .modal-header .close:hover {
+    color: var(--k-accent);
+    opacity: 1;
+}
+
+body .modal-body {
+    padding: var(--k-space-5);
+    color: var(--k-text);
+}
+
+body .modal-footer {
+    padding: var(--k-space-3) var(--k-space-5);
+    border-top: 1px solid var(--k-border-soft);
+    background: transparent;
+    border-radius: 0 0 var(--k-radius) var(--k-radius);
+}
+
+html[data-theme='dark'] body .modal-content {
+    background: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .modal-header {
+    border-bottom-color: var(--k-border-soft);
+    background: var(--k-overlay-header-bg);
+}
+
+html[data-theme='dark'] body .modal-footer {
+    border-top-color: var(--k-border-soft);
+}
+
+html[data-theme='dark'] body .modal-body {
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   Dropdown menus
+   (base panel already shaped in killa-v2.css; items/dividers live here)
+   -------------------------------------------------------------------------- */
+body .dropdown-menu {
+    background: var(--k-surface);
+    padding: var(--k-space-1) 0;
+}
+
+body .dropdown-menu > li > a {
+    color: var(--k-text);
+    padding: var(--k-space-2) var(--k-space-4);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .dropdown-menu > li > a:hover,
+body .dropdown-menu > li > a:focus {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+body .dropdown-menu > .active > a,
+body .dropdown-menu > .active > a:hover,
+body .dropdown-menu > .active > a:focus {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+    color: var(--k-accent);
+}
+
+body .dropdown-menu .divider {
+    background-color: var(--k-border-soft);
+    margin: var(--k-space-1) 0;
+}
+
+body .dropdown-menu > li > a > .fa,
+body .dropdown-menu > li > a > .glyphicon,
+body .dropdown-menu > li > a > .ion {
+    color: var(--k-text-muted);
+}
+
+body .dropdown-menu > li > a:hover > .fa,
+body .dropdown-menu > li > a:hover > .glyphicon,
+body .dropdown-menu > li > a:hover > .ion {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .dropdown-menu {
+    background: var(--k-surface);
+}
+
+html[data-theme='dark'] body .dropdown-menu > li > a {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .dropdown-menu > li > a:hover,
+html[data-theme='dark'] body .dropdown-menu > li > a:focus {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .dropdown-menu .divider {
+    background-color: var(--k-border-soft);
+}
+
+html[data-theme='dark'] body .dropdown-menu > li > a > .fa,
+html[data-theme='dark'] body .dropdown-menu > li > a > .glyphicon,
+html[data-theme='dark'] body .dropdown-menu > li > a > .ion {
+    color: var(--k-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Select2 dropdown layer (trigger/selection styling belongs to forms domain)
+   -------------------------------------------------------------------------- */
+body .select2-dropdown {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-chip);
+    box-shadow: var(--k-shadow-2);
+    color: var(--k-text);
+    overflow: hidden;
+}
+
+body .select2-container--default .select2-search--dropdown .select2-search__field {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    color: var(--k-text);
+    padding: var(--k-space-1) var(--k-space-2);
+    box-shadow: none;
+}
+
+body .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--k-accent);
+    outline: none;
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+}
+
+body .select2-container--default .select2-results > .select2-results__options {
+    scrollbar-width: thin;
+}
+
+body .select2-container--default .select2-results__option {
+    padding: var(--k-space-2) var(--k-space-3);
+    color: var(--k-text);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
+body .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+body .select2-container--default .select2-results__option--selected,
+body .select2-container--default .select2-results__option[aria-selected='true'] {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+    color: var(--k-accent);
+}
+
+body .select2-container--default .select2-results__option--group,
+body .select2-container--default .select2-results__group {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted);
+}
+
+body .select2-container--default .select2-results__message,
+body .select2-results__option.loading-results {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .select2-dropdown {
+    background: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .select2-container--default .select2-search--dropdown .select2-search__field {
+    background: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .select2-container--default .select2-results__option {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
+html[data-theme='dark'] body .select2-container--default .select2-results__option--highlighted[aria-selected] {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   Popover
+   -------------------------------------------------------------------------- */
+body .popover {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-chip);
+    box-shadow: var(--k-shadow-2);
+    color: var(--k-text);
+    font-family: var(--k-font);
+    max-width: var(--k-popover-width);
+    padding: 0;
+}
+
+body .popover-title,
+body .popover > .popover-title {
+    background: var(--k-overlay-header-bg);
+    border-bottom: 1px solid var(--k-border-soft);
+    border-radius: var(--k-radius-chip) var(--k-radius-chip) 0 0;
+    color: var(--k-text);
+    font-size: 12px;
+    font-weight: 600;
+    padding: var(--k-space-2) var(--k-space-3);
+}
+
+body .popover-content {
+    color: var(--k-text);
+    padding: var(--k-space-3);
+}
+
+/* arrows: keep Bootstrap's two-layer arrow trick, retinted */
+body .popover.top > .arrow { border-top-color: var(--k-border); }
+body .popover.top > .arrow::after { border-top-color: var(--k-surface); }
+body .popover.bottom > .arrow { border-bottom-color: var(--k-border); }
+body .popover.bottom > .arrow::after { border-bottom-color: var(--k-overlay-header-bg); }
+body .popover.left > .arrow { border-left-color: var(--k-border); }
+body .popover.left > .arrow::after { border-left-color: var(--k-surface); }
+body .popover.right > .arrow { border-right-color: var(--k-border); }
+body .popover.right > .arrow::after { border-right-color: var(--k-surface); }
+
+html[data-theme='dark'] body .popover {
+    background: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .popover-title {
+    background: var(--k-overlay-header-bg);
+    border-bottom-color: var(--k-border-soft);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .popover-content {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .popover.top > .arrow::after { border-top-color: var(--k-surface); }
+html[data-theme='dark'] body .popover.bottom > .arrow::after { border-bottom-color: var(--k-overlay-header-bg); }
+html[data-theme='dark'] body .popover.left > .arrow::after { border-left-color: var(--k-surface); }
+html[data-theme='dark'] body .popover.right > .arrow::after { border-right-color: var(--k-surface); }
+
+/* --------------------------------------------------------------------------
+   Tooltip
+   -------------------------------------------------------------------------- */
+body .tooltip {
+    font-family: var(--k-font);
+    font-size: 12px;
+}
+
+body .tooltip-inner {
+    background: var(--k-tooltip-bg);
+    color: var(--k-tooltip-text);
+    border-radius: var(--k-radius-sm);
+    padding: var(--k-space-1) var(--k-space-2);
+    max-width: 260px;
+}
+
+body .tooltip.top .tooltip-arrow { border-top-color: var(--k-tooltip-bg); }
+body .tooltip.top-left .tooltip-arrow { border-top-color: var(--k-tooltip-bg); }
+body .tooltip.top-right .tooltip-arrow { border-top-color: var(--k-tooltip-bg); }
+body .tooltip.bottom .tooltip-arrow { border-bottom-color: var(--k-tooltip-bg); }
+body .tooltip.bottom-left .tooltip-arrow { border-bottom-color: var(--k-tooltip-bg); }
+body .tooltip.bottom-right .tooltip-arrow { border-bottom-color: var(--k-tooltip-bg); }
+body .tooltip.left .tooltip-arrow { border-left-color: var(--k-tooltip-bg); }
+body .tooltip.right .tooltip-arrow { border-right-color: var(--k-tooltip-bg); }
+
+html[data-theme='dark'] body .tooltip-inner {
+    background: var(--k-tooltip-bg);
+    color: var(--k-tooltip-text);
+    border: 1px solid var(--k-border);
+}
+
+html[data-theme='dark'] body .tooltip.top .tooltip-arrow,
+html[data-theme='dark'] body .tooltip.top-left .tooltip-arrow,
+html[data-theme='dark'] body .tooltip.top-right .tooltip-arrow { border-top-color: var(--k-tooltip-bg); }
+html[data-theme='dark'] body .tooltip.bottom .tooltip-arrow,
+html[data-theme='dark'] body .tooltip.bottom-left .tooltip-arrow,
+html[data-theme='dark'] body .tooltip.bottom-right .tooltip-arrow { border-bottom-color: var(--k-tooltip-bg); }
+html[data-theme='dark'] body .tooltip.left .tooltip-arrow { border-left-color: var(--k-tooltip-bg); }
+html[data-theme='dark'] body .tooltip.right .tooltip-arrow { border-right-color: var(--k-tooltip-bg); }
+
+/* --------------------------------------------------------------------------
+   bootstrap-datepicker / daterangepicker calendar popups
+   -------------------------------------------------------------------------- */
+body .datepicker,
+body .daterangepicker {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-chip);
+    box-shadow: var(--k-shadow-2);
+    color: var(--k-text);
+    font-family: var(--k-font);
+    padding: var(--k-space-2);
+}
+
+body .datepicker table,
+body .daterangepicker .calendar-table {
+    color: var(--k-text);
+}
+
+body .datepicker table tr td,
+body .datepicker table tr th,
+body .daterangepicker .calendar-table td,
+body .daterangepicker .calendar-table th {
+    border-radius: var(--k-radius-sm);
+    color: var(--k-text);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .datepicker table tr th.datepicker-switch,
+body .datepicker table tr th.prev,
+body .datepicker table tr th.next,
+body .datepicker table tr th.dow,
+body .daterangepicker .calendar-table th.month,
+body .daterangepicker .calendar-table th.prev,
+body .daterangepicker .calendar-table th.next {
+    color: var(--k-text-muted);
+    font-weight: 600;
+}
+
+body .datepicker table tr td.day:hover,
+body .datepicker table tr td.focused,
+body .datepicker table tr td span:hover,
+body .daterangepicker .calendar-table td:hover {
+    background: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+body .datepicker table tr td.old,
+body .datepicker table tr td.new,
+body .datepicker table tr td.disabled,
+body .datepicker table tr td.disabled:hover,
+body .daterangepicker .calendar-table td.off,
+body .daterangepicker .calendar-table td.disabled {
+    color: var(--k-text-muted);
+    background: transparent;
+    opacity: 0.6;
+}
+
+body .datepicker table tr td.active,
+body .datepicker table tr td.active:hover,
+body .datepicker table tr td.active.active,
+body .datepicker table tr td.selected,
+body .datepicker table tr td span.active,
+body .daterangepicker .calendar-table td.active,
+body .daterangepicker .calendar-table td.active:hover,
+body .daterangepicker td.start-date,
+body .daterangepicker td.end-date {
+    background: var(--k-accent);
+    color: var(--k-sidebar-text-active);
+    text-shadow: none;
+    background-image: none;
+}
+
+body .datepicker table tr td.today,
+body .datepicker table tr td.today:hover,
+body .daterangepicker td.today {
+    background: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+    color: var(--k-accent);
+    background-image: none;
+}
+
+body .daterangepicker .ranges li {
+    color: var(--k-text);
+    border-radius: var(--k-radius-sm);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .daterangepicker .ranges li:hover {
+    background: var(--k-hover-tint);
+}
+
+body .daterangepicker .ranges li.active {
+    background: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+    color: var(--k-accent);
+}
+
+body .daterangepicker select.monthselect,
+body .daterangepicker select.yearselect,
+body .daterangepicker select.hourselect,
+body .daterangepicker select.minuteselect,
+body .daterangepicker select.ampmselect {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .datepicker,
+html[data-theme='dark'] body .daterangepicker {
+    background: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .datepicker table tr td,
+html[data-theme='dark'] body .datepicker table tr th,
+html[data-theme='dark'] body .daterangepicker .calendar-table td,
+html[data-theme='dark'] body .daterangepicker .calendar-table th {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .datepicker table tr td.day:hover,
+html[data-theme='dark'] body .datepicker table tr td.focused,
+html[data-theme='dark'] body .datepicker table tr td span:hover,
+html[data-theme='dark'] body .daterangepicker .calendar-table td:hover {
+    background: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .datepicker table tr td.old,
+html[data-theme='dark'] body .datepicker table tr td.new,
+html[data-theme='dark'] body .daterangepicker .calendar-table td.off {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .daterangepicker .ranges li {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .daterangepicker .ranges li:hover {
+    background: var(--k-hover-tint);
+}
+
+html[data-theme='dark'] body .daterangepicker select.monthselect,
+html[data-theme='dark'] body .daterangepicker select.yearselect {
+    background: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   Alerts & callouts: tinted surface + colored left edge, not solid fills
+   -------------------------------------------------------------------------- */
+body .alert {
+    border-radius: var(--k-radius-sm);
+    border: 1px solid var(--k-border);
+    background: var(--k-surface);
+    color: var(--k-text);
+    text-shadow: none;
+    box-shadow: var(--k-shadow-1);
+    padding: var(--k-space-3) var(--k-space-4);
+}
+
+body .alert .close {
+    color: var(--k-text-muted);
+    opacity: 1;
+    text-shadow: none;
+    transition: color var(--k-motion);
+}
+
+body .alert .close:hover {
+    color: var(--k-text);
+}
+
+body .alert-success,
+body .callout.callout-success {
+    border-left: 3px solid var(--k-success);
+    background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha-soft), var(--k-surface));
+    border-color: color-mix(in srgb, var(--k-success) 30%, var(--k-border));
+    color: var(--k-text);
+}
+
+body .alert-info,
+body .callout.callout-info {
+    border-left: 3px solid var(--k-info);
+    background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha-soft), var(--k-surface));
+    border-color: color-mix(in srgb, var(--k-info) 30%, var(--k-border));
+    color: var(--k-text);
+}
+
+body .alert-warning,
+body .callout.callout-warning {
+    border-left: 3px solid var(--k-warning);
+    background-color: color-mix(in srgb, var(--k-warning) var(--k-tint-alpha-soft), var(--k-surface));
+    border-color: color-mix(in srgb, var(--k-warning) 30%, var(--k-border));
+    color: var(--k-text);
+}
+
+body .alert-danger,
+body .callout.callout-danger {
+    border-left: 3px solid var(--k-danger);
+    background-color: color-mix(in srgb, var(--k-danger) var(--k-tint-alpha-soft), var(--k-surface));
+    border-color: color-mix(in srgb, var(--k-danger) 30%, var(--k-border));
+    color: var(--k-text);
+}
+
+body .alert a,
+body .alert .alert-link {
+    color: var(--k-accent);
+    font-weight: 600;
+}
+
+body .callout {
+    border-radius: var(--k-radius-sm);
+    border: 1px solid var(--k-border);
+    background: var(--k-surface);
+    color: var(--k-text);
+    margin: 0 0 var(--k-space-5);
+    padding: var(--k-space-3) var(--k-space-4);
+}
+
+body .callout a {
+    color: var(--k-accent);
+}
+
+body .callout h4 {
+    font-family: var(--k-font-display);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--k-text);
+    margin-top: 0;
+}
+
+html[data-theme='dark'] body .alert {
+    background: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .callout {
+    background: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .alert .close {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .callout h4 {
+    color: var(--k-text);
+}

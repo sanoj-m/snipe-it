@@ -1,1 +1,607 @@
-/* killa-v2-dark.css — see skills/killa-design/SKILL.md. Tokens in killa-v2.css. */
+/* ==========================================================================
+   Killa Asset v2 "Atelier" — DARK-MODE COMPLETENESS layer
+   Carries ONLY html[data-theme='dark'] rules. Catches light defaults that
+   survive the token switch in killa-v2.css: hard-coded Bootstrap/AdminLTE
+   backgrounds (panels, wells, pre, list-group, dropdowns, FullCalendar, etc.)
+   stay light under dark tokens, so they are re-grounded here on dark tokens.
+   Light mode is intentionally untouched.
+   ========================================================================== */
+
+/* Component tokens introduced by this file (light values for completeness;
+   the dark block below is the one actually consumed by these rules). */
+:root {
+    --k-code-bg: #f4f5f7;
+    --k-code-text: #b03548;
+    --k-input-disabled-bg: #eef0f2;
+    --k-scrollbar-track: #eef0f2;
+    --k-scrollbar-thumb: #c9ced6;
+    --k-scrollbar-thumb-hover: #aab1bb;
+}
+
+html[data-theme='dark'] {
+    --k-code-bg: #121417;
+    --k-code-text: #e8879a;
+    --k-input-disabled-bg: #16181d;
+    --k-scrollbar-track: #121417;
+    --k-scrollbar-thumb: #31383f;
+    --k-scrollbar-thumb-hover: #49525c;
+}
+
+/* --------------------------------------------------------------------------
+   Base leftovers
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body {
+    color-scheme: dark; /* native scrollbars/form controls in supporting browsers */
+}
+
+html[data-theme='dark'] body .content {
+    background-color: var(--k-bg);
+}
+
+html[data-theme='dark'] body hr {
+    border-top-color: var(--k-border);
+}
+
+html[data-theme='dark'] body blockquote {
+    border-left-color: var(--k-border);
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body blockquote .small,
+html[data-theme='dark'] body blockquote footer,
+html[data-theme='dark'] body blockquote small {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body code {
+    background-color: var(--k-code-bg);
+    color: var(--k-code-text);
+    border-radius: var(--k-radius-sm);
+}
+
+html[data-theme='dark'] body pre {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+    border-radius: var(--k-radius-sm);
+}
+
+html[data-theme='dark'] body pre code {
+    background-color: transparent;
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body kbd {
+    background-color: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    box-shadow: none;
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   Webkit scrollbars
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-track {
+    background: var(--k-scrollbar-track);
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb {
+    background: var(--k-scrollbar-thumb);
+    border-radius: var(--k-radius-pill);
+    border: 2px solid var(--k-scrollbar-track);
+}
+
+html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
+    background: var(--k-scrollbar-thumb-hover);
+}
+
+/* --------------------------------------------------------------------------
+   Navbar / sidebar edge cases
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .main-header .navbar .navbar-custom-menu .navbar-nav > li > a,
+html[data-theme='dark'] body .main-header .navbar .navbar-right > li > a {
+    color: var(--k-navbar-text);
+}
+
+html[data-theme='dark'] body .main-header .navbar .nav > li > a:active,
+html[data-theme='dark'] body .main-header .navbar .nav > li > a:focus {
+    background-color: transparent;
+    color: var(--k-accent);
+}
+
+/* user-menu dropdown header/footer (skin backgrounds) */
+html[data-theme='dark'] body .navbar-nav > .user-menu > .dropdown-menu > .user-header {
+    background-color: var(--k-table-head-bg);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .navbar-nav > .user-menu > .dropdown-menu > .user-header > p {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .navbar-nav > .user-menu > .dropdown-menu > .user-header > p > small {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .navbar-nav > .user-menu > .dropdown-menu > .user-body {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+}
+
+html[data-theme='dark'] body .navbar-nav > .user-menu > .dropdown-menu > .user-body a {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .navbar-nav > .user-menu > .dropdown-menu > .user-footer {
+    background-color: var(--k-table-head-bg);
+    border-color: var(--k-border);
+}
+
+/* notifications / tasks / messages menus */
+html[data-theme='dark'] body .navbar-nav > .notifications-menu > .dropdown-menu > li.header,
+html[data-theme='dark'] body .navbar-nav > .messages-menu > .dropdown-menu > li.header,
+html[data-theme='dark'] body .navbar-nav > .tasks-menu > .dropdown-menu > li.header {
+    background-color: var(--k-surface);
+    border-bottom-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .navbar-nav > .notifications-menu > .dropdown-menu > li.footer > a,
+html[data-theme='dark'] body .navbar-nav > .messages-menu > .dropdown-menu > li.footer > a,
+html[data-theme='dark'] body .navbar-nav > .tasks-menu > .dropdown-menu > li.footer > a {
+    background-color: var(--k-table-head-bg);
+    border-top-color: var(--k-border);
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a,
+html[data-theme='dark'] body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a,
+html[data-theme='dark'] body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a {
+    border-bottom-color: var(--k-border-soft);
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a:hover,
+html[data-theme='dark'] body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a:hover,
+html[data-theme='dark'] body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a:hover {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+/* generic dropdown surfaces (Bootstrap default is hard white) */
+html[data-theme='dark'] body .dropdown-menu {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+}
+
+html[data-theme='dark'] body .dropdown-menu > li > a {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .dropdown-menu > li > a:hover,
+html[data-theme='dark'] body .dropdown-menu > li > a:focus {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .dropdown-menu .divider {
+    background-color: var(--k-border-soft);
+}
+
+html[data-theme='dark'] body .dropdown-menu > .active > a,
+html[data-theme='dark'] body .dropdown-menu > .active > a:hover {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
+    color: var(--k-accent);
+}
+
+/* sidebar search form + user panel dividers */
+html[data-theme='dark'] body .sidebar-form {
+    border-color: var(--k-sidebar-border);
+}
+
+html[data-theme='dark'] body .sidebar-form input[type='text'],
+html[data-theme='dark'] body .sidebar-form .btn {
+    background-color: var(--k-sidebar-hover-bg);
+    border-color: var(--k-sidebar-border);
+    color: var(--k-sidebar-text-active);
+}
+
+html[data-theme='dark'] body .sidebar-form input[type='text']:focus,
+html[data-theme='dark'] body .sidebar-form input[type='text']:focus + .input-group-btn .btn {
+    background-color: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+}
+
+html[data-theme='dark'] body .sidebar-form input[type='text']::placeholder {
+    color: var(--k-sidebar-text);
+}
+
+html[data-theme='dark'] body .user-panel {
+    border-bottom-color: var(--k-sidebar-border);
+}
+
+/* --------------------------------------------------------------------------
+   .box variants: solid headers carry hard-coded AdminLTE colors
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .box.box-solid.box-primary > .box-header {
+    background-color: color-mix(in srgb, var(--k-accent) 22%, var(--k-surface));
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .box.box-solid.box-info > .box-header {
+    background-color: color-mix(in srgb, var(--k-info) 22%, var(--k-surface));
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .box.box-solid.box-success > .box-header {
+    background-color: color-mix(in srgb, var(--k-success) 22%, var(--k-surface));
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .box.box-solid.box-warning > .box-header {
+    background-color: color-mix(in srgb, var(--k-warning) 22%, var(--k-surface));
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .box.box-solid.box-danger > .box-header {
+    background-color: color-mix(in srgb, var(--k-danger) 22%, var(--k-surface));
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .box.box-solid > .box-header .box-title {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .box.box-solid > .box-header .btn-box-tool,
+html[data-theme='dark'] body .box.box-solid > .box-header a {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .box.box-solid > .box-header .btn-box-tool:hover,
+html[data-theme='dark'] body .box.box-solid > .box-header a:hover {
+    color: var(--k-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Legacy Bootstrap panels + wells
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .panel {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: none;
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .panel-heading {
+    border-bottom-color: var(--k-border);
+    border-top-left-radius: var(--k-radius);
+    border-top-right-radius: var(--k-radius);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .panel-title {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .panel-footer {
+    background-color: var(--k-table-head-bg);
+    border-top-color: var(--k-border-soft);
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .panel-default > .panel-heading {
+    background-color: var(--k-table-head-bg);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .panel-primary { border-color: var(--k-border); }
+html[data-theme='dark'] body .panel-primary > .panel-heading {
+    background-color: color-mix(in srgb, var(--k-accent) 22%, var(--k-surface));
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .panel-success { border-color: var(--k-border); }
+html[data-theme='dark'] body .panel-success > .panel-heading {
+    background-color: color-mix(in srgb, var(--k-success) 22%, var(--k-surface));
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .panel-info { border-color: var(--k-border); }
+html[data-theme='dark'] body .panel-info > .panel-heading {
+    background-color: color-mix(in srgb, var(--k-info) 22%, var(--k-surface));
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .panel-warning { border-color: var(--k-border); }
+html[data-theme='dark'] body .panel-warning > .panel-heading {
+    background-color: color-mix(in srgb, var(--k-warning) 22%, var(--k-surface));
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .panel-danger { border-color: var(--k-border); }
+html[data-theme='dark'] body .panel-danger > .panel-heading {
+    background-color: color-mix(in srgb, var(--k-danger) 22%, var(--k-surface));
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .well {
+    background-color: var(--k-hover-tint);
+    border-color: var(--k-border);
+    border-radius: var(--k-radius-sm);
+    box-shadow: none;
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   List groups, nav-pills, breadcrumb, pager, thumbnails
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .list-group-item {
+    background-color: var(--k-surface);
+    border-color: var(--k-border-soft);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body a.list-group-item,
+html[data-theme='dark'] body button.list-group-item {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body a.list-group-item:hover,
+html[data-theme='dark'] body a.list-group-item:focus,
+html[data-theme='dark'] body button.list-group-item:hover,
+html[data-theme='dark'] body button.list-group-item:focus {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .list-group-item.active,
+html[data-theme='dark'] body .list-group-item.active:hover,
+html[data-theme='dark'] body .list-group-item.active:focus {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
+    border-color: var(--k-border);
+    color: var(--k-accent);
+}
+
+html[data-theme='dark'] body .list-group-item.disabled,
+html[data-theme='dark'] body .list-group-item.disabled:hover,
+html[data-theme='dark'] body .list-group-item.disabled:focus {
+    background-color: var(--k-surface);
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .nav-pills > li > a {
+    color: var(--k-text-muted);
+    border-radius: var(--k-radius-sm);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+html[data-theme='dark'] body .nav-pills > li > a:hover,
+html[data-theme='dark'] body .nav-pills > li > a:focus {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .nav-pills > li.active > a,
+html[data-theme='dark'] body .nav-pills > li.active > a:hover,
+html[data-theme='dark'] body .nav-pills > li.active > a:focus {
+    background-color: var(--k-accent);
+    color: var(--k-sidebar-text-active);
+}
+
+html[data-theme='dark'] body .breadcrumb {
+    background-color: var(--k-surface);
+}
+
+html[data-theme='dark'] body .breadcrumb > li,
+html[data-theme='dark'] body .breadcrumb > li a {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .breadcrumb > li a:hover {
+    color: var(--k-accent);
+}
+
+html[data-theme='dark'] body .breadcrumb > .active {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .breadcrumb > li + li::before {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .pager li > a,
+html[data-theme='dark'] body .pager li > span {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text-muted);
+    border-radius: var(--k-radius-pill);
+}
+
+html[data-theme='dark'] body .pager li > a:hover,
+html[data-theme='dark'] body .pager li > a:focus {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .pager .disabled > a,
+html[data-theme='dark'] body .pager .disabled > a:hover,
+html[data-theme='dark'] body .pager .disabled > span {
+    background-color: var(--k-surface);
+    border-color: var(--k-border-soft);
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .thumbnail {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    border-radius: var(--k-radius-sm);
+}
+
+html[data-theme='dark'] body .thumbnail .caption {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body a.thumbnail:hover,
+html[data-theme='dark'] body a.thumbnail:focus,
+html[data-theme='dark'] body a.thumbnail.active {
+    border-color: var(--k-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Forms: disabled / readonly states (Bootstrap forces #eee)
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .form-control[disabled],
+html[data-theme='dark'] body .form-control[readonly],
+html[data-theme='dark'] body fieldset[disabled] .form-control {
+    background-color: var(--k-input-disabled-bg);
+    border-color: var(--k-border-soft);
+    color: var(--k-text-muted);
+    opacity: 1;
+}
+
+html[data-theme='dark'] body .form-control::placeholder {
+    color: var(--k-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Table border fallbacks (.table-bordered ships hard #ddd)
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .table,
+html[data-theme='dark'] body .table > tbody > tr > td,
+html[data-theme='dark'] body .table > tbody > tr > th,
+html[data-theme='dark'] body .table > tfoot > tr > td,
+html[data-theme='dark'] body .table > tfoot > tr > th {
+    border-color: var(--k-border-soft);
+}
+
+html[data-theme='dark'] body .table-bordered,
+html[data-theme='dark'] body .table-bordered > thead > tr > th,
+html[data-theme='dark'] body .table-bordered > thead > tr > td,
+html[data-theme='dark'] body .table-bordered > tbody > tr > th,
+html[data-theme='dark'] body .table-bordered > tbody > tr > td,
+html[data-theme='dark'] body .table-bordered > tfoot > tr > th,
+html[data-theme='dark'] body .table-bordered > tfoot > tr > td {
+    border-color: var(--k-border);
+}
+
+html[data-theme='dark'] body .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--k-row-hover);
+}
+
+/* --------------------------------------------------------------------------
+   FullCalendar (v3 markup used by Snipe-IT)
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .fc {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .fc-widget-header,
+html[data-theme='dark'] body .fc-widget-content,
+html[data-theme='dark'] body .fc th,
+html[data-theme='dark'] body .fc td {
+    border-color: var(--k-border);
+}
+
+html[data-theme='dark'] body .fc .fc-day-header {
+    background-color: var(--k-table-head-bg);
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .fc-unthemed .fc-today,
+html[data-theme='dark'] body .fc-today {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+}
+
+html[data-theme='dark'] body .fc-day-number {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .fc-toolbar h2 {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .fc-state-default {
+    background-color: var(--k-surface);
+    background-image: none;
+    border-color: var(--k-border);
+    color: var(--k-text);
+    box-shadow: none;
+    text-shadow: none;
+}
+
+html[data-theme='dark'] body .fc-state-hover,
+html[data-theme='dark'] body .fc-state-active {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .fc-state-disabled {
+    background-color: var(--k-input-disabled-bg);
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body .fc-popover,
+html[data-theme='dark'] body .fc-popover .fc-header {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   Chart.js canvas containers: keep them on surface, not white
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body .chart,
+html[data-theme='dark'] body .chart-responsive,
+html[data-theme='dark'] body canvas {
+    background-color: transparent;
+}
+
+html[data-theme='dark'] body .box .chart,
+html[data-theme='dark'] body .box canvas {
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   Login page (basic layout) leftovers
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body.login-page .login-box,
+html[data-theme='dark'] body.login-page .register-box {
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body.login-page .login-box-msg,
+html[data-theme='dark'] body.login-page .register-box-msg {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body.login-page .login-box-body a,
+html[data-theme='dark'] body.login-page .register-box-body a {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body.login-page .login-box-body a:hover,
+html[data-theme='dark'] body.login-page .register-box-body a:hover {
+    color: var(--k-accent);
+}
+
+html[data-theme='dark'] body.login-page .form-control-feedback {
+    color: var(--k-text-muted);
+}
+
+html[data-theme='dark'] body.login-page .has-feedback .form-control {
+    background-color: var(--k-surface);
+    color: var(--k-text);
+}

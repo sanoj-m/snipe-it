@@ -1,1 +1,444 @@
-/* killa-v2-tables.css — see skills/killa-design/SKILL.md. Tokens in killa-v2.css. */
+/* ==========================================================================
+   Killa Asset v2 — TABLES domain (killa-v2-tables.css)
+   bootstrap-table chrome (toolbar, search, columns/export dropdowns,
+   pagination, page-jump-to), .table variants, fixed-table-body scrollbars,
+   sortable headers, loading overlay, checkbox columns, detail-view rows,
+   print fallbacks. Loaded after killa-v2.css; reuses its tokens only.
+   ========================================================================== */
+
+:root {
+    /* table-domain tokens (dark counterparts below) */
+    --k-table-stripe: rgba(31, 41, 51, 0.03);
+    --k-table-selected-bg: color-mix(in srgb, var(--k-accent) 8%, var(--k-surface));
+    --k-scrollbar-thumb: #c6ccd3;
+    --k-accent-contrast: #ffffff;
+    --k-print-border: #b8bcc2;
+
+    /* upstream overrides.less vars that sticky table cells paint with —
+       pinned to the Killa surfaces so pinned columns don't drift off-theme */
+    --box-bg: var(--k-surface);
+    --table-stripe-bg: var(--k-surface);
+    --table-stripe-bg-alt: var(--k-table-stripe);
+}
+
+html[data-theme='dark'] {
+    --k-table-stripe: rgba(255, 255, 255, 0.03);
+    --k-table-selected-bg: color-mix(in srgb, var(--k-accent) 14%, var(--k-surface));
+    --k-scrollbar-thumb: #3d454e;
+    --k-accent-contrast: #14171b;
+    --k-print-border: #b8bcc2;
+
+    --box-bg: #1a1d23;
+    --table-stripe-bg: #1a1d23;
+    --table-stripe-bg-alt: rgba(255, 255, 255, 0.03);
+}
+
+/* --------------------------------------------------------------------------
+   Table variants: striped / bordered / hover
+   (hover lives in killa-v2.css; here for the striped/bordered variants)
+   -------------------------------------------------------------------------- */
+body .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--k-table-stripe);
+}
+
+body .table-striped > tbody > tr:nth-of-type(odd) > td,
+body .table-striped > tbody > tr:nth-of-type(odd) > th {
+    background-color: transparent;
+}
+
+body .table-bordered,
+body .table-bordered > thead > tr > th,
+body .table-bordered > tbody > tr > td {
+    border-color: var(--k-border-soft);
+}
+
+body .table-bordered {
+    border: 1px solid var(--k-border);
+}
+
+/* selected rows (checkbox multi-select) beat the zebra stripe */
+body .bootstrap-table .fixed-table-container .table tbody tr.selected > td {
+    background-color: var(--k-table-selected-bg);
+}
+
+/* empty state */
+body .bootstrap-table .fixed-table-container .table tbody tr.no-records-found > td {
+    color: var(--k-text-muted);
+    font-size: 13px;
+    padding: var(--k-space-6) var(--k-space-4);
+}
+
+/* --------------------------------------------------------------------------
+   bootstrap-table container & fixed-height borders
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-container.fixed-height:not(.has-footer),
+body .bootstrap-table .fixed-table-container.fixed-height.has-card-view {
+    border-bottom: 1px solid var(--k-border);
+}
+
+body .bootstrap-table .fixed-table-container.fixed-height.has-card-view {
+    border-top: 1px solid var(--k-border);
+}
+
+body .bootstrap-table .fixed-table-container.fixed-height .fixed-table-border {
+    border-left: 1px solid var(--k-border);
+    border-right: 1px solid var(--k-border);
+}
+
+body .bootstrap-table .fixed-table-container.fixed-height .table thead th {
+    border-bottom: 1px solid var(--k-border);
+}
+
+/* --------------------------------------------------------------------------
+   Toolbar: search, columns dropdown, export buttons
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-toolbar .bs-bars,
+body .bootstrap-table .fixed-table-toolbar .columns,
+body .bootstrap-table .fixed-table-toolbar .search {
+    margin-top: var(--k-space-2);
+    margin-bottom: var(--k-space-3);
+}
+
+body .bootstrap-table .fixed-table-toolbar .search .form-control {
+    max-width: 280px;
+}
+
+body .bootstrap-table .fixed-table-toolbar .search .form-control::placeholder {
+    color: var(--k-text-muted);
+}
+
+/* toolbar icon buttons (columns / export / advanced search / fullscreen) */
+body .bootstrap-table .fixed-table-toolbar .columns .btn,
+body .bootstrap-table .fixed-table-toolbar .export .btn {
+    color: var(--k-text-muted);
+    transition: background-color var(--k-motion), border-color var(--k-motion), color var(--k-motion);
+}
+
+body .bootstrap-table .fixed-table-toolbar .columns .btn:hover,
+body .bootstrap-table .fixed-table-toolbar .export .btn:hover,
+body .bootstrap-table .fixed-table-toolbar .columns .open > .btn,
+body .bootstrap-table .fixed-table-toolbar .export .open > .btn {
+    color: var(--k-text);
+    background-color: var(--k-hover-tint);
+    border-color: var(--k-border);
+}
+
+/* keep-open dropdowns (column toggles, export formats) */
+body .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu,
+body .bootstrap-table .fixed-table-toolbar .export .dropdown-menu,
+body .bootstrap-table .fixed-table-pagination .page-list .dropdown-menu {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-chip);
+    box-shadow: var(--k-shadow-2);
+    padding: var(--k-space-1);
+}
+
+body .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu label,
+body .bootstrap-table .fixed-table-toolbar .export .dropdown-menu li a,
+body .bootstrap-table .fixed-table-pagination .page-list .dropdown-menu li a {
+    display: block;
+    padding: var(--k-space-2) var(--k-space-3);
+    border-radius: var(--k-radius-sm);
+    color: var(--k-text);
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu label:hover,
+body .bootstrap-table .fixed-table-toolbar .export .dropdown-menu li a:hover,
+body .bootstrap-table .fixed-table-pagination .page-list .dropdown-menu li a:hover {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+    text-decoration: none;
+}
+
+body .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu input[type='checkbox'],
+body .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu input[type='radio'] {
+    accent-color: var(--k-accent);
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   Sortable headers: CSS chevrons replace the hardcoded-grey SVG data-URIs
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-container .table thead th .sortable,
+body .bootstrap-table .fixed-table-container .table tfoot th .sortable {
+    background-image: none;
+    cursor: pointer;
+    position: relative;
+    transition: color var(--k-motion);
+}
+
+body .bootstrap-table .fixed-table-container .table thead th .sortable:hover {
+    color: var(--k-text);
+}
+
+body .bootstrap-table .fixed-table-container .table thead th .sortable:focus-visible {
+    outline: 2px solid var(--k-accent-focus);
+    outline-offset: -2px;
+}
+
+body .bootstrap-table .fixed-table-container .table thead th .sortable::before,
+body .bootstrap-table .fixed-table-container .table thead th .sortable::after {
+    content: '';
+    position: absolute;
+    right: 10px;
+    border-left: 4px solid transparent;
+    border-right: 4px solid transparent;
+    opacity: 0.4;
+}
+
+body .bootstrap-table .fixed-table-container .table thead th .sortable::before {
+    top: calc(50% - 6px);
+    border-bottom: 5px solid currentColor;
+}
+
+body .bootstrap-table .fixed-table-container .table thead th .sortable::after {
+    top: calc(50% + 1px);
+    border-top: 5px solid currentColor;
+}
+
+/* ascending: up chevron only, active */
+body .bootstrap-table .fixed-table-container .table thead th .asc::before {
+    border-bottom-color: var(--k-accent);
+    opacity: 1;
+}
+
+body .bootstrap-table .fixed-table-container .table thead th .asc::after {
+    border-top-color: transparent;
+    opacity: 0;
+}
+
+/* descending: down chevron only, active */
+body .bootstrap-table .fixed-table-container .table thead th .desc::before {
+    border-bottom-color: transparent;
+    opacity: 0;
+}
+
+body .bootstrap-table .fixed-table-container .table thead th .desc::after {
+    border-top-color: var(--k-accent);
+    opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Checkbox / radio columns
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-container .table .bs-checkbox input[type='checkbox'],
+body .bootstrap-table .fixed-table-container .table .bs-checkbox input[type='radio'] {
+    accent-color: var(--k-accent);
+    cursor: pointer;
+}
+
+/* inert checkboxes on bulk-action-incompatible rows (partials/bootstrap-table.blade.php) */
+body .bootstrap-table .fixed-table-container .table tbody tr.bulk-action-incompatible input[type='checkbox'] {
+    cursor: not-allowed;
+}
+
+body .bootstrap-table .fixed-table-container .table .bs-checkbox input[type='checkbox']:focus-visible,
+body .bootstrap-table .fixed-table-container .table .bs-checkbox input[type='radio']:focus-visible {
+    outline: 2px solid var(--k-accent-focus);
+    outline-offset: 1px;
+}
+
+/* --------------------------------------------------------------------------
+   Detail-view (expandable) rows
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-container .table thead th .detail-icon,
+body .bootstrap-table .fixed-table-container .table tbody td .detail-icon {
+    color: var(--k-text-muted);
+    cursor: pointer;
+    transition: color var(--k-motion);
+}
+
+body .bootstrap-table .fixed-table-container .table .detail-icon:hover {
+    color: var(--k-accent);
+}
+
+body .bootstrap-table .fixed-table-container .table tbody tr.detail-view > td {
+    background-color: var(--k-table-head-bg);
+    border-top: 1px solid var(--k-border-soft);
+    padding: var(--k-space-4) var(--k-space-5);
+}
+
+/* card view (responsive stacked layout) */
+body .bootstrap-table .fixed-table-container .table tbody tr .card-view .card-view-title {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted);
+}
+
+body .bootstrap-table .fixed-table-container .table tbody tr .card-view .card-view-value {
+    color: var(--k-text);
+}
+
+/* --------------------------------------------------------------------------
+   fixed-table-body scrollbars
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-container .fixed-table-body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--k-scrollbar-thumb) transparent;
+}
+
+body .bootstrap-table .fixed-table-container .fixed-table-body::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+body .bootstrap-table .fixed-table-container .fixed-table-body::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body .bootstrap-table .fixed-table-container .fixed-table-body::-webkit-scrollbar-thumb {
+    background-color: var(--k-scrollbar-thumb);
+    border-radius: var(--k-radius-pill);
+}
+
+/* --------------------------------------------------------------------------
+   Loading overlay
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading {
+    background: color-mix(in srgb, var(--k-surface) 88%, transparent);
+    transition: visibility 0s, opacity var(--k-motion);
+}
+
+body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .loading-text {
+    color: var(--k-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .animation-dot,
+body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .animation-wrap::before,
+body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .animation-wrap::after {
+    background: var(--k-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Pagination bar: info text, page-size dropdown, page links, page-jump-to
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-pagination > .pagination,
+body .bootstrap-table .fixed-table-pagination > .pagination-detail {
+    margin-top: var(--k-space-3);
+    margin-bottom: var(--k-space-2);
+}
+
+body .bootstrap-table .fixed-table-pagination .pagination-detail .pagination-info {
+    color: var(--k-text-muted);
+    font-size: 12px;
+    line-height: 34px;
+}
+
+body .bootstrap-table .fixed-table-pagination ul.pagination > li > a {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+    font-weight: 500;
+    transition: background-color var(--k-motion), border-color var(--k-motion), color var(--k-motion);
+}
+
+body .bootstrap-table .fixed-table-pagination ul.pagination > li > a:hover,
+body .bootstrap-table .fixed-table-pagination ul.pagination > li > a:focus {
+    background-color: var(--k-hover-tint);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
+
+body .bootstrap-table .fixed-table-pagination ul.pagination > li > a:focus-visible {
+    outline: 2px solid var(--k-accent-focus);
+    outline-offset: 1px;
+}
+
+body .bootstrap-table .fixed-table-pagination ul.pagination > li.active > a,
+body .bootstrap-table .fixed-table-pagination ul.pagination > li.active > a:hover,
+body .bootstrap-table .fixed-table-pagination ul.pagination > li.active > a:focus {
+    background-color: var(--k-accent);
+    border-color: var(--k-accent);
+    color: var(--k-accent-contrast);
+}
+
+body .bootstrap-table .fixed-table-pagination ul.pagination > li.disabled > a,
+body .bootstrap-table .fixed-table-pagination ul.pagination > li.disabled > a:hover {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text-muted);
+    opacity: 0.55;
+}
+
+body .bootstrap-table .fixed-table-pagination ul.pagination > li.page-intermediate > a {
+    color: var(--k-text-muted);
+}
+
+body .bootstrap-table .fixed-table-pagination ul.pagination > li:first-child > a {
+    border-top-left-radius: var(--k-radius-sm);
+    border-bottom-left-radius: var(--k-radius-sm);
+}
+
+body .bootstrap-table .fixed-table-pagination ul.pagination > li:last-child > a {
+    border-top-right-radius: var(--k-radius-sm);
+    border-bottom-right-radius: var(--k-radius-sm);
+}
+
+/* page-size select + page-jump-to extension input */
+body .bootstrap-table .fixed-table-pagination .page-list .btn,
+body .bootstrap-table .fixed-table-pagination .page-jump-to select,
+body .bootstrap-table .fixed-table-pagination .page-jump-to input {
+    background-color: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    color: var(--k-text);
+    box-shadow: none;
+    transition: background-color var(--k-motion), border-color var(--k-motion), color var(--k-motion);
+}
+
+body .bootstrap-table .fixed-table-pagination .page-jump-to select:focus,
+body .bootstrap-table .fixed-table-pagination .page-jump-to input:focus {
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+    outline: none;
+}
+
+/* --------------------------------------------------------------------------
+   Fullscreen + sticky-header modes
+   -------------------------------------------------------------------------- */
+body .bootstrap-table.fullscreen {
+    background: var(--k-bg);
+}
+
+body .fix-sticky table thead {
+    background: var(--k-surface);
+}
+
+/* --------------------------------------------------------------------------
+   Print fallbacks: reports and label pages print the data, not the chrome
+   -------------------------------------------------------------------------- */
+@media print {
+    body .bootstrap-table .fixed-table-toolbar,
+    body .bootstrap-table .fixed-table-pagination,
+    body .bootstrap-table .fixed-table-container .fixed-table-loading,
+    body .bootstrap-table .fixed-table-container .table thead th .sortable::before,
+    body .bootstrap-table .fixed-table-container .table thead th .sortable::after {
+        display: none !important;
+    }
+
+    body .bootstrap-table .fixed-table-container .fixed-table-body {
+        overflow: visible;
+        height: auto;
+    }
+
+    body .bootstrap-table .fixed-table-container .table {
+        box-shadow: none;
+    }
+
+    body .bootstrap-table .fixed-table-container .table > thead > tr > th,
+    body .bootstrap-table .fixed-table-container .table > tbody > tr > td {
+        border-color: var(--k-print-border);
+    }
+}

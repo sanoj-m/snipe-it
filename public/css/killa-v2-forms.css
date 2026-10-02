@@ -1,1 +1,536 @@
-/* killa-v2-forms.css — see skills/killa-design/SKILL.md. Tokens in killa-v2.css. */
+/* ==========================================================================
+   Killa Asset v2 "Atelier" — FORMS domain layer
+   Loaded after killa-v2.css (see layouts/default.blade.php). All selectors
+   body-prefixed; all colors/radii/shadows come from the tokens in
+   killa-v2.css. Dark coverage lives in the dedicated block at the bottom —
+   most rules adapt automatically because they only reference var(--k-*),
+   so the dark block only carries what var-swapping cannot fix.
+   ========================================================================== */
+
+/* Component tokens specific to forms. Defined for BOTH themes per the
+   killa-v2 rule: no raw hex outside these blocks. */
+:root {
+    --k-input-disabled-bg: #f3f4f6;
+    --k-input-disabled-text: #9aa3ad;
+    --k-form-choice-bg: #fdeceb;
+    --k-form-choice-border: rgba(230, 59, 46, 0.25);
+}
+
+html[data-theme='dark'] {
+    --k-input-disabled-bg: #22262d;
+    --k-input-disabled-text: #6b7280;
+    --k-form-choice-bg: #3a2220;
+    --k-form-choice-border: rgba(240, 87, 75, 0.3);
+}
+
+/* --------------------------------------------------------------------------
+   Form groups & labels
+   -------------------------------------------------------------------------- */
+body .form-group {
+    margin-bottom: var(--k-space-4);
+}
+
+body .form-group label,
+body .control-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: var(--k-label);
+}
+
+/* checkbox/radio rows render a <label class="form-control"> wrapping the
+   native input — make the whole row read as one clickable control */
+body label.form-control {
+    height: auto;
+    min-height: 36px;
+    cursor: pointer;
+    font-weight: 400;
+    font-size: 13.5px;
+    letter-spacing: normal;
+    color: var(--k-text);
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-2);
+    padding-top: 7px;
+    padding-bottom: 7px;
+}
+
+body label.form-control:hover {
+    border-color: var(--k-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Text inputs, textareas, native selects
+   -------------------------------------------------------------------------- */
+body .form-control {
+    height: 36px;
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    background-color: var(--k-surface);
+    color: var(--k-text);
+    box-shadow: none;
+    transition: border-color var(--k-motion), box-shadow var(--k-motion);
+}
+
+body textarea.form-control,
+body select[multiple].form-control {
+    height: auto;
+}
+
+body textarea.form-control {
+    min-height: 96px;
+    resize: vertical;
+    padding-top: var(--k-space-2);
+}
+
+body .form-control:hover:not(:focus):not([disabled]):not([readonly]) {
+    border-color: var(--k-text-muted);
+}
+
+body .form-control:focus {
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+    outline: none;
+}
+
+body .form-control::placeholder {
+    color: var(--k-text-muted);
+    opacity: 1;
+}
+
+/* native select: keep the browser arrow, just align metrics with inputs */
+body select.form-control {
+    padding-right: var(--k-space-6);
+}
+
+body select.form-control option {
+    background-color: var(--k-surface);
+    color: var(--k-text);
+}
+
+/* disabled & readonly */
+body .form-control[disabled],
+body .form-control[readonly],
+body fieldset[disabled] .form-control {
+    background-color: var(--k-input-disabled-bg);
+    border-color: var(--k-border);
+    color: var(--k-input-disabled-text);
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+body .form-control[readonly] {
+    cursor: default;
+}
+
+/* required marker: Snipe-IT flags required fields with .required
+   (overrides.css ships a 6px orange bar — quiet it to a hairline) */
+body .form-control.required,
+body .required .form-control {
+    border-right: 2px solid var(--k-warning);
+}
+
+/* --------------------------------------------------------------------------
+   Input groups
+   -------------------------------------------------------------------------- */
+body .input-group .input-group-addon {
+    background-color: var(--k-hover-tint);
+    border: 1px solid var(--k-border);
+    color: var(--k-text-muted);
+    border-radius: var(--k-radius-sm);
+    font-size: 12.5px;
+    transition: border-color var(--k-motion), color var(--k-motion);
+}
+
+body .input-group .form-control:focus + .input-group-addon,
+body .input-group-addon:has(+ .form-control:focus) {
+    border-color: var(--k-accent);
+}
+
+/* seam between joined segments */
+body .input-group .form-control:first-child,
+body .input-group-addon:first-child,
+body .input-group-btn:first-child > .btn,
+body .input-group-btn:first-child > .btn-group > .btn {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+body .input-group .form-control:last-child,
+body .input-group-addon:last-child,
+body .input-group-btn:last-child > .btn,
+body .input-group-btn:last-child > .btn-group > .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+body .input-group-btn > .btn {
+    height: 36px;
+    border-color: var(--k-border);
+}
+
+/* --------------------------------------------------------------------------
+   Checkboxes & radios (native, no icheck in this codebase)
+   -------------------------------------------------------------------------- */
+body input[type='checkbox'],
+body input[type='radio'] {
+    accent-color: var(--k-accent);
+    cursor: pointer;
+    margin: 0;
+    flex: none;
+}
+
+body input[type='checkbox']:focus-visible,
+body input[type='radio']:focus-visible {
+    outline: 2px solid var(--k-accent-focus);
+    outline-offset: 2px;
+}
+
+body input[type='checkbox'][disabled],
+body input[type='radio'][disabled] {
+    cursor: not-allowed;
+    opacity: 0.55;
+}
+
+body .checkbox label,
+body .radio label,
+body .checkbox-inline,
+body .radio-inline {
+    color: var(--k-text);
+    font-weight: 400;
+    cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+   File inputs
+   -------------------------------------------------------------------------- */
+body input[type='file'].form-control {
+    height: auto;
+    padding: var(--k-space-2) var(--k-space-3);
+}
+
+body input[type='file'].form-control::file-selector-button {
+    margin-right: var(--k-space-3);
+    padding: 4px var(--k-space-3);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color var(--k-motion), border-color var(--k-motion);
+}
+
+body input[type='file'].form-control::file-selector-button:hover {
+    background-color: var(--k-border-soft);
+}
+
+/* Snipe-IT .btn-file wrapper (invisible native input over a styled button) */
+body .btn-file {
+    border-radius: var(--k-radius-sm);
+}
+
+body .btn-file:hover {
+    border-color: var(--k-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Help text & validation states
+   -------------------------------------------------------------------------- */
+body .help-block {
+    color: var(--k-text-muted);
+    font-size: 12px;
+    margin-top: var(--k-space-1);
+    margin-bottom: 0;
+}
+
+body .has-success .form-control {
+    border-color: var(--k-success);
+}
+
+body .has-success .form-control:focus {
+    border-color: var(--k-success);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--k-success) 18%, transparent);
+}
+
+body .has-success .control-label,
+body .has-success .help-block {
+    color: var(--k-success);
+}
+
+body .has-error .form-control {
+    border-color: var(--k-danger);
+}
+
+body .has-error .form-control:focus {
+    border-color: var(--k-danger);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--k-danger) 18%, transparent);
+}
+
+body .has-error .control-label,
+body .has-error .help-block {
+    color: var(--k-danger);
+}
+
+body .has-warning .form-control {
+    border-color: var(--k-warning);
+}
+
+body .has-warning .control-label,
+body .has-warning .help-block {
+    color: var(--k-warning);
+}
+
+/* Snipe-IT's own error conventions (.error wrapper + .alert-msg text).
+   overrides.css uses !important on the input border, so we must too. */
+body .error input,
+body .error .form-control {
+    color: var(--k-text);
+    border: 1px solid var(--k-danger) !important;
+}
+
+body .alert-msg {
+    color: var(--k-danger);
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    margin-top: var(--k-space-1);
+}
+
+body .error label {
+    color: var(--k-danger);
+}
+
+/* --------------------------------------------------------------------------
+   Select2 (v4) — container, single & multiple, dropdown
+   -------------------------------------------------------------------------- */
+body .select2-container {
+    font-family: var(--k-font);
+}
+
+body .select2-container--default .select2-selection--single,
+body .select2-container--default .select2-selection--multiple {
+    background-color: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    min-height: 36px;
+    box-shadow: none;
+    transition: border-color var(--k-motion), box-shadow var(--k-motion);
+}
+
+body .select2-container--default .select2-selection--single:hover,
+body .select2-container--default .select2-selection--multiple:hover {
+    border-color: var(--k-text-muted);
+}
+
+body .select2-container--default.select2-container--focus .select2-selection--single,
+body .select2-container--default.select2-container--focus .select2-selection--multiple,
+body .select2-container--default.select2-container--open .select2-selection--single,
+body .select2-container--default.select2-container--open .select2-selection--multiple {
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+}
+
+/* single: rendered value + arrow */
+body .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: var(--k-text);
+    line-height: 34px;
+    padding-left: var(--k-space-3);
+    padding-right: var(--k-space-6);
+}
+
+body .select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: var(--k-text-muted);
+}
+
+body .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 34px;
+    right: var(--k-space-2);
+}
+
+body .select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: var(--k-text-muted) transparent transparent transparent;
+}
+
+body .select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
+    border-color: transparent transparent var(--k-text-muted) transparent;
+}
+
+body .select2-container--default .select2-selection--single .select2-selection__clear {
+    color: var(--k-text-muted);
+    font-weight: 400;
+    margin-right: var(--k-space-4);
+}
+
+body .select2-container--default .select2-selection--single .select2-selection__clear:hover {
+    color: var(--k-danger);
+}
+
+/* multiple: chip-style choices */
+body .select2-container--default .select2-selection--multiple {
+    padding: 2px var(--k-space-1) 0;
+}
+
+body .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    padding: 0 var(--k-space-1);
+}
+
+body .select2-container--default .select2-selection--multiple .select2-selection__choice {
+    background-color: var(--k-form-choice-bg);
+    border: 1px solid var(--k-form-choice-border);
+    border-radius: var(--k-radius-pill);
+    color: var(--k-accent);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px var(--k-space-2) 2px var(--k-space-3);
+    margin-top: 4px;
+    margin-right: var(--k-space-1);
+    cursor: default;
+}
+
+body .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+    color: var(--k-accent);
+    opacity: 0.6;
+    margin-right: 2px;
+    float: right;
+    font-weight: 600;
+    transition: opacity var(--k-motion);
+}
+
+body .select2-container--default .select2-selection--multiple .select2-selection__choice__remove:hover {
+    color: var(--k-danger);
+    opacity: 1;
+}
+
+body .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+    color: var(--k-text);
+    margin-top: 6px;
+}
+
+body .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field::placeholder {
+    color: var(--k-text-muted);
+}
+
+/* disabled select2 */
+body .select2-container--default.select2-container--disabled .select2-selection--single,
+body .select2-container--default.select2-container--disabled .select2-selection--multiple {
+    background-color: var(--k-input-disabled-bg);
+    border-color: var(--k-border);
+    cursor: not-allowed;
+}
+
+body .select2-container--default.select2-container--disabled .select2-selection__rendered,
+body .select2-container--default.select2-container--disabled .select2-selection__choice {
+    color: var(--k-input-disabled-text);
+}
+
+/* dropdown panel */
+body .select2-dropdown {
+    background-color: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-chip);
+    box-shadow: var(--k-shadow-2);
+    overflow: hidden;
+}
+
+body .select2-dropdown--above {
+    border-radius: var(--k-radius-chip);
+}
+
+body .select2-dropdown--below {
+    border-radius: var(--k-radius-chip);
+}
+
+body .select2-container--default .select2-search--dropdown .select2-search__field {
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    background-color: var(--k-surface);
+    color: var(--k-text);
+    padding: 6px var(--k-space-2);
+    outline: none;
+    transition: border-color var(--k-motion), box-shadow var(--k-motion);
+}
+
+body .select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+}
+
+body .select2-search--dropdown {
+    padding: var(--k-space-2);
+}
+
+/* results list */
+body .select2-container--default .select2-results > .select2-results__options {
+    max-height: 320px;
+}
+
+body .select2-container--default .select2-results__option {
+    padding: var(--k-space-2) var(--k-space-3);
+    color: var(--k-text);
+    font-size: 13px;
+}
+
+body .select2-container--default .select2-results__option[role='group'] {
+    padding: 0;
+}
+
+body .select2-container--default .select2-results__group {
+    color: var(--k-text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    padding: var(--k-space-2) var(--k-space-3) var(--k-space-1);
+    cursor: default;
+}
+
+body .select2-container--default .select2-results__option--highlighted[aria-selected],
+body .select2-container--default .select2-results__option--highlighted[aria-selected='false'] {
+    background-color: var(--k-accent-tint);
+    color: var(--k-accent);
+}
+
+body .select2-container--default .select2-results__option[aria-selected='true'] {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
+    color: var(--k-accent);
+    font-weight: 500;
+}
+
+body .select2-container--default .select2-results__option[aria-disabled='true'] {
+    color: var(--k-input-disabled-text);
+    cursor: not-allowed;
+}
+
+body .select2-container--default .select2-results__option .select2-results__option {
+    padding-left: var(--k-space-5);
+}
+
+/* loading / no-results messaging */
+body .select2-container--default .select2-results__option.loading-results,
+body .select2-container--default .select2-results__message {
+    color: var(--k-text-muted);
+    font-size: 12.5px;
+}
+
+/* select2 inside input-groups keeps the seam tidy */
+body .input-group .select2-container--default .select2-selection--single,
+body .input-group .select2-container--default .select2-selection--multiple {
+    border-radius: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Dark theme: only what var-swapping alone cannot express.
+   (All colors above already flip via the killa-v2 dark token block.)
+   -------------------------------------------------------------------------- */
+html[data-theme='dark'] body select.form-control {
+    /* native arrow glyph inherits system color; force the dark color scheme
+       so the UA picker/arrow render legibly on the dark surface */
+    color-scheme: dark;
+}
+
+html[data-theme='dark'] body input[type='checkbox'],
+html[data-theme='dark'] body input[type='radio'] {
+    color-scheme: dark;
+}
