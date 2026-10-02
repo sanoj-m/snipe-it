@@ -44,14 +44,19 @@
     --k-tint-alpha: 12%;
     --k-tint-alpha-soft: 10%;
     --k-tint-alpha-active: 14%;
+    --k-tint-border: 30%;
 
-    /* app shell (dark sidebar reads as one unit with the logo) */
-    --k-sidebar-bg: #16181d;
-    --k-sidebar-border: rgba(255, 255, 255, 0.07);
-    --k-sidebar-text: #9aa3b2;
-    --k-sidebar-text-active: #ffffff;
-    --k-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
-    --k-sidebar-header: #5c6470;
+    /* app shell: light sidebar in light mode (dark values below) */
+    --k-sidebar-bg: #fafbfc;
+    --k-sidebar-border: #e5e7eb;
+    --k-sidebar-text: #4b5563;
+    --k-sidebar-text-active: #1f2933;
+    --k-sidebar-hover-bg: #f0f2f5;
+    --k-sidebar-header: #9ca3af;
+    --k-sidebar-active-bg: var(--k-accent-tint);
+    --k-sidebar-active-text: var(--k-accent);
+    --k-logo-text: var(--k-text);
+    --k-check-border: #d1d5db;
     --k-navbar-bg: #ffffff;
     --k-navbar-text: #4b5563;
 
@@ -114,6 +119,16 @@ html[data-theme='dark'] {
     --k-tile-light-blue: #4a90c2;
     --k-sidebar-bg: #0f1115;
     --k-sidebar-border: rgba(255, 255, 255, 0.06);
+    --k-sidebar-text: #9aa3b2;
+    --k-sidebar-text-active: #ffffff;
+    --k-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
+    --k-sidebar-header: #5c6470;
+    --k-sidebar-active-bg: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
+    --k-sidebar-active-text: #ffffff;
+    --k-logo-text: #ffffff;
+    --k-check-border: #4b5563;
+    --k-tint-alpha: 18%;
+    --k-tint-border: 40%;
     --k-navbar-bg: #1a1d23;
     --k-navbar-text: #9aa3ad;
     --k-login-bg-top: #121417;
@@ -129,7 +144,7 @@ html[data-theme='dark'] {
 body {
     background-color: var(--k-bg);
     font-family: var(--k-font);
-    font-size: 13.5px;
+    font-size: 12.5px;
     color: var(--k-text);
 }
 
@@ -152,7 +167,8 @@ body a {
 }
 
 /* --------------------------------------------------------------------------
-   App shell: dark sidebar + logo, white navbar with hairline
+   App shell: sidebar + logo (light in light mode, dark in dark mode),
+   white navbar with hairline
    -------------------------------------------------------------------------- */
 body .main-sidebar,
 body .left-side {
@@ -166,8 +182,9 @@ body .sidebar {
 
 body .main-header .logo {
     background-color: var(--k-sidebar-bg);
-    color: var(--k-sidebar-text-active);
+    color: var(--k-logo-text);
     border-bottom: 1px solid var(--k-sidebar-border);
+    border-right: 1px solid var(--k-sidebar-border);
     font-family: var(--k-font-display);
     font-weight: 700;
     letter-spacing: -0.01em;
@@ -227,10 +244,11 @@ body .sidebar-menu li.header {
 /* sidebar links */
 body .sidebar-menu > li > a {
     margin: 1px var(--k-space-2);
-    padding: 9px var(--k-space-3) 9px 9px;
+    padding: 6px var(--k-space-3) 6px 9px;
     border-left: 3px solid transparent;
     border-radius: var(--k-radius-sm);
     color: var(--k-sidebar-text);
+    font-size: 12.5px;
     font-weight: 500;
     transition: background-color var(--k-motion), color var(--k-motion), border-color var(--k-motion);
 }
@@ -243,8 +261,8 @@ body .sidebar-menu > li > a:hover {
 body .sidebar-menu > li.active > a,
 body .sidebar-menu > li.menu-open > a {
     border-left: 3px solid var(--k-accent);
-    background: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
-    color: var(--k-sidebar-text-active);
+    background: var(--k-sidebar-active-bg);
+    color: var(--k-sidebar-active-text);
     font-weight: 600;
 }
 
@@ -257,15 +275,15 @@ body .sidebar-menu > li > a > .ion {
 /* treeview submenus: indented with a left hairline guide */
 body .sidebar-menu > li > .treeview-menu {
     background: transparent;
-    margin: 2px var(--k-space-2) var(--k-space-2) 22px;
-    padding-left: var(--k-space-3);
+    margin: 2px var(--k-space-2) var(--k-space-2) 16px;
+    padding-left: var(--k-space-2);
     border-left: 1px solid var(--k-sidebar-border);
 }
 
 body .sidebar-menu .treeview-menu > li > a {
     color: var(--k-sidebar-text);
     border-radius: var(--k-radius-sm);
-    padding: 7px var(--k-space-3);
+    padding: 5px var(--k-space-3);
     transition: background-color var(--k-motion), color var(--k-motion);
 }
 
@@ -289,12 +307,12 @@ body .user-panel > .info > a {
    Content header: display title + muted breadcrumb pills
    -------------------------------------------------------------------------- */
 body .content-header {
-    padding: var(--k-space-6) var(--k-space-6) var(--k-space-2);
+    padding: var(--k-space-4) var(--k-space-4) var(--k-space-2);
     background: transparent;
 }
 
 body .content-header > h1 {
-    font-size: 20px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--k-text);
     margin: 0;
@@ -321,7 +339,7 @@ body .content-header .breadcrumb > li {
     border-radius: var(--k-radius-pill);
     padding: 2px 10px;
     margin-right: var(--k-space-1);
-    font-size: 11.5px;
+    font-size: 11px;
     color: var(--k-text-muted);
 }
 
@@ -330,12 +348,16 @@ body .content-header .breadcrumb > li + li::before {
     padding: 0;
 }
 
-body .content-header .breadcrumb > li a {
-    color: var(--k-text-muted);
+body .content-header .breadcrumb > li a,
+body .content-header .breadcrumb > li a .fa,
+body .content-header .breadcrumb > li a .fas {
+    color: var(--k-text-muted) !important;
 }
 
-body .content-header .breadcrumb > li a:hover {
-    color: var(--k-accent);
+body .content-header .breadcrumb > li a:hover,
+body .content-header .breadcrumb > li a:hover .fa,
+body .content-header .breadcrumb > li a:hover .fas {
+    color: var(--k-accent) !important;
 }
 
 body .content-header .breadcrumb > li.active {
@@ -368,29 +390,29 @@ body .k-tile .k-tile-body {
     display: flex;
     align-items: center;
     gap: var(--k-space-4);
-    padding: var(--k-space-5) var(--k-space-5) var(--k-space-3);
+    padding: var(--k-space-4) var(--k-space-4) var(--k-space-2);
 }
 
 body .k-tile .k-tile-icon {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 34px;
+    height: 34px;
     flex: none;
     border-radius: var(--k-radius-chip);
-    font-size: 18px;
+    font-size: 15px;
 }
 
 body .k-tile .k-tile-icon svg {
-    width: 18px;
-    height: 18px;
+    width: 15px;
+    height: 15px;
 }
 
 body .k-tile .k-tile-number {
     display: block;
     font-family: var(--k-font-display);
-    font-size: 30px;
+    font-size: 23px;
     font-weight: 700;
     letter-spacing: -0.01em;
     line-height: 1.1;
@@ -400,7 +422,7 @@ body .k-tile .k-tile-number {
 body .k-tile .k-tile-label {
     display: block;
     margin-top: var(--k-space-1);
-    font-size: 12px;
+    font-size: 10.5px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
@@ -413,7 +435,7 @@ body .k-tile .small-box-footer {
     align-items: center;
     justify-content: space-between;
     margin-top: auto;
-    padding: var(--k-space-2) var(--k-space-5);
+    padding: 6px var(--k-space-4);
     background: transparent;
     border-top: 1px solid var(--k-border-soft);
     color: var(--k-text-muted);
@@ -506,7 +528,7 @@ body .box.box-danger {
 }
 
 body .box-header {
-    padding: 18px 18px 0;
+    padding: 14px 14px 0;
 }
 
 body .box-header.with-border {
@@ -515,7 +537,7 @@ body .box-header.with-border {
 
 body .box-header .box-title {
     font-family: var(--k-font-display);
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--k-text);
@@ -527,7 +549,7 @@ body .box-header .box-title a:hover {
 }
 
 body .box-body {
-    padding: 18px;
+    padding: 14px;
 }
 
 body .box-footer {
@@ -550,30 +572,31 @@ body .box-tools .btn-box-tool:hover {
    -------------------------------------------------------------------------- */
 body .table > thead > tr > th {
     background: var(--k-table-head-bg);
-    font-size: 11px;
+    font-size: 10.5px;
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--k-text-muted);
     border-bottom: 1px solid var(--k-border);
-    padding: 10px var(--k-space-4);
+    padding: 8px 12px;
 }
 
 body .table > tbody > tr > td,
 body .table > tbody > tr > th {
     border-top: 1px solid var(--k-border-soft);
-    padding: 12px var(--k-space-4);
+    padding: 6px 12px;
+    height: 36px;
     vertical-align: middle;
 }
 
 body .table > thead > tr > th:first-child,
 body .table > tbody > tr > td:first-child {
-    padding-left: var(--k-space-4);
+    padding-left: 12px;
 }
 
 body .table > thead > tr > th:last-child,
 body .table > tbody > tr > td:last-child {
-    padding-right: var(--k-space-4);
+    padding-right: 12px;
 }
 
 body .table-hover > tbody > tr:hover {
@@ -585,11 +608,19 @@ body .table-hover > tbody > tr:hover {
    -------------------------------------------------------------------------- */
 body .btn {
     border-radius: var(--k-radius-sm);
+    font-size: 12.5px;
     font-weight: 500;
+    padding: 5px 12px;
     background-image: none;
     box-shadow: none;
     text-shadow: none;
     transition: background-color var(--k-motion), border-color var(--k-motion), color var(--k-motion);
+}
+
+body .btn-sm,
+body .btn-xs {
+    padding: 3px 8px;
+    font-size: 12px;
 }
 
 body .btn-default {
@@ -649,7 +680,7 @@ body .btn-info,
 body .btn.bg-purple,
 body .btn.bg-light-blue {
     background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha), transparent) !important;
-    border-color: color-mix(in srgb, var(--k-info) 30%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-info) var(--k-tint-border), transparent) !important;
     color: var(--k-info) !important;
 }
 
@@ -667,7 +698,7 @@ body .btn.bg-light-blue:focus {
 body .btn-warning,
 body .btn.bg-orange {
     background-color: color-mix(in srgb, var(--k-warning) var(--k-tint-alpha), transparent) !important;
-    border-color: color-mix(in srgb, var(--k-warning) 30%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-warning) var(--k-tint-border), transparent) !important;
     color: var(--k-warning) !important;
 }
 
@@ -684,7 +715,7 @@ body .btn-danger,
 body .btn.bg-maroon,
 body .btn.bg-red {
     background-color: color-mix(in srgb, var(--k-danger) var(--k-tint-alpha), transparent) !important;
-    border-color: color-mix(in srgb, var(--k-danger) 30%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-danger) var(--k-tint-border), transparent) !important;
     color: var(--k-danger) !important;
 }
 
@@ -703,7 +734,7 @@ body .btn-success,
 body .btn.bg-green,
 body .btn.bg-olive {
     background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha), transparent) !important;
-    border-color: color-mix(in srgb, var(--k-success) 30%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-success) var(--k-tint-border), transparent) !important;
     color: var(--k-success) !important;
 }
 
@@ -723,7 +754,7 @@ body .btn.bg-purple,
 body .btn.bg-purple:hover,
 body .btn.bg-purple:focus {
     background-color: color-mix(in srgb, var(--k-tile-purple) var(--k-tint-alpha), transparent) !important;
-    border-color: color-mix(in srgb, var(--k-tile-purple) 30%, transparent) !important;
+    border-color: color-mix(in srgb, var(--k-tile-purple) var(--k-tint-border), transparent) !important;
     color: var(--k-tile-purple) !important;
 }
 
@@ -740,7 +771,7 @@ body .label {
     border-radius: var(--k-radius-pill);
     font-size: 11px;
     font-weight: 600;
-    padding: 0.3em 0.8em;
+    padding: 0.25em 0.65em;
     text-shadow: none;
 }
 
@@ -803,7 +834,7 @@ body .nav-tabs-custom > .nav-tabs > li.active > a:hover {
    Forms
    -------------------------------------------------------------------------- */
 body .form-control {
-    height: 36px;
+    height: 32px;
     border: 1px solid var(--k-border);
     border-radius: var(--k-radius-sm);
     background-color: var(--k-surface);
@@ -864,4 +895,147 @@ body .main-footer {
     background: var(--k-surface);
     color: var(--k-text-muted);
     font-size: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   User-menu dropdown (navbar): tenant branding vars paint these surfaces
+   white-on-white in both modes, so force token colors with !important
+   -------------------------------------------------------------------------- */
+body .navbar-nav > .user-menu > .dropdown-menu {
+    background-color: var(--k-surface) !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > li {
+    background-color: transparent !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-header {
+    background-color: var(--k-table-head-bg) !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-header > p {
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-header > p > small {
+    color: var(--k-text-muted) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-body {
+    background-color: var(--k-surface) !important;
+    border-color: var(--k-border) !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-body a {
+    color: var(--k-text-muted) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-body a:hover {
+    color: var(--k-accent) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-footer {
+    background-color: var(--k-table-head-bg) !important;
+    border-color: var(--k-border) !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-footer a,
+body .navbar-nav > .user-menu > .dropdown-menu > .user-footer .btn {
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > .user-menu > .dropdown-menu > .user-footer a:hover,
+body .navbar-nav > .user-menu > .dropdown-menu > .user-footer .btn:hover {
+    color: var(--k-accent) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Native checkboxes & radios: compact token-skinned controls
+   -------------------------------------------------------------------------- */
+body input[type='checkbox'],
+body input[type='radio'] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    border: 1.5px solid var(--k-check-border);
+    border-radius: 3px;
+    background-color: var(--k-surface);
+    cursor: pointer;
+    vertical-align: -2px;
+    position: relative;
+    flex: none;
+    transition: background-color var(--k-motion), border-color var(--k-motion);
+}
+
+body input[type='radio'] {
+    border-radius: 50%;
+}
+
+body input[type='checkbox']:checked,
+body input[type='radio']:checked {
+    background-color: var(--k-accent);
+    border-color: var(--k-accent);
+}
+
+body input[type='checkbox']:checked::after {
+    content: '';
+    position: absolute;
+    left: 3.5px;
+    top: 0.5px;
+    width: 4px;
+    height: 8px;
+    border: solid var(--k-accent-contrast);
+    border-width: 0 1.5px 1.5px 0;
+    transform: rotate(45deg);
+}
+
+body input[type='radio']:checked::after {
+    content: '';
+    position: absolute;
+    left: 3.25px;
+    top: 3.25px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--k-accent-contrast);
+}
+
+body input[type='checkbox']:focus-visible,
+body input[type='radio']:focus-visible {
+    outline: 2px solid var(--k-accent-focus);
+    outline-offset: 1px;
+}
+
+body input[type='checkbox']:disabled,
+body input[type='radio']:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* --------------------------------------------------------------------------
+   Tab count badges (e.g. license view tabs): tinted pills, not white blocks
+   -------------------------------------------------------------------------- */
+body .nav-tabs-custom > .nav-tabs > li > a > .badge,
+body .nav-tabs-custom > .nav-tabs > li > a > .label,
+body .nav-tabs-custom > .nav-tabs > li > a .pull-right > .badge,
+body .nav-tabs-custom > .nav-tabs > li > a .pull-right.badge {
+    background-color: color-mix(in srgb, var(--k-text-muted) var(--k-tint-alpha-soft), transparent) !important;
+    color: var(--k-text-muted) !important;
+    font-weight: 600;
+    text-shadow: none;
+}
+
+body .nav-tabs-custom > .nav-tabs > li.active > a > .badge,
+body .nav-tabs-custom > .nav-tabs > li.active > a > .label,
+body .nav-tabs-custom > .nav-tabs > li.active > a .pull-right > .badge,
+body .nav-tabs-custom > .nav-tabs > li.active > a .pull-right.badge {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent) !important;
+    color: var(--k-accent) !important;
 }

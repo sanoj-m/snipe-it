@@ -674,3 +674,21 @@ html[data-theme='dark'] body .label-default:hover {
     background-color: color-mix(in srgb, var(--k-text-muted) 18%, transparent) !important;
     color: var(--k-text-muted) !important;
 }
+
+/* --------------------------------------------------------------------------
+   Cross-mode repair (this file loads last, so it wins the cascade):
+   killa-v2-overlays.css reuses --k-sidebar-text-active as the on-accent
+   text color for datepicker active days; that token is now dark-on-light
+   in light mode. Re-point it at --k-accent-contrast (readable in both).
+   -------------------------------------------------------------------------- */
+body .datepicker table tr td.active,
+body .datepicker table tr td.active:hover,
+body .datepicker table tr td.active.active,
+body .datepicker table tr td.selected,
+body .datepicker table tr td span.active,
+body .daterangepicker .calendar-table td.active,
+body .daterangepicker .calendar-table td.active:hover,
+body .daterangepicker td.start-date,
+body .daterangepicker td.end-date {
+    color: var(--k-accent-contrast);
+}

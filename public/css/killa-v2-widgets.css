@@ -585,3 +585,19 @@ body .timeline > .time-label > span {
     letter-spacing: 0.06em;
     padding: 4px var(--k-space-3);
 }
+
+/* --------------------------------------------------------------------------
+   Compact form scale-down: killa-v2-forms.css (loaded before this file)
+   still declares 36px controls; re-pin to the compact 32px scale here so
+   both modes inherit it via tokens
+   -------------------------------------------------------------------------- */
+body .form-control {
+    height: 32px;
+}
+
+body label.form-control {
+    min-height: 32px;
+    font-size: 12.5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}

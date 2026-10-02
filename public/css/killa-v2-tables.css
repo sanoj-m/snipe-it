@@ -101,6 +101,25 @@ body .bootstrap-table .fixed-table-toolbar .search {
 
 body .bootstrap-table .fixed-table-toolbar .search .form-control {
     max-width: 280px;
+    height: 28px;
+    font-size: 12.5px;
+}
+
+/* search clear ("x") button: same compact height, quiet surface */
+body .bootstrap-table .fixed-table-toolbar .search .btn,
+body .bootstrap-table .fixed-table-toolbar .search-input + .btn {
+    height: 28px;
+    padding: 3px 8px;
+    background-color: var(--k-surface);
+    border: 1px solid var(--k-border);
+    color: var(--k-text-muted);
+    box-shadow: none;
+}
+
+body .bootstrap-table .fixed-table-toolbar .search .btn:hover,
+body .bootstrap-table .fixed-table-toolbar .search-input + .btn:hover {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
 }
 
 body .bootstrap-table .fixed-table-toolbar .search .form-control::placeholder {
@@ -108,6 +127,13 @@ body .bootstrap-table .fixed-table-toolbar .search .form-control::placeholder {
 }
 
 /* toolbar icon buttons (columns / export / advanced search / fullscreen) */
+body .bootstrap-table .fixed-table-toolbar .btn {
+    height: 28px;
+    padding: 3px 8px;
+    font-size: 12px;
+    line-height: 1.4;
+}
+
 body .bootstrap-table .fixed-table-toolbar .columns .btn,
 body .bootstrap-table .fixed-table-toolbar .export .btn {
     color: var(--k-text-muted);
@@ -303,12 +329,13 @@ body .bootstrap-table .fixed-table-container .fixed-table-body::-webkit-scrollba
    Loading overlay
    -------------------------------------------------------------------------- */
 body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading {
-    background: color-mix(in srgb, var(--k-surface) 88%, transparent);
+    background: color-mix(in srgb, var(--k-surface) 92%, transparent);
+    z-index: 10;
     transition: visibility 0s, opacity var(--k-motion);
 }
 
 body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .loading-text {
-    color: var(--k-text-muted);
+    color: var(--k-text);
     font-size: 12px;
     font-weight: 600;
     text-transform: uppercase;
