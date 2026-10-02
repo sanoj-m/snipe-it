@@ -1082,3 +1082,136 @@ body .sidebar-menu .treeview-menu > li.active > a {
     color: var(--k-accent);
     background: transparent;
 }
+
+/* ==========================================================================
+   Sidebar rebuild (final authority): wider, cleaner, readable in both modes.
+   Beats upstream --sidenav-* var rules and hardcoded dark hovers.
+   ========================================================================== */
+
+/* width: 230px -> 250px for menu depth (collapsed/mini stays 50px) */
+@media (min-width: 768px) {
+    body:not(.sidebar-collapse) .main-sidebar { width: 250px; }
+    body:not(.sidebar-collapse) .main-header .logo { width: 250px; }
+    body:not(.sidebar-collapse) .main-header .navbar { margin-left: 250px; }
+    body:not(.sidebar-collapse) .content-wrapper,
+    body:not(.sidebar-collapse) .main-footer { margin-left: 250px; }
+}
+
+/* base links */
+body .sidebar-menu > li > a,
+body .sidebar-menu > li > a:link,
+body .sidebar-menu > li > a:visited {
+    margin: 1px 10px;
+    padding: 7px 12px;
+    border-left: 3px solid transparent !important;
+    border-radius: 8px;
+    background-color: transparent !important;
+    color: var(--k-sidebar-text) !important;
+    font-size: 12px;
+    font-weight: 500;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .sidebar-menu > li > a .fa,
+body .sidebar-menu > li > a .fas,
+body .sidebar-menu > li > a .far,
+body .sidebar-menu > li > a .x-icon,
+body .sidebar-menu > li > a svg {
+    color: var(--k-sidebar-header) !important;
+    width: 16px;
+    text-align: center;
+    margin-right: 6px;
+    transition: color var(--k-motion);
+}
+
+/* hover */
+body .sidebar-menu > li:hover > a,
+body .sidebar-menu > li > a:hover {
+    background-color: var(--k-sidebar-hover-bg) !important;
+    color: var(--k-sidebar-text-active) !important;
+    border-left-color: transparent !important;
+    padding-left: 12px !important;
+}
+
+body .sidebar-menu > li:hover > a .fa,
+body .sidebar-menu > li > a:hover svg {
+    color: var(--k-sidebar-text-active) !important;
+}
+
+/* li hover must NOT paint the old dark block behind the link */
+body .sidebar-menu > li:hover {
+    background-color: transparent !important;
+}
+
+/* active: soft accent pill + accent text + indicator (readable both modes) */
+body .sidebar-menu > li.active > a,
+body .sidebar-menu > li.active > a:link,
+body .sidebar-menu > li.active > a:visited,
+body .sidebar-menu > li.menu-open > a {
+    background-color: var(--k-sidebar-active-bg) !important;
+    color: var(--k-sidebar-active-text) !important;
+    border-left: 3px solid var(--k-accent) !important;
+    font-weight: 600;
+}
+
+body .sidebar-menu > li.active > a .fa,
+body .sidebar-menu > li.active > a svg {
+    color: var(--k-accent) !important;
+}
+
+/* treeview: transparent panel, hairline depth guide, right-aligned counts */
+body .sidebar-menu > li > .treeview-menu,
+body .sidebar-menu > li.menu-open > .treeview-menu {
+    background-color: transparent !important;
+    margin: 2px 10px 6px 22px;
+    padding-left: 10px;
+    border-left: 1px solid var(--k-sidebar-border);
+}
+
+body .sidebar-menu .treeview-menu > li > a,
+body .sidebar-menu .treeview-menu > li > a:link,
+body .sidebar-menu .treeview-menu > li > a:visited {
+    background-color: transparent !important;
+    color: var(--k-sidebar-text) !important;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+body .sidebar-menu .treeview-menu > li > a:hover {
+    background-color: var(--k-sidebar-hover-bg) !important;
+    color: var(--k-sidebar-text-active) !important;
+}
+
+body .sidebar-menu .treeview-menu > li.active > a,
+body .sidebar-menu .treeview-menu > li.active > a:hover {
+    background-color: transparent !important;
+    color: var(--k-accent) !important;
+    font-weight: 600;
+}
+
+/* count badges: quiet readable pills, no dark filter */
+body .sidebar-menu > li .badge,
+body .sidebar-menu .treeview-menu > li .badge,
+body .sidebar-menu > li > a > .pull-right-container .label {
+    filter: none !important;
+    background-color: color-mix(in srgb, var(--k-sidebar-text) 14%, transparent) !important;
+    color: var(--k-sidebar-text) !important;
+    font-size: 10px !important;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 2px 7px;
+    margin-top: 1px;
+}
+
+body .sidebar-menu > li.active .badge {
+    background-color: color-mix(in srgb, var(--k-accent) 16%, transparent) !important;
+    color: var(--k-accent) !important;
+}
+
+/* treeview chevrons inherit link color */
+body .sidebar-menu > li > a > .pull-right-container > .fa {
+    color: var(--k-sidebar-header) !important;
+    font-size: 10px;
+    margin-top: 3px;
+}
