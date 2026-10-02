@@ -1,25 +1,30 @@
 /* ==========================================================================
    Killa Asset v2 "Atelier" theme layer
    Plain committed stylesheet (no build step). Loaded once in
-   layouts/default.blade.php AFTER css/dist/all.css so it wins the cascade
-   against AdminLTE 2 / Bootstrap 3 by source order + body prefixing.
-   All values come from the token blocks below — no stray hex elsewhere.
+   layouts/default.blade.php / basic.blade.php AFTER css/dist/all.css so it
+   wins the cascade against AdminLTE 2 / Bootstrap 3 via source order +
+   body prefixing. All values come from the token blocks below.
    ========================================================================== */
 
 :root {
     /* surfaces & text */
-    --k-bg: #f4f6f8;
+    --k-bg: #f4f5f7;
     --k-surface: #ffffff;
-    --k-border: #e3e7eb;
+    --k-border: #e5e7eb;
+    --k-border-soft: #eef0f2;
     --k-text: #1f2933;
     --k-text-muted: #6b7280;
-    --k-hover-tint: #f0f2f5;
+    --k-label: #374151;
+    --k-hover-tint: #f3f4f6;
+    --k-table-head-bg: #f9fafb;
+    --k-row-hover: #fafbfc;
 
     /* brand */
     --k-accent: #E63B2E;
     --k-accent-hover: #c93024;
     --k-accent-tint: #fdeceb;
     --k-accent-focus: rgba(230, 59, 46, 0.4);
+    --k-accent-ring: rgba(230, 59, 46, 0.12);
 
     /* muted semantics */
     --k-success: #2f9e6e;
@@ -27,7 +32,7 @@
     --k-danger: #c0392b;
     --k-info: #2470a0;
 
-    /* small-box icon colors (mapped from AdminLTE bg-* signal classes) */
+    /* stat-tile icon colors (mapped from AdminLTE bg-* signal classes) */
     --k-tile-teal: #0f8b8d;
     --k-tile-maroon: #c0392b;
     --k-tile-orange: #d97706;
@@ -35,11 +40,29 @@
     --k-tile-yellow: #b97d10;
     --k-tile-light-blue: #2470a0;
 
+    /* tint alphas (used inside color-mix()) */
+    --k-tint-alpha: 12%;
+    --k-tint-alpha-soft: 10%;
+    --k-tint-alpha-active: 14%;
+
+    /* app shell (dark sidebar reads as one unit with the logo) */
+    --k-sidebar-bg: #16181d;
+    --k-sidebar-border: rgba(255, 255, 255, 0.07);
+    --k-sidebar-text: #9aa3b2;
+    --k-sidebar-text-active: #ffffff;
+    --k-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
+    --k-sidebar-header: #5c6470;
+    --k-navbar-bg: #ffffff;
+    --k-navbar-text: #4b5563;
+
     /* shape & depth */
-    --k-radius: 6px;
-    --k-radius-sm: 4px;
-    --k-radius-lg: 8px;
+    --k-radius: 12px;
+    --k-radius-sm: 6px;
+    --k-radius-chip: 10px;
+    --k-radius-pill: 999px;
     --k-shadow-1: 0 1px 2px rgba(16, 24, 40, 0.06);
+    --k-shadow-2: 0 6px 16px rgba(16, 24, 40, 0.08);
+    --k-shadow-lg: 0 8px 30px rgba(16, 24, 40, 0.08);
 
     /* spacing grid (4px base) */
     --k-space-1: 4px;
@@ -48,39 +71,70 @@
     --k-space-4: 16px;
     --k-space-5: 20px;
     --k-space-6: 24px;
+    --k-space-8: 32px;
 
     /* type */
     --k-font: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+    --k-font-display: 'Inter Tight', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+    /* login backdrop (the ONE gradient in the system) */
+    --k-login-bg-top: #f7f7f9;
+    --k-login-bg-bottom: #f0f1f4;
+
+    /* motion */
+    --k-motion: 160ms ease;
 }
 
-/* Dark theme: darker surface tokens, same structure. */
+/* Dark theme: same structure, darker surfaces. Sidebar stays dark. */
 html[data-theme='dark'] {
-    --k-bg: #15181c;
-    --k-surface: #1e2329;
-    --k-border: #31383f;
+    --k-bg: #121417;
+    --k-surface: #1a1d23;
+    --k-border: #2a2f37;
+    --k-border-soft: #23272e;
     --k-text: #e5e9ee;
     --k-text-muted: #9aa3ad;
-    --k-hover-tint: #262c33;
+    --k-label: #c3cad2;
+    --k-hover-tint: #22262d;
+    --k-table-head-bg: #1f232a;
+    --k-row-hover: #20242b;
     --k-accent: #f0574b;
     --k-accent-hover: #f46a5f;
     --k-accent-tint: #3a2220;
     --k-accent-focus: rgba(240, 87, 75, 0.4);
+    --k-accent-ring: rgba(240, 87, 75, 0.18);
     --k-tile-teal: #2aa5a7;
     --k-tile-maroon: #e06052;
     --k-tile-orange: #e09a3a;
     --k-tile-purple: #9a80d4;
     --k-tile-yellow: #d19a2b;
     --k-tile-light-blue: #4a90c2;
+    --k-sidebar-bg: #0f1115;
+    --k-sidebar-border: rgba(255, 255, 255, 0.06);
+    --k-navbar-bg: #1a1d23;
+    --k-navbar-text: #9aa3ad;
+    --k-login-bg-top: #121417;
+    --k-login-bg-bottom: #0f1115;
     --k-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --k-shadow-2: 0 6px 16px rgba(0, 0, 0, 0.35);
+    --k-shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.4);
 }
 
 /* --------------------------------------------------------------------------
-   Base
+   Typography & base
    -------------------------------------------------------------------------- */
 body {
     background-color: var(--k-bg);
     font-family: var(--k-font);
+    font-size: 13.5px;
     color: var(--k-text);
+}
+
+body h1,
+body h2,
+body h3,
+body .content-header h1 {
+    font-family: var(--k-font-display);
+    letter-spacing: -0.01em;
 }
 
 body .wrapper,
@@ -88,6 +142,340 @@ body .content-wrapper,
 body .right-side {
     background-color: var(--k-bg);
 }
+
+body a {
+    transition: color var(--k-motion);
+}
+
+/* --------------------------------------------------------------------------
+   App shell: dark sidebar + logo, white navbar with hairline
+   -------------------------------------------------------------------------- */
+body .main-sidebar,
+body .left-side {
+    background-color: var(--k-sidebar-bg);
+    width: 230px;
+}
+
+body .sidebar {
+    padding-bottom: var(--k-space-6);
+}
+
+body .main-header .logo {
+    background-color: var(--k-sidebar-bg);
+    color: var(--k-sidebar-text-active);
+    border-bottom: 1px solid var(--k-sidebar-border);
+    font-family: var(--k-font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    transition: background-color var(--k-motion);
+}
+
+body .main-header .logo:hover {
+    background-color: var(--k-sidebar-bg);
+}
+
+body .main-header .navbar {
+    background-color: var(--k-navbar-bg);
+    border-bottom: 1px solid var(--k-border);
+    box-shadow: none;
+    transition: none;
+}
+
+body .main-header .navbar .nav > li > a,
+body .main-header .navbar .sidebar-toggle {
+    color: var(--k-navbar-text);
+    transition: color var(--k-motion), background-color var(--k-motion);
+}
+
+body .main-header .navbar .nav > li > a:hover,
+body .main-header .navbar .sidebar-toggle:hover {
+    color: var(--k-accent);
+    background-color: transparent;
+}
+
+body .main-header .navbar .nav .open > a {
+    background-color: transparent;
+    color: var(--k-accent);
+}
+
+/* navbar dropdown panels */
+body .navbar-nav > li > .dropdown-menu,
+body .dropdown-menu {
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-chip);
+    box-shadow: var(--k-shadow-2);
+}
+
+/* sidebar section headers */
+body .sidebar-menu li.header {
+    background: transparent;
+    color: var(--k-sidebar-header);
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    padding: var(--k-space-4) var(--k-space-5) var(--k-space-2);
+}
+
+/* sidebar links */
+body .sidebar-menu > li > a {
+    margin: 1px var(--k-space-2);
+    padding: 9px var(--k-space-3) 9px 9px;
+    border-left: 3px solid transparent;
+    border-radius: var(--k-radius-sm);
+    color: var(--k-sidebar-text);
+    font-weight: 500;
+    transition: background-color var(--k-motion), color var(--k-motion), border-color var(--k-motion);
+}
+
+body .sidebar-menu > li > a:hover {
+    background: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+}
+
+body .sidebar-menu > li.active > a,
+body .sidebar-menu > li.menu-open > a {
+    border-left: 3px solid var(--k-accent);
+    background: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
+    color: var(--k-sidebar-text-active);
+    font-weight: 600;
+}
+
+body .sidebar-menu > li > a > .fa,
+body .sidebar-menu > li > a > .glyphicon,
+body .sidebar-menu > li > a > .ion {
+    color: inherit;
+}
+
+/* treeview submenus: indented with a left hairline guide */
+body .sidebar-menu > li > .treeview-menu {
+    background: transparent;
+    margin: 2px var(--k-space-2) var(--k-space-2) 22px;
+    padding-left: var(--k-space-3);
+    border-left: 1px solid var(--k-sidebar-border);
+}
+
+body .sidebar-menu .treeview-menu > li > a {
+    color: var(--k-sidebar-text);
+    border-radius: var(--k-radius-sm);
+    padding: 7px var(--k-space-3);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .sidebar-menu .treeview-menu > li > a:hover {
+    background: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+}
+
+body .sidebar-menu .treeview-menu > li.active > a {
+    color: var(--k-sidebar-text-active);
+    font-weight: 600;
+}
+
+/* user panel */
+body .user-panel > .info,
+body .user-panel > .info > a {
+    color: var(--k-sidebar-text);
+}
+
+/* --------------------------------------------------------------------------
+   Content header: display title + muted breadcrumb pills
+   -------------------------------------------------------------------------- */
+body .content-header {
+    padding: var(--k-space-6) var(--k-space-6) var(--k-space-2);
+    background: transparent;
+}
+
+body .content-header > h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--k-text);
+    margin: 0;
+}
+
+body .content-header > h1 > small {
+    color: var(--k-text-muted);
+    font-family: var(--k-font);
+    font-size: 12.5px;
+    font-weight: 400;
+}
+
+body .content-header > .breadcrumb {
+    background: transparent;
+    margin-bottom: 0;
+    top: auto;
+    margin-top: 2px;
+}
+
+body .content-header .breadcrumb > li {
+    display: inline-block;
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-pill);
+    padding: 2px 10px;
+    margin-right: var(--k-space-1);
+    font-size: 11.5px;
+    color: var(--k-text-muted);
+}
+
+body .content-header .breadcrumb > li + li::before {
+    content: '';
+    padding: 0;
+}
+
+body .content-header .breadcrumb > li a {
+    color: var(--k-text-muted);
+}
+
+body .content-header .breadcrumb > li a:hover {
+    color: var(--k-accent);
+}
+
+body .content-header .breadcrumb > li.active {
+    color: var(--k-text);
+    font-weight: 500;
+}
+
+/* --------------------------------------------------------------------------
+   Dashboard stat tiles (.k-tile)
+   -------------------------------------------------------------------------- */
+body .k-tile {
+    display: flex;
+    flex-direction: column;
+    background: var(--k-surface) !important;
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: none;
+    color: var(--k-text);
+    margin-bottom: var(--k-space-6);
+    overflow: hidden;
+    transition: transform var(--k-motion), box-shadow var(--k-motion);
+}
+
+body .k-tile:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--k-shadow-2);
+}
+
+body .k-tile .k-tile-body {
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-4);
+    padding: var(--k-space-5) var(--k-space-5) var(--k-space-3);
+}
+
+body .k-tile .k-tile-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    flex: none;
+    border-radius: var(--k-radius-chip);
+    font-size: 18px;
+}
+
+body .k-tile .k-tile-icon svg {
+    width: 18px;
+    height: 18px;
+}
+
+body .k-tile .k-tile-number {
+    display: block;
+    font-family: var(--k-font-display);
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: var(--k-text);
+}
+
+body .k-tile .k-tile-label {
+    display: block;
+    margin-top: var(--k-space-1);
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted);
+}
+
+body .k-tile .small-box-footer {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding: var(--k-space-2) var(--k-space-5);
+    background: transparent;
+    border-top: 1px solid var(--k-border-soft);
+    color: var(--k-text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    text-align: left;
+    transition: color var(--k-motion);
+}
+
+body .k-tile:hover .small-box-footer {
+    background: transparent;
+    color: var(--k-accent);
+}
+
+/* per-type icon chips: 12% tint of the tile color */
+body .bg-teal.k-tile .k-tile-icon { background-color: color-mix(in srgb, var(--k-tile-teal) var(--k-tint-alpha), transparent); color: var(--k-tile-teal); }
+body .bg-maroon.k-tile .k-tile-icon { background-color: color-mix(in srgb, var(--k-tile-maroon) var(--k-tint-alpha), transparent); color: var(--k-tile-maroon); }
+body .bg-orange.k-tile .k-tile-icon { background-color: color-mix(in srgb, var(--k-tile-orange) var(--k-tint-alpha), transparent); color: var(--k-tile-orange); }
+body .bg-purple.k-tile .k-tile-icon { background-color: color-mix(in srgb, var(--k-tile-purple) var(--k-tint-alpha), transparent); color: var(--k-tile-purple); }
+body .bg-yellow.k-tile .k-tile-icon { background-color: color-mix(in srgb, var(--k-tile-yellow) var(--k-tint-alpha), transparent); color: var(--k-tile-yellow); }
+body .bg-light-blue.k-tile .k-tile-icon { background-color: color-mix(in srgb, var(--k-tile-light-blue) var(--k-tint-alpha), transparent); color: var(--k-tile-light-blue); }
+
+/* legacy AdminLTE .small-box anywhere else still gets the quiet treatment */
+body .small-box:not(.k-tile) {
+    background: var(--k-surface) !important;
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: none;
+    color: var(--k-text);
+}
+
+body .small-box:not(.k-tile) .inner h3 {
+    font-family: var(--k-font-display);
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--k-text);
+}
+
+body .small-box:not(.k-tile) .inner p {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted);
+}
+
+body .small-box:not(.k-tile) .icon {
+    font-size: 40px;
+    top: var(--k-space-3);
+    right: var(--k-space-4);
+    opacity: 0.9;
+}
+
+body .small-box:not(.k-tile) .small-box-footer {
+    background: transparent;
+    border-top: 1px solid var(--k-border-soft);
+    color: var(--k-text-muted);
+}
+
+body .small-box:not(.k-tile):hover .small-box-footer {
+    background: transparent;
+    color: var(--k-accent);
+}
+
+body .small-box.bg-teal:not(.k-tile) .icon { color: var(--k-tile-teal); }
+body .small-box.bg-maroon:not(.k-tile) .icon { color: var(--k-tile-maroon); }
+body .small-box.bg-orange:not(.k-tile) .icon { color: var(--k-tile-orange); }
+body .small-box.bg-purple:not(.k-tile) .icon { color: var(--k-tile-purple); }
+body .small-box.bg-yellow:not(.k-tile) .icon { color: var(--k-tile-yellow); }
+body .small-box.bg-light-blue:not(.k-tile) .icon { color: var(--k-tile-light-blue); }
 
 /* --------------------------------------------------------------------------
    Panels (.box)
@@ -97,7 +485,7 @@ body .box {
     border: 1px solid var(--k-border);
     border-top: 1px solid var(--k-border);
     border-radius: var(--k-radius);
-    box-shadow: var(--k-shadow-1);
+    box-shadow: none;
     margin-bottom: var(--k-space-6);
 }
 
@@ -110,24 +498,34 @@ body .box.box-danger {
     border-top: 1px solid var(--k-border);
 }
 
+body .box-header {
+    padding: 18px 18px 0;
+}
+
 body .box-header.with-border {
-    border-bottom: 1px solid var(--k-border);
-    padding: var(--k-space-4) var(--k-space-5);
+    border-bottom: none;
 }
 
 body .box-header .box-title {
-    font-size: 14px;
+    font-family: var(--k-font-display);
+    font-size: 15px;
     font-weight: 600;
-    letter-spacing: normal;
+    letter-spacing: -0.01em;
     color: var(--k-text);
 }
 
 body .box-body {
-    padding: var(--k-space-5);
+    padding: 18px;
+}
+
+body .box-footer {
+    border-top: 1px solid var(--k-border-soft);
+    background: transparent;
 }
 
 body .box-tools .btn-box-tool {
     color: var(--k-text-muted);
+    transition: color var(--k-motion);
 }
 
 body .box-tools .btn-box-tool:hover {
@@ -136,102 +534,38 @@ body .box-tools .btn-box-tool:hover {
 }
 
 /* --------------------------------------------------------------------------
-   Dashboard stat tiles (.small-box) — unified quiet tiles; the AdminLTE
-   bg-* class stays only as the color signal for the icon.
+   Tables
    -------------------------------------------------------------------------- */
-body .small-box {
-    background: var(--k-surface) !important;
-    border: 1px solid var(--k-border);
-    border-radius: var(--k-radius);
-    box-shadow: var(--k-shadow-1);
-    color: var(--k-text);
-}
-
-body .small-box .inner {
-    padding: var(--k-space-4) var(--k-space-5);
-}
-
-body .small-box .inner h3 {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--k-text);
-}
-
-body .small-box .inner p {
-    font-size: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--k-text-muted);
-}
-
-body .small-box .icon {
-    font-size: 40px;
-    top: var(--k-space-3);
-    right: var(--k-space-4);
-    opacity: 0.9;
-}
-
-body .small-box.bg-teal .icon { color: var(--k-tile-teal); }
-body .small-box.bg-maroon .icon { color: var(--k-tile-maroon); }
-body .small-box.bg-orange .icon { color: var(--k-tile-orange); }
-body .small-box.bg-purple .icon { color: var(--k-tile-purple); }
-body .small-box.bg-yellow .icon { color: var(--k-tile-yellow); }
-body .small-box.bg-light-blue .icon { color: var(--k-tile-light-blue); }
-
-body .small-box-footer {
-    background: transparent;
-    border-top: 1px solid var(--k-border);
-    color: var(--k-text-muted);
-    padding: var(--k-space-2) var(--k-space-5);
-}
-
-body .small-box:hover .small-box-footer,
-body .small-box-footer:hover {
-    background: transparent;
-    color: var(--k-accent);
-}
-
-/* --------------------------------------------------------------------------
-   Tabs & tables
-   -------------------------------------------------------------------------- */
-body .nav-tabs-custom {
-    background: var(--k-surface);
-    border: 1px solid var(--k-border);
-    border-radius: var(--k-radius);
-    box-shadow: var(--k-shadow-1);
-}
-
-body .nav-tabs-custom > .nav-tabs {
-    border-bottom: 1px solid var(--k-border);
-}
-
-body .nav-tabs-custom > .nav-tabs > li.active > a {
-    border-left-color: transparent;
-    border-right-color: transparent;
-    color: var(--k-text);
-    font-weight: 600;
-}
-
-body .nav-tabs-custom > .nav-tabs > li > a:hover {
-    color: var(--k-accent);
-    background: transparent;
-}
-
 body .table > thead > tr > th {
+    background: var(--k-table-head-bg);
     font-size: 11px;
+    font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--k-text-muted);
     border-bottom: 1px solid var(--k-border);
+    padding: 10px var(--k-space-4);
 }
 
 body .table > tbody > tr > td,
 body .table > tbody > tr > th {
-    border-top: 1px solid var(--k-border);
+    border-top: 1px solid var(--k-border-soft);
+    padding: 12px var(--k-space-4);
+    vertical-align: middle;
+}
+
+body .table > thead > tr > th:first-child,
+body .table > tbody > tr > td:first-child {
+    padding-left: var(--k-space-4);
+}
+
+body .table > thead > tr > th:last-child,
+body .table > tbody > tr > td:last-child {
+    padding-right: var(--k-space-4);
 }
 
 body .table-hover > tbody > tr:hover {
-    background-color: var(--k-hover-tint);
+    background-color: var(--k-row-hover);
 }
 
 /* --------------------------------------------------------------------------
@@ -239,8 +573,11 @@ body .table-hover > tbody > tr:hover {
    -------------------------------------------------------------------------- */
 body .btn {
     border-radius: var(--k-radius-sm);
+    font-weight: 500;
     background-image: none;
     box-shadow: none;
+    text-shadow: none;
+    transition: background-color var(--k-motion), border-color var(--k-motion), color var(--k-motion);
 }
 
 body .btn-default {
@@ -274,34 +611,126 @@ body .btn:focus-visible {
 }
 
 /* --------------------------------------------------------------------------
-   Header & sidebar
+   Badges / labels: tinted pills instead of solid fills
    -------------------------------------------------------------------------- */
-body .main-header .navbar {
-    background-color: var(--main-theme-color, var(--k-surface));
-}
-
-body .main-sidebar,
-body .left-side {
-    background-color: var(--k-surface);
-}
-
-body .sidebar-menu > li > a {
-    border-left: 3px solid transparent;
-}
-
-body .sidebar-menu > li > a:hover {
-    background: var(--k-hover-tint);
-}
-
-body .sidebar-menu > li.active > a {
-    border-left: 3px solid var(--k-accent);
-    background: var(--k-accent-tint);
-    color: var(--k-text);
-}
-
-body .main-header .logo {
-    font-family: var(--k-font);
+body .label {
+    border-radius: var(--k-radius-pill);
+    font-size: 11px;
     font-weight: 600;
+    padding: 0.3em 0.8em;
+    text-shadow: none;
+}
+
+body .label-default { background-color: color-mix(in srgb, var(--k-text-muted) var(--k-tint-alpha-soft), transparent); color: var(--k-text-muted); }
+body .label-primary { background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent); color: var(--k-accent); }
+body .label-success { background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha-soft), transparent); color: var(--k-success); }
+body .label-info { background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha-soft), transparent); color: var(--k-info); }
+body .label-warning { background-color: color-mix(in srgb, var(--k-warning) var(--k-tint-alpha-soft), transparent); color: var(--k-warning); }
+body .label-danger { background-color: color-mix(in srgb, var(--k-danger) var(--k-tint-alpha-soft), transparent); color: var(--k-danger); }
+
+/* --------------------------------------------------------------------------
+   Tabs: underline style, not bordered boxes
+   -------------------------------------------------------------------------- */
+body .nav-tabs-custom {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: none;
+}
+
+body .nav-tabs-custom > .nav-tabs {
+    background: transparent;
+    border-bottom: 1px solid var(--k-border);
+    border-radius: 0;
+    padding: 0 var(--k-space-3);
+}
+
+body .nav-tabs-custom > .nav-tabs > li {
+    margin-bottom: -1px;
+    margin-right: var(--k-space-1);
+}
+
+body .nav-tabs-custom > .nav-tabs > li > a {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    color: var(--k-text-muted);
+    font-weight: 500;
+    padding: var(--k-space-3) var(--k-space-3);
+    transition: color var(--k-motion), border-color var(--k-motion);
+}
+
+body .nav-tabs-custom > .nav-tabs > li > a:hover {
+    background: transparent;
+    color: var(--k-accent);
+    border-bottom-color: transparent;
+}
+
+body .nav-tabs-custom > .nav-tabs > li.active > a,
+body .nav-tabs-custom > .nav-tabs > li.active > a:hover {
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid var(--k-accent);
+    color: var(--k-accent);
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Forms
+   -------------------------------------------------------------------------- */
+body .form-control {
+    height: 36px;
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    background-color: var(--k-surface);
+    color: var(--k-text);
+    box-shadow: none;
+    transition: border-color var(--k-motion), box-shadow var(--k-motion);
+}
+
+body textarea.form-control,
+body select[multiple].form-control {
+    height: auto;
+}
+
+body .form-control:focus {
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+}
+
+body .form-group label,
+body .control-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--k-label);
+}
+
+/* --------------------------------------------------------------------------
+   Login (basic layout)
+   -------------------------------------------------------------------------- */
+body.login-page {
+    background: linear-gradient(180deg, var(--k-login-bg-top), var(--k-login-bg-bottom));
+}
+
+body .login-logo {
+    margin-bottom: var(--k-space-6);
+}
+
+body .login-logo a {
+    color: var(--k-text);
+    font-family: var(--k-font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+body .login-box-body {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: var(--k-shadow-lg);
+    padding: var(--k-space-8);
+    color: var(--k-text);
 }
 
 /* --------------------------------------------------------------------------
@@ -312,23 +741,4 @@ body .main-footer {
     background: var(--k-surface);
     color: var(--k-text-muted);
     font-size: 12px;
-}
-
-/* --------------------------------------------------------------------------
-   Login
-   -------------------------------------------------------------------------- */
-body .login-box {
-    margin: 8% auto 0;
-}
-
-body .login-box-body {
-    background: var(--k-surface);
-    border: 1px solid var(--k-border);
-    border-radius: var(--k-radius-lg);
-    box-shadow: var(--k-shadow-1);
-    padding: var(--k-space-6);
-}
-
-body .login-logo a {
-    color: var(--k-text);
 }

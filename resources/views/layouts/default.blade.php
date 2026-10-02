@@ -36,6 +36,10 @@
 
     {{-- stylesheets --}}
     <link rel="stylesheet" href="{{ url(mix('css/dist/all.css')) }}">
+    {{-- [killa-v2] fonts: Inter (UI) + Inter Tight (display) --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700&display=swap">
     {{-- [killa-v2] theme layer: plain committed stylesheet, no build step. Loads after all.css so it wins the cascade; tenant branding vars below still override brand colors. --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}">
 
