@@ -1264,3 +1264,40 @@ body .main-header .navbar .navbar-form .input-group .btn {
     border-color: var(--k-border);
     color: var(--k-text);
 }
+
+/* --------------------------------------------------------------------------
+   Logo: never overflow the header block (long site names truncated)
+   -------------------------------------------------------------------------- */
+body .main-header .logo,
+body .main-header .logo > span,
+body .main-header .logo > a {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100%;
+}
+
+body .main-header .logo {
+    display: flex;
+    align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   Placeholder + input text clipping: 32px inputs need a sane line-height,
+   and every placeholder renders in the same muted tone.
+   -------------------------------------------------------------------------- */
+body .form-control {
+    line-height: 1.45;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+body .form-control::placeholder,
+body .select2-container--default .select2-selection--single .select2-selection__placeholder,
+body .select2-container--default .select2-search__field::placeholder,
+body input::placeholder,
+body textarea::placeholder {
+    color: var(--k-text-muted) !important;
+    opacity: 0.75;
+    line-height: 1.45;
+}

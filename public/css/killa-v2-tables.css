@@ -550,3 +550,27 @@ body .table-striped > tbody > tr:nth-of-type(even) > td {
 body .table-striped > tbody > tr:nth-of-type(odd) {
     background-color: var(--k-table-stripe);
 }
+
+/* --------------------------------------------------------------------------
+   Multi-select row highlight: bootstrap-table's own CSS paints .selected
+   rows near-white with !important, which washes out in dark mode. Force the
+   accent-tint selection with readable text in both themes.
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-container .table tbody tr.selected > td,
+body .bootstrap-table .fixed-table-container .table tbody tr.selected:hover > td,
+body .table > tbody > tr.selected > td {
+    background-color: var(--k-table-selected-bg) !important;
+    color: var(--k-text);
+}
+
+html[data-theme='dark'] body .bootstrap-table .fixed-table-container .table tbody tr.selected > td {
+    background-color: var(--k-table-selected-bg) !important;
+}
+
+/* Go button matches the 32px input height next to it */
+body .input-group-btn > .btn,
+body .fixed-table-toolbar .btn[name="go"],
+body form .btn[type="submit"].btn-default {
+    height: 32px;
+    line-height: 1.4;
+}
