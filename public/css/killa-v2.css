@@ -1301,3 +1301,27 @@ body textarea::placeholder {
     opacity: 0.75;
     line-height: 1.45;
 }
+
+/* --------------------------------------------------------------------------
+   Logo correction: this fork renders .logo as a navbar-brand INSIDE the
+   navbar (not AdminLTE's classic split header), so the navbar must span the
+   full width and only the logo block matches the sidebar width.
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    body:not(.sidebar-collapse) .main-header .navbar { margin-left: 0; }
+
+    body:not(.sidebar-collapse) .main-header .logo.navbar-brand {
+        width: 250px;
+        max-width: 250px;
+        flex: 0 0 250px;
+    }
+}
+
+body .main-header .logo.navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
