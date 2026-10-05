@@ -574,3 +574,51 @@ body form .btn[type="submit"].btn-default {
     height: 32px;
     line-height: 1.4;
 }
+
+/* --------------------------------------------------------------------------
+   Sticky/pinned columns: the transparent-cells rule above knocked out the
+   opaque backer upstream gives pinned cells, so scrolled content bled
+   through. Restore the opaque base; upstream's translucent stripe overlay
+   (linear-gradient) keeps the zebra continuous across the pinned boundary.
+   Selected rows stay on the accent tint end-to-end.
+   -------------------------------------------------------------------------- */
+body table[class*="snipe-table--sticky"] > tbody > tr > td,
+body table[class*="snipe-table--sticky"] > thead > tr > th {
+    background-color: var(--k-surface) !important;
+}
+
+body table[class*="snipe-table--sticky"].table-striped > tbody > tr:nth-of-type(even) > td {
+    background-color: var(--k-table-stripe) !important;
+}
+
+body table[class*="snipe-table--sticky"] > tbody > tr.selected > td {
+    background-color: var(--k-table-selected-bg) !important;
+    background-image: none !important;
+}
+
+/* columns dropdown: flat aligned rows instead of stacked gray cards */
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marker,
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marker label {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 6px 12px;
+    margin: 0;
+    background: transparent !important;
+    color: var(--k-text) !important;
+    font-weight: 400;
+    cursor: pointer;
+    border-radius: 0;
+}
+
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marker:hover,
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marker label:hover {
+    background: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marker input[type="checkbox"] {
+    margin: 0;
+    flex: none;
+}
