@@ -622,3 +622,15 @@ body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marke
     margin: 0;
     flex: none;
 }
+
+/* specificity tie-break: the transparent-cells zebra rule above must NOT
+   apply inside sticky-column tables (pinned cells need their opaque backer) */
+body .table[class*="snipe-table--sticky"] > tbody > tr > td,
+body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td,
+body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(even) > td {
+    background-color: var(--k-surface) !important;
+}
+
+body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td {
+    background-color: var(--k-table-stripe) !important;
+}
