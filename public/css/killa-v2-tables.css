@@ -634,3 +634,14 @@ body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(even)
 body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td {
     background-color: var(--k-table-stripe) !important;
 }
+
+/* stripe token is translucent by design (composites over the row) — pinned
+   cells need the solid composited equivalent so nothing bleeds through */
+body .table[class*="snipe-table--sticky"] > tbody > tr > td,
+body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(even) > td {
+    background-color: var(--k-surface) !important;
+}
+
+body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td {
+    background-color: color-mix(in srgb, var(--k-text) 3%, var(--k-surface)) !important;
+}
