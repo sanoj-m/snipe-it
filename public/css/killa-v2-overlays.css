@@ -180,51 +180,62 @@ html[data-theme='dark'] body .dropdown-menu > li > a > .ion {
 
 /* --------------------------------------------------------------------------
    Select2 dropdown layer (trigger/selection styling belongs to forms domain)
+   Upstream overrides.less forces tenant colors here with !important
+   (--main-theme-color / --nav-primary-text-color / --table-stripe-bg), so
+   these rules carry !important and beat them via body-prefix specificity.
    -------------------------------------------------------------------------- */
-body .select2-dropdown {
-    background: var(--k-surface);
-    border: 1px solid var(--k-border);
+body .select2-dropdown,
+body .select2-container--open .select2-dropdown {
+    background: var(--k-surface) !important;
+    border: 1px solid var(--k-border) !important;
     border-radius: var(--k-radius-chip);
     box-shadow: var(--k-shadow-2);
-    color: var(--k-text);
+    color: var(--k-text) !important;
     overflow: hidden;
 }
 
+body .select2-container--default .select2-search--dropdown {
+    background: var(--k-surface) !important;
+}
+
 body .select2-container--default .select2-search--dropdown .select2-search__field {
-    background: var(--k-surface);
-    border: 1px solid var(--k-border);
+    background: var(--k-surface) !important;
+    border: 1px solid var(--k-border) !important;
     border-radius: var(--k-radius-sm);
-    color: var(--k-text);
+    color: var(--k-text) !important;
     padding: var(--k-space-1) var(--k-space-2);
     box-shadow: none;
 }
 
 body .select2-container--default .select2-search--dropdown .select2-search__field:focus {
-    border-color: var(--k-accent);
+    border-color: var(--k-accent) !important;
     outline: none;
     box-shadow: 0 0 0 3px var(--k-accent-ring);
 }
 
 body .select2-container--default .select2-results > .select2-results__options {
     scrollbar-width: thin;
+    background: var(--k-surface) !important;
 }
 
 body .select2-container--default .select2-results__option {
     padding: var(--k-space-2) var(--k-space-3);
-    color: var(--k-text);
+    background-color: var(--k-surface) !important;
+    color: var(--k-text) !important;
     transition: background-color var(--k-motion), color var(--k-motion);
 }
 
 body .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
 body .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: var(--k-hover-tint);
-    color: var(--k-text);
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
 }
 
 body .select2-container--default .select2-results__option--selected,
-body .select2-container--default .select2-results__option[aria-selected='true'] {
-    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
-    color: var(--k-accent);
+body .select2-container--default .select2-results__option[aria-selected='true'],
+body .select2-container--default .select2-results__option--highlighted[aria-selected='true'] {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent) !important;
+    color: var(--k-accent) !important;
 }
 
 body .select2-container--default .select2-results__option--group,
@@ -233,34 +244,85 @@ body .select2-container--default .select2-results__group {
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    color: var(--k-text-muted);
+    color: var(--k-text-muted) !important;
 }
 
 body .select2-container--default .select2-results__message,
-body .select2-results__option.loading-results {
-    color: var(--k-text-muted);
+body .select2-results__option.loading-results,
+body .select2-results__option.load-more {
+    background-color: var(--k-surface) !important;
+    color: var(--k-text-muted) !important;
 }
 
-html[data-theme='dark'] body .select2-dropdown {
-    background: var(--k-surface);
-    border-color: var(--k-border);
-    color: var(--k-text);
+html[data-theme='dark'] body .select2-dropdown,
+html[data-theme='dark'] body .select2-container--open .select2-dropdown {
+    background: var(--k-surface) !important;
+    border-color: var(--k-border) !important;
+    color: var(--k-text) !important;
 }
 
+html[data-theme='dark'] body .select2-container--default .select2-search--dropdown,
 html[data-theme='dark'] body .select2-container--default .select2-search--dropdown .select2-search__field {
-    background: var(--k-surface);
-    border-color: var(--k-border);
-    color: var(--k-text);
+    background: var(--k-surface) !important;
+    border-color: var(--k-border) !important;
+    color: var(--k-text) !important;
 }
 
 html[data-theme='dark'] body .select2-container--default .select2-results__option {
-    color: var(--k-text);
+    background-color: var(--k-surface) !important;
+    color: var(--k-text) !important;
 }
 
 html[data-theme='dark'] body .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable,
 html[data-theme='dark'] body .select2-container--default .select2-results__option--highlighted[aria-selected] {
-    background-color: var(--k-hover-tint);
-    color: var(--k-text);
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+html[data-theme='dark'] body .select2-container--default .select2-results__option--selected,
+html[data-theme='dark'] body .select2-container--default .select2-results__option[aria-selected='true'],
+html[data-theme='dark'] body .select2-container--default .select2-results__option--highlighted[aria-selected='true'] {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent) !important;
+    color: var(--k-accent) !important;
+}
+
+html[data-theme='dark'] body .select2-container--default .select2-results__message,
+html[data-theme='dark'] body .select2-results__option.loading-results,
+html[data-theme='dark'] body .select2-results__option.load-more {
+    background-color: var(--k-surface) !important;
+    color: var(--k-text-muted) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Select2 selection focus + required marker
+   Upstream marks required selects with a 5px solid-orange border-right on
+   the selection box (overrides.less) — soften to a thin token-colored
+   marker, and on focus the accent border + soft ring take over entirely.
+   -------------------------------------------------------------------------- */
+body select:required + .select2-container .select2-selection,
+body select:required + .select2-container .select2-selection .select2-selection--multiple {
+    border-right: 3px solid var(--k-warning) !important;
+}
+
+body .select2-container--default.select2-container--focus .select2-selection--single,
+body .select2-container--default.select2-container--focus .select2-selection--multiple,
+body .select2-container--default.select2-container--open .select2-selection--single,
+body .select2-container--default.select2-container--open .select2-selection--multiple {
+    border-color: var(--k-accent) !important;
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+}
+
+html[data-theme='dark'] body select:required + .select2-container .select2-selection,
+html[data-theme='dark'] body select:required + .select2-container .select2-selection .select2-selection--multiple {
+    border-right-color: var(--k-warning) !important;
+}
+
+html[data-theme='dark'] body .select2-container--default.select2-container--focus .select2-selection--single,
+html[data-theme='dark'] body .select2-container--default.select2-container--focus .select2-selection--multiple,
+html[data-theme='dark'] body .select2-container--default.select2-container--open .select2-selection--single,
+html[data-theme='dark'] body .select2-container--default.select2-container--open .select2-selection--multiple {
+    border-color: var(--k-accent) !important;
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
 }
 
 /* --------------------------------------------------------------------------

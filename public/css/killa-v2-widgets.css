@@ -52,7 +52,12 @@ body .box .fixed-table-container .no-records-found td {
 body .dashboard-attention-list > .list-group-item {
     background: transparent;
     border: none;
-    padding: 0;
+    border-bottom: 1px solid var(--k-border-soft);
+    padding: var(--k-space-2) 0;
+}
+
+body .dashboard-attention-list > .list-group-item:last-child {
+    border-bottom: none;
 }
 
 body .dashboard-attention-list > .list-group-item > a {
@@ -86,11 +91,12 @@ body .dashboard-attention-list .dashboard-attention-label {
     font-weight: 500;
 }
 
+/* quiet neutral pill: the accent stays reserved for the active sidebar item */
 body .dashboard-attention-list .dashboard-attention-count {
-    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent);
-    color: var(--k-accent);
+    background-color: color-mix(in srgb, var(--k-text-muted) 14%, transparent);
+    color: var(--k-text-muted);
     font-weight: 600;
-    font-size: 11px;
+    font-size: 10px;
     border-radius: var(--k-radius-pill);
     text-shadow: none;
 }

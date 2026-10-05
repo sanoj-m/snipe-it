@@ -105,6 +105,23 @@ body .bootstrap-table .fixed-table-toolbar .search .form-control {
     font-size: 12.5px;
 }
 
+/* upstream paints the filled toolbar search with --search-highlight (yellow);
+   re-pin to theme surface/text in both modes */
+body .bootstrap-table .fixed-table-toolbar .search input.form-control,
+body .bootstrap-table .fixed-table-toolbar .search input.form-control:active,
+body .bootstrap-table .fixed-table-toolbar .search input[type='search'].search-highlight {
+    background-color: var(--k-surface) !important;
+    color: var(--k-text) !important;
+}
+
+body .bootstrap-table .fixed-table-toolbar .search input.form-control:focus,
+body .bootstrap-table .fixed-table-toolbar .search input[type='search'].search-highlight:focus {
+    background-color: var(--k-surface) !important;
+    color: var(--k-text) !important;
+    border-color: var(--k-accent) !important;
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+}
+
 /* search clear ("x") button: same compact height, quiet surface */
 body .bootstrap-table .fixed-table-toolbar .search .btn,
 body .bootstrap-table .fixed-table-toolbar .search-input + .btn {
@@ -186,6 +203,43 @@ body .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu input[type='c
 body .bootstrap-table .fixed-table-toolbar .columns .dropdown-menu input[type='radio'] {
     accent-color: var(--k-accent);
     cursor: pointer;
+}
+
+/* upstream forces dropdown item labels/anchors to the tenant nav text color
+   (!important), which is white on our light menu — re-pin to theme text */
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marker label,
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li > a,
+body .bootstrap-table .fixed-table-pagination .page-list .dropdown-menu li > a {
+    color: var(--k-text) !important;
+    background-color: transparent !important;
+}
+
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marker label:hover,
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu li > a:hover,
+body .bootstrap-table .fixed-table-pagination .page-list .dropdown-menu li > a:hover {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+/* search field inside the keep-open dropdowns */
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu input[type='text'],
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu input[type='search'],
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu .form-control,
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu input[name='columnsSearch'] {
+    background-color: var(--k-surface) !important;
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-sm);
+    color: var(--k-text) !important;
+    box-shadow: none;
+}
+
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu input[type='text']:focus,
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu input[type='search']:focus,
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu .form-control:focus,
+body .bootstrap-table .fixed-table-toolbar .dropdown-menu input[name='columnsSearch']:focus {
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+    outline: none;
 }
 
 /* --------------------------------------------------------------------------
