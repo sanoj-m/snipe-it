@@ -1325,3 +1325,21 @@ body .main-header .logo.navbar-brand {
     white-space: nowrap;
     text-overflow: ellipsis;
 }
+
+/* --------------------------------------------------------------------------
+   Logo sizing: let the brand block size to its content (full site name
+   visible) instead of hard-capping it to the sidebar width.
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    body:not(.sidebar-collapse) .main-header .logo.navbar-brand {
+        width: auto;
+        max-width: 480px;
+        flex: 0 0 auto;
+        padding-right: 16px;
+    }
+}
+
+body .main-header .logo.navbar-brand {
+    font-size: 14px;
+    text-overflow: clip;
+}
