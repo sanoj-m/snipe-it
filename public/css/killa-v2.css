@@ -1223,3 +1223,44 @@ body .sidebar-menu .treeview-menu > li:hover,
 body .sidebar-menu .treeview-menu > li.active {
     background-color: transparent !important;
 }
+
+/* --------------------------------------------------------------------------
+   Header authority: tenant vars paint .navbar/.navbar-nav with the (white)
+   header color in BOTH modes, splitting the header. Route the entire header
+   — logo block, navbar, both nav groups — through the theme tokens.
+   -------------------------------------------------------------------------- */
+body .main-header,
+body .main-header .navbar,
+body .main-header .navbar-nav,
+body .main-header .navbar-custom-menu > .navbar-nav,
+body .main-header .navbar .navbar-form {
+    background-color: var(--k-navbar-bg) !important;
+}
+
+body .main-header .logo,
+body .main-header .logo:hover {
+    background-color: var(--k-sidebar-bg) !important;
+    color: var(--k-logo-text, var(--k-text)) !important;
+}
+
+body .main-header .navbar .nav > li > a,
+body .main-header .navbar .nav > li > a:link,
+body .main-header .navbar .nav > li > a:visited,
+body .main-header .navbar .navbar-custom-menu .nav > li > a,
+body .main-header .navbar .nav > li > .dropdown-toggle {
+    background-color: transparent !important;
+    color: var(--k-navbar-text) !important;
+}
+
+body .main-header .navbar .nav > li > a:hover {
+    background-color: transparent !important;
+    color: var(--k-accent) !important;
+}
+
+/* search box in header follows the header, not the tenant white */
+body .main-header .navbar .navbar-form .form-control,
+body .main-header .navbar .navbar-form .input-group .btn {
+    background-color: var(--k-hover-tint);
+    border-color: var(--k-border);
+    color: var(--k-text);
+}
