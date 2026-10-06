@@ -1378,7 +1378,7 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: -10px;
-    width: 10px;
+    left: -190px;
+    width: 190px;
     background: transparent;
 }
