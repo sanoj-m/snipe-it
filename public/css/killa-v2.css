@@ -1398,7 +1398,6 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     display: block !important;
     visibility: hidden;
     opacity: 0;
-    pointer-events: none;
     transition: opacity 0.12s ease, visibility 0s linear 0.18s;
 }
 
@@ -1407,6 +1406,5 @@ body.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu,
 body.sidebar-collapse .sidebar-menu > li > .treeview-menu:hover {
     visibility: visible;
     opacity: 1;
-    pointer-events: auto;
     transition: opacity 0.12s ease, visibility 0s linear 0s;
 }
