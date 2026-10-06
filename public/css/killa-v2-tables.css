@@ -645,3 +645,11 @@ body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(even)
 body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td {
     background-color: color-mix(in srgb, var(--k-text) 3%, var(--k-surface)) !important;
 }
+
+/* one solid color per row, end to end: remove upstream's translucent
+   gradient overlay on pinned cells (it double-painted over our solid base) */
+body .table[class*="snipe-table--sticky"] > tbody > tr > td,
+body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td,
+body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(even) > td {
+    background-image: none !important;
+}
