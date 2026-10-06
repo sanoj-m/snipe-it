@@ -1408,3 +1408,19 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu:hover {
     opacity: 1;
     transition: opacity 0.12s ease, visibility 0s linear 0s;
 }
+
+/* specificity beat over AdminLTE's collapsed-mode display:none !important */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity 0.12s ease, visibility 0s linear 0.18s;
+}
+
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu,
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu,
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu:hover {
+    visibility: visible;
+    opacity: 1;
+    transition: opacity 0.12s ease, visibility 0s linear 0s;
+}
