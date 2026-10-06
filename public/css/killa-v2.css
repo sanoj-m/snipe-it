@@ -1383,3 +1383,8 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
     top: -60px;
     background: transparent;
 }
+
+/* the hover bridge must win hit-testing over the following sibling anchors */
+body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
+    z-index: 1000;
+}
