@@ -1370,3 +1370,15 @@ body.sidebar-collapse .sidebar-menu .treeview-menu > li > a:hover {
     background: var(--k-hover-tint) !important;
     color: var(--k-accent) !important;
 }
+
+/* hover bridge: keep the flyout open while the pointer crosses the gap
+   between the collapsed sidebar icon and the menu card */
+body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -10px;
+    width: 10px;
+    background: transparent;
+}
