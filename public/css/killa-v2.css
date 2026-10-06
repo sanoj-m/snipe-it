@@ -1388,3 +1388,25 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
 body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
     z-index: 1000;
 }
+
+/* --------------------------------------------------------------------------
+   Hover-intent: keep collapsed flyouts rendered but hidden, and delay the
+   hide by 180ms so the pointer can cross from the icon to the menu without
+   losing it (pure display:none racing made the menu vanish instantly).
+   -------------------------------------------------------------------------- */
+body.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    display: block !important;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.12s ease, visibility 0s linear 0.18s;
+}
+
+body.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu,
+body.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu,
+body.sidebar-collapse .sidebar-menu > li > .treeview-menu:hover {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition: opacity 0.12s ease, visibility 0s linear 0s;
+}
