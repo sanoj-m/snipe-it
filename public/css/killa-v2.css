@@ -1424,3 +1424,13 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu:hover {
     opacity: 1;
     transition: opacity 0.12s ease, visibility 0s linear 0s;
 }
+
+/* keep the collapsed flyout's absolute position even when not hovered, so
+   the visibility grace period has something stationary to hover into */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    position: absolute !important;
+    top: 100%;
+    left: 50px;
+    margin: 0;
+    z-index: 1000;
+}
