@@ -14,8 +14,8 @@ marking them is Phase 3 work.
 |---|---|---|---|---|---|---|
 | KCP-001 | `app/Http/Controllers/Licenses/LicenseCheckoutController.php` | Floating checkout interception | +32 | Yes | MEDIUM | Only if upstream fires a pre-checkout event |
 | KCP-002 | `app/Http/Controllers/Licenses/LicenseCheckinController.php` | Floating bulk checkin (`floating:<id>`) | +36 | Yes | MED-LOW | None viable; keep fenced |
-| KCP-003 | `app/Http/Controllers/Licenses/LicensesController.php` | Floating sync + perpetual expiration-clear in store/update | +14 | Partial | MED-HIGH | Move to `License` observer/saving event (planned) |
-| KCP-004 | `app/Http/Controllers/Api/LicensesController.php` | Perpetual expiration-clear | +6 | No | MEDIUM | Same observer |
+| KCP-003 | `app/Http/Controllers/Licenses/LicensesController.php` | Floating sync comment pointers + perpetual assignment in store/update | +8 | Yes | LOW | Floating sync moved to package `License::saved` listener (route-gated); perpetual clear moved to model `saving` hook |
+| KCP-004 | `app/Http/Controllers/Api/LicensesController.php` | Perpetual comment pointers only (clearing moved to `License::saving`) | +4 | Yes | LOW | Already consolidated on the model |
 | KCP-005 | `app/Http/Controllers/Api/UsersController.php` | Floating allocations in user licenses | +13 | Yes | MEDIUM | Possible package endpoint + JS |
 | KCP-006 | `app/Http/Controllers/SettingsController.php` | `floating_licenses_enabled` persist | +2 | No | LOW | Package-owned settings table |
 | KCP-007 | `app/Http/Transformers/LicensesTransformer.php` | Floating seat math + cost columns | +67 | Yes | **HIGH** | Upstream transformer extension point (none exists) |
@@ -23,14 +23,15 @@ marking them is Phase 3 work.
 | KCP-009 | `app/Http/Transformers/UsersTransformer.php` | Floating allocation rows | +50 | Yes | MEDIUM | None viable |
 | KCP-010 | `app/Presenters/LicensePresenter.php` | New columns; **replaces purchase_cost column** | +33 | No | MED-HIGH | Revert to additive columns |
 | KCP-011 | `app/Presenters/UserPresenter.php` | license_type column | +12 | Yes | MEDIUM | None viable |
-| KCP-012 | `app/Models/License.php` | perpetual cast/rule/fillable/mutator + isExpired guard | +15 | No | MEDIUM | Trait if upstream supports; else keep |
+| KCP-012 | `app/Models/License.php` | perpetual cast/rule/fillable/mutator + isExpired guard + `saving` hook clearing expiration_date (consolidates KCP-003/004 clearing) | +22 | Yes | MEDIUM | Trait if upstream supports; else keep |
 | KCP-013 | `app/Models/Ldap.php` | deactivateUsersMissingFromLdap() | +36 | No | NONE (tail append) | Extract to Action class |
 | KCP-014 | `app/Console/Commands/LdapSync.php` | deactivate-missing elseif | +8 | No | LOW-MED | Keep |
 | KCP-015 | `app/Console/Kernel.php` | daily ldap-sync auto-schedule | +3 | No | LOW | Config-gate or upstream PR |
+| KCP-031 | `app/Console/Kernel.php` | schedule `floating-licenses:expire` every 5 min when addon enabled | +5 | Yes (`[floating-licenses addon]`) | LOW | Keep fenced |
 | KCP-016 | `app/Livewire/LdapSettings.php` + `resources/views/livewire/ldap-settings.blade.php` | deactivate-missing setting UI | +15 | No | LOW-MED | Keep |
-| KCP-017 | `app/Importer/Importer.php`, `LicenseImporter.php`, `app/Livewire/Importer.php` | perpetual CSV mapping | +10 | Partial | LOW | Keep |
-| KCP-018 | `resources/views/licenses/view.blade.php` | Floating UI (+320) incl. `@if(!$floatingConfig)` wrappers around upstream blocks | +320 | Partial | **HIGH** | Extract floating blocks to `@include` partials |
-| KCP-019 | `resources/views/licenses/edit.blade.php` | Perpetual + floating form sections | +73 | Partial | MEDIUM | Extract to partial |
+| KCP-017 | `app/Importer/Importer.php`, `LicenseImporter.php`, `app/Livewire/Importer.php` | perpetual CSV mapping (clearing moved to `License::saving`) | +7 | Yes | LOW | Keep |
+| KCP-018 | `resources/views/licenses/view.blade.php` | 5 fenced `@include('floating-licenses::partials/license-view-*')` + 4 tight `@if(!$floatingConfig)` wrappers around upstream blocks | ~20 | Yes | MED-LOW | Done (extracted to package partials); wrappers must stay |
+| KCP-019 | `resources/views/licenses/edit.blade.php` | Perpetual row/JS (marked) + fenced `@include('floating-licenses::partials/license-form-floating')` | ~8 | Yes | LOW | Done (floating section extracted to package partial) |
 | KCP-020 | `resources/views/licenses/checkout.blade.php` | Pool availability header | +21 | Yes | MED-LOW | Keep |
 | KCP-021 | `resources/views/users/view.blade.php` | Floating tab/rows | +18 | Yes | MEDIUM | Keep |
 | KCP-022 | `resources/views/partials/bootstrap-table.blade.php` | Floating release formatter | +15 | Yes | LOW | Keep |
@@ -50,10 +51,9 @@ marking them is Phase 3 work.
 | KCP-035 | `composer.json`, `phpunit.xml`, `package.json` | Package/test/tooling wiring | +16 | N/A | LOW | Keep |
 
 **Totals: 36 registered patches across 58 modified files (was 72 — 16 notification
-files reverted to upstream in Phase 3; gitlink removed). HIGH risk: 2 (KCP-007,
-KCP-018). MED-HIGH: 3 (KCP-003, KCP-010, and frequency-class branding).**
+files reverted to upstream in Phase 3; gitlink removed). HIGH risk: 1 (KCP-007).
+MED-HIGH: 2 (KCP-010 and frequency-class branding).**
 
 ## Unmarked patches (defect — fix in Phase 3)
 
-KCP-003 (perpetual parts), KCP-004, KCP-006, KCP-010, KCP-012–016, KCP-023–024,
-KCP-029, KCP-031–034.
+KCP-006, KCP-010, KCP-013–016, KCP-023–024, KCP-029, KCP-031–034.

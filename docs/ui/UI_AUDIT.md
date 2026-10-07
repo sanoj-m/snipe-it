@@ -11,11 +11,11 @@ UPSTREAM-DIVERGENCE. Severities: HIGH / MEDIUM / LOW.
 
 | # | Finding | Evidence | Class | Severity | Status |
 |---|---|---|---|---|---|
-| UI-A-01 | ~90 lines dead/contradictory flyout "corridor" CSS still live | `public/css/killa-v2.css:1400-1525` | BUG (dead code) | MEDIUM | OPEN |
-| UI-A-02 | Comment/behavior drift: comment says 400ms, code holds 800ms | `killa-v2.css:1520` vs `layouts/default.blade.php:1095` | INCONSISTENCY | LOW | OPEN |
-| UI-A-03 | Duplicate diverging tokens: `--k-input-disabled-bg`, `--k-scrollbar-thumb` | `forms.css:13` vs `dark.css:15`; tables vs dark | DESIGN-SYSTEM | MEDIUM | OPEN |
-| UI-A-04 | 6× `md5_file()` per request (cache-busting) in both layouts | `layouts/default.blade.php`, `layouts/basic.blade.php` | BUG (perf) | MEDIUM | OPEN |
-| UI-A-05 | SKILL.md drift: says 1 CSS file / 6px radius; reality 6 files / 12px | `skills/killa-design/SKILL.md` vs `public/css/killa-v2*.css` | INCONSISTENCY | LOW | OPEN |
+| UI-A-01 | ~90 lines dead/contradictory flyout "corridor" CSS still live | `public/css/killa-v2.css:1400-1525` | BUG (dead code) | MEDIUM | FIXED — removed hover-bridge ::before + corridor padding/::after/min-width/left:-190px blocks; all were overridden by the later flush-geometry block + `content:none` (kept `> li` z-index rule, still live) |
+| UI-A-02 | Comment/behavior drift: comment says 400ms, code holds 800ms | `killa-v2.css:1520` vs `layouts/default.blade.php:1095` | INCONSISTENCY | LOW | FIXED — comments now say 800ms JS hold and 0.5s CSS visibility grace (was 400/350/180ms) |
+| UI-A-03 | Duplicate diverging tokens: `--k-input-disabled-bg`, `--k-scrollbar-thumb` | `forms.css:13` vs `dark.css:15`; tables vs dark | DESIGN-SYSTEM | MEDIUM | FIXED — single light source in killa-v2.css `:root` (using the values that already won the cascade), dark overrides only in killa-v2-dark.css; duplicates removed from forms/tables; full grep found no other cross-file dupes |
+| UI-A-04 | 6× `md5_file()` per request (cache-busting) in both layouts | `layouts/default.blade.php`, `layouts/basic.blade.php` | BUG (perf) | MEDIUM | FIXED — replaced with `?v={{ config('version.app_version') }}` in both layouts (busts per release, no per-request disk reads) |
+| UI-A-05 | SKILL.md drift: says 1 CSS file / 6px radius; reality 6 files / 12px | `skills/killa-design/SKILL.md` vs `public/css/killa-v2*.css` | INCONSISTENCY | LOW | FIXED — SKILL.md lists the six stylesheets, `--k-radius: 12px`, token single-source rule, version-based cache-bust, and an !important-justification note |
 | UI-A-06 | `licenses/view.blade.php`: inline styles + ~320-line divergence from upstream | KCP-018 | UPSTREAM-DIVERGENCE | HIGH | OPEN |
 | UI-A-07 | No responsive rules below 768px anywhere in the theme | `public/css/killa-v2*.css` | RESPONSIVE | MEDIUM | OPEN |
 | UI-A-08 | Google Fonts CDN loaded on login pages (GDPR/offline concern) | `layouts/basic.blade.php` | ACCESSIBILITY/privacy | MEDIUM | OPEN |

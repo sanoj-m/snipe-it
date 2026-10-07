@@ -12,7 +12,7 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 | FL-EXT | Package | `packages/floating-licenses/**` (~5,700 LOC) | KILLA-EXTENSION | No | Core feature | Already isolated | LOW | 17 feature files, ~114 tests |
 | FL-01 | Wiring | `composer.json` (path repo, require, autoload-dev) | KILLA-CONFIG | Yes | Path-package registration | No (inherent) | LOW | — |
 | FL-02 | Wiring | `phpunit.xml` (3rd testsuite) | KILLA-CONFIG | Yes | Package tests | No (inherent) | LOW | — |
-| FL-03 | Web controller | `Licenses/LicensesController.php` store/update | KILLA-CORE-PATCH | Yes (+14) | `FloatingLicenseSync::syncFromRequest` post-save | **YES — model observer** | MED-HIGH | LicenseFormSyncTest |
+| FL-03 | Web controller | `Licenses/LicensesController.php` store/update | KILLA-CORE-PATCH | Yes (comment pointers only) | **Done** — `License::saved` listener in package service provider, gated to `licenses.store`/`licenses.update` routes | LOW | LicenseFormSyncTest |
 | FL-04 | Checkout | `Licenses/LicenseCheckoutController.php` | KILLA-CORE-PATCH | Yes (+32, marked) | Intercept seat checkout → pool allocation | No (no pre-checkout event upstream) | MEDIUM | FloatingCheckoutInterceptionTest |
 | FL-05 | Checkin | `Licenses/LicenseCheckinController.php` | KILLA-CORE-PATCH | Yes (+36, marked) | Parse `floating:<id>` bulk checkin, release | No | MED-LOW | ReleaseTest |
 | FL-06 | Settings | `SettingsController.php` | KILLA-CORE-PATCH | Yes (+2) | Persist master switch | **YES — package-owned config** | LOW | Yes |
@@ -21,8 +21,8 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 | FL-09 | Transformer | `LicenseSeatsTransformer.php` | KILLA-CORE-PATCH | Yes (+25, marked) | Suppress per-seat checkout for pools | No | LOW-MED | Yes |
 | FL-10 | Transformer | `UsersTransformer.php` | KILLA-CORE-PATCH | Yes (+50, marked) | Floating rows + release URL | No | MEDIUM | Yes |
 | FL-11 | Presenters | `LicensePresenter.php`, `UserPresenter.php` | KILLA-CORE-PATCH | Yes (+45) | New columns; **purchase_cost column replaced** | No | MED-HIGH | Yes |
-| FL-12 | Views | `licenses/view.blade.php` (+320), `edit` (+73), `checkout` (+21), `users/view` (+18), `settings/general` (+8), `partials/bootstrap-table` (+15) | KILLA-CORE-PATCH / KILLA-UI | Yes | Floating UI | Partial (`@include` extraction) | **HIGH** (view.blade) | LicenseViewIntegrationTest |
-| FL-13 | Console | `app/Console/Kernel.php` — `floating-licenses:expire` **NOT scheduled** (gap; README says it should be) | KILLA-CONFIG | Should be | Lease expiry | N/A | — | ExpirationTest |
+| FL-12 | Views | `licenses/view.blade.php` (~20, includes + wrappers), `edit` (~8), `checkout` (+21), `users/view` (+18), `settings/general` (+8), `partials/bootstrap-table` (+15) | KILLA-CORE-PATCH / KILLA-UI | Yes | Floating UI | Done for view/edit (`@include` package partials) | MEDIUM | LicenseViewIntegrationTest |
+| FL-13 | Console | `app/Console/Kernel.php` — `floating-licenses:expire` scheduled every 5 min (fenced, KCP-031) when master switch on | KILLA-CONFIG | Yes (+5) | Lease expiry | N/A | LOW | ExpirationTest |
 | FL-14 | DB | 5 package migrations (2 tables + 3 settings/data) | KILLA-DATABASE | No | Schema | Isolated | LOW | Yes |
 | FL-15 | Debt | `snipe-it-floating-license-plugin` broken gitlink (no `.gitmodules`, objects absent) | KILLA-EXTENSION | Yes (gitlink) | Legacy duplicate | **Remove** | LOW | — |
 
@@ -31,8 +31,8 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 | ID | File | Diff | Reason | Isolation possible? | Risk | Tests |
 |---|---|---|---|---|---|---|
 | PL-01 | `database/migrations/2026_09_02_000000_add_perpetual_to_licenses_table.php` | new | Column | N/A (idempotent) | LOW | — |
-| PL-02 | `app/Models/License.php` | +15 (5 hunks, **unmarked**) | cast/rule/fillable/mutator, `isExpired()` guard | No (must be on model) | MEDIUM | UpdateLicenseTest |
-| PL-03 | `LicensesController` + `Api/LicensesController` | +2×4 sites | `expiration_date=null` when perpetual — **duplicated 4×**, plus importer = 5th | **YES — `License::saving` observer collapses all** | MEDIUM | Yes |
+| PL-02 | `app/Models/License.php` | +22 (6 hunks, **marked**) | cast/rule/fillable/mutator, `isExpired()` guard, `saving` hook clearing expiration_date | No (must be on model) | MEDIUM | UpdateLicenseTest |
+| PL-03 | `LicensesController` + `Api/LicensesController` | comment pointers only | `expiration_date=null` when perpetual — **collapsed into `License::saving`** (KCP-012) | Done | LOW | Yes |
 | PL-04 | `Importer.php`, `LicenseImporter.php`, `Livewire/Importer.php` | +10 | CSV mapping | No | LOW | ImportLicenseTest |
 | PL-05 | `licenses/edit.blade.php`, lang `admin/licenses/form.php`, `sample_csvs/licenses-sample.csv` | +75 | UI/labels/sample | No | LOW-MED | Yes |
 
@@ -78,13 +78,13 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 
 ## Known functional defects found during inventory
 
-1. **Open redirect** — `FloatingLicenseController::release()` redirects to attacker-controlled `Referer` header. HIGH security.
-2. **No FMCS company scoping** anywhere in floating licenses (no `company_id`, cross-company allocate/list possible). HIGH when FMCS enabled.
-3. **`floating-licenses:expire` never scheduled** — leases/idle timeouts never fire.
-4. **Dead code**: `FloatingLicenseService::revoke()` + `STATUS_REVOKED` unrouted.
-5. **Package rule deviations**: string Gates instead of policies; no breadcrumbs on package UI routes; API returns raw model payload (no Transformer).
+1. **Open redirect** — FIXED: `FloatingLicenseController::release()` now honors only same-host/relative Referer targets (`safeRedirectTarget()`), else falls back to the pool page; tests cover external and lookalike hosts.
+2. **No FMCS company scoping** — FIXED: `FloatingLicenseConfig::companyScoped()` (scopes via the license relation) applied to the pool index; config-bound pages 404 out-of-scope pools; allocate/bulk-add/API allocate reject cross-company users via `CompanyableTrait::canCheckoutTo()`; API availability is scoped by the License global scope on route binding. FMCS tests in `tests/Feature/FmcsScopingTest.php`.
+3. **`floating-licenses:expire` never scheduled** — FIXED: fenced `[floating-licenses addon]` block in `app/Console/Kernel.php` (KCP-031) schedules it every five minutes when the master switch is on.
+4. **Dead code**: FIXED: removed `FloatingLicenseService::revoke()`, `STATUS_REVOKED`, the `log.revoke` lang key, and the README audit row (no callers/routes existed).
+5. **Package rule deviations**: string Gates instead of policies; no breadcrumbs on package UI routes (FIXED: breadcrumbs added on all package GET page routes, parented on `licenses.index`/`floating-licenses.index`); API returns raw model payload (no Transformer).
 6. **CSS drift**: ~90 lines of contradictory flyout "corridor" CSS still live; comment/behavior drift (400ms vs 800ms); duplicate diverging tokens (`--k-input-disabled-bg`); ~251 `!important`s.
 7. **Perf**: 6× `md5_file()` per page render in both layouts.
 8. **Google Fonts CDN** on all pages incl. login (GDPR/offline concern).
-9. **`floating_licenses_enabled` migration unguarded** (no `hasColumn`) — fatal on re-run vs upstream collision.
+9. **`floating_licenses_enabled` migration unguarded** — FIXED: `Schema::hasColumn` guards added in `up()`/`down()` matching the ldap_deactivate_missing pattern.
 10. **Migration dates interleave upstream's** (2026_08_25 < upstream's 2026_09_22) — recommend `killa_` infix for future migrations.
