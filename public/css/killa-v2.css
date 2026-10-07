@@ -1522,3 +1522,225 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li.k-flyout-hold > .treeview-
     visibility: visible;
     opacity: 1;
 }
+
+/* ==========================================================================
+   Sidebar v3 (reference redesign): neutral gray-pill active state, pure
+   white rail, comfortable rows, soft tinted badges, simple indented submenu.
+   Final authority over all earlier sidebar blocks.
+   ========================================================================== */
+:root {
+    --k-sb-bg: #ffffff;
+    --k-sb-border: #eceef0;
+    --k-sb-text: #4b5563;
+    --k-sb-text-strong: #1f2933;
+    --k-sb-icon: #9ca3af;
+    --k-sb-hover-bg: #f4f5f6;
+    --k-sb-active-bg: #eef0f2;
+    --k-sb-header: #a1a8b0;
+    --k-sb-badge-bg: #f0f2f4;
+    --k-sb-badge-text: #6b7280;
+}
+
+html[data-theme='dark'] {
+    --k-sb-bg: #15181c;
+    --k-sb-border: #262b31;
+    --k-sb-text: #9aa3b2;
+    --k-sb-text-strong: #f2f4f6;
+    --k-sb-icon: #5f6873;
+    --k-sb-hover-bg: rgba(255, 255, 255, 0.05);
+    --k-sb-active-bg: rgba(255, 255, 255, 0.09);
+    --k-sb-header: #565f6a;
+    --k-sb-badge-bg: rgba(255, 255, 255, 0.09);
+    --k-sb-badge-text: #9aa3ad;
+}
+
+/* rail */
+body .main-sidebar,
+body .sidebar,
+body .sidebar-menu,
+body .main-header .logo,
+body .main-header .logo:hover {
+    background-color: var(--k-sb-bg) !important;
+}
+
+body .main-sidebar,
+body .sidebar {
+    border-right: 1px solid var(--k-sb-border);
+}
+
+body .main-header .logo,
+body .main-header .logo:hover {
+    color: var(--k-sb-text-strong) !important;
+    border-right: 1px solid var(--k-sb-border);
+}
+
+/* section headers */
+body .sidebar-menu li.header {
+    color: var(--k-sb-header) !important;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    padding: 18px 22px 6px;
+}
+
+/* rows */
+body .sidebar-menu > li > a,
+body .sidebar-menu > li > a:link,
+body .sidebar-menu > li > a:visited {
+    margin: 1px 12px;
+    padding: 8px 12px;
+    border: none !important;
+    border-radius: 8px;
+    background-color: transparent !important;
+    color: var(--k-sb-text) !important;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.35;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .sidebar-menu > li > a .fa,
+body .sidebar-menu > li > a .fas,
+body .sidebar-menu > li > a .far,
+body .sidebar-menu > li > a .x-icon,
+body .sidebar-menu > li > a svg {
+    color: var(--k-sb-icon) !important;
+    width: 18px;
+    font-size: 14px;
+    text-align: center;
+    margin-right: 8px;
+    transition: color var(--k-motion);
+}
+
+body .sidebar-menu > li > a > .pull-right-container > .fa {
+    color: var(--k-sb-icon) !important;
+    font-size: 10px;
+    margin-top: 4px;
+}
+
+/* hover: soft gray */
+body .sidebar-menu > li:hover,
+body .sidebar-menu > li:hover > a,
+body .sidebar-menu > li > a:hover {
+    background-color: var(--k-sb-hover-bg) !important;
+    color: var(--k-sb-text-strong) !important;
+    border: none !important;
+    padding-left: 12px !important;
+}
+
+body .sidebar-menu > li:hover > a .fa,
+body .sidebar-menu > li > a:hover svg {
+    color: var(--k-sb-text-strong) !important;
+}
+
+/* active: neutral gray pill, strong text (reference style — no accent) */
+body .sidebar-menu > li.active > a,
+body .sidebar-menu > li.active > a:link,
+body .sidebar-menu > li.active > a:visited,
+body .sidebar-menu > li.menu-open > a {
+    background-color: var(--k-sb-active-bg) !important;
+    color: var(--k-sb-text-strong) !important;
+    border: none !important;
+    font-weight: 600;
+}
+
+body .sidebar-menu > li.active > a .fa,
+body .sidebar-menu > li.active > a svg {
+    color: var(--k-sb-text-strong) !important;
+}
+
+/* submenu: simple indent, no hairline guide */
+body .sidebar-menu > li > .treeview-menu,
+body .sidebar-menu > li.menu-open > .treeview-menu {
+    background-color: transparent !important;
+    margin: 2px 12px 6px 12px;
+    padding: 0 0 0 26px;
+    border-left: none !important;
+}
+
+body .sidebar-menu .treeview-menu > li > a,
+body .sidebar-menu .treeview-menu > li > a:link,
+body .sidebar-menu .treeview-menu > li > a:visited {
+    background-color: transparent !important;
+    color: var(--k-sb-text) !important;
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 6px 12px;
+    border-radius: 8px;
+}
+
+body .sidebar-menu .treeview-menu > li > a:hover {
+    background-color: var(--k-sb-hover-bg) !important;
+    color: var(--k-sb-text-strong) !important;
+}
+
+body .sidebar-menu .treeview-menu > li.active > a,
+body .sidebar-menu .treeview-menu > li.active > a:hover {
+    background-color: var(--k-sb-active-bg) !important;
+    color: var(--k-sb-text-strong) !important;
+    font-weight: 600;
+}
+
+body .sidebar-menu .treeview-menu > li,
+body .sidebar-menu .treeview-menu > li:hover,
+body .sidebar-menu .treeview-menu > li.active {
+    background-color: transparent !important;
+}
+
+/* badges: soft neutral tinted pills */
+body .sidebar-menu > li .badge,
+body .sidebar-menu .treeview-menu > li .badge,
+body .sidebar-menu > li > a > .pull-right-container .label {
+    filter: none !important;
+    background-color: var(--k-sb-badge-bg) !important;
+    color: var(--k-sb-badge-text) !important;
+    font-size: 10px !important;
+    font-weight: 600;
+    border-radius: 999px;
+    padding: 2px 7px;
+    margin-top: 2px;
+}
+
+body .sidebar-menu > li.active .badge {
+    background-color: var(--k-sb-badge-bg) !important;
+    color: var(--k-sb-text-strong) !important;
+}
+
+/* status dots keep their semantic colors */
+body .sidebar-menu .treeview-menu > li > a > .fa-circle,
+body .sidebar-menu .treeview-menu > li > a > .text-red,
+body .sidebar-menu .treeview-menu > li > a > .fa {
+    font-size: 11px;
+}
+
+/* user panel follows the rail */
+body .user-panel,
+body .user-panel > .info,
+body .user-panel > .info > a {
+    background-color: transparent;
+    color: var(--k-sb-text) !important;
+}
+
+body .user-panel {
+    border-bottom: 1px solid var(--k-sb-border);
+}
+
+/* collapsed (mini) rail keeps the same surface; flyout cards match */
+body.sidebar-collapse .main-sidebar,
+body.sidebar-collapse .sidebar {
+    border-right: 1px solid var(--k-sb-border);
+}
+
+body.sidebar-collapse .sidebar-menu > li > a {
+    margin: 2px 8px;
+    padding: 9px 0;
+    text-align: center;
+}
+
+body.sidebar-collapse .sidebar-menu > li > a .fa,
+body.sidebar-collapse .sidebar-menu > li > a svg {
+    margin-right: 0;
+    font-size: 15px;
+    width: auto;
+}
