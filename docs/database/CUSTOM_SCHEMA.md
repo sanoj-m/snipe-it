@@ -28,5 +28,5 @@ Multi-DB (MySQL/PostgreSQL/SQLite) compatibility verified by CI.
 
 ## Collision-risk notes
 
-- Upstream v8.8.0 itself ships migrations dated up to 2026_09_22; Killa's dates interleave. Filename collision with a future upstream same-timestamp migration is the main hazard → **name future Killa migrations with a `killa_` infix**.
+- Upstream v8.8.0 itself ships migrations dated up to 2026_09_22; Killa's dates interleave. Filename collision with a future upstream same-timestamp migration is the main hazard → **name future Killa migrations with a `killa_` infix**. The existing Killa migrations listed above predate this convention and are grandfathered — do not rename them (renaming a merged migration breaks `migrations` table bookkeeping).
 - If upstream ever adds its own `ldap_deactivate_missing`/`perpetual`/`floating_licenses_enabled` columns with different definitions, guarded migrations silently keep the existing column (fresh installs get upstream's definition only if it runs first — audit on upgrade).
