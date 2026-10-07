@@ -27,8 +27,10 @@ use App\Observers\UserObserver;
 use App\View\Composers\ImpersonationBannerComposer;
 use App\View\Composers\SidebarComposer;
 use Illuminate\Http\Client\Response as HttpClientResponse;
+use Illuminate\Mail\Events\MessageSending;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\UrlGenerator;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
@@ -78,6 +80,17 @@ class AppServiceProvider extends ServiceProvider
         }
 
         Paginator::useBootstrap();
+
+        // [killa branding] BEGIN — KCP-030
+        // Centralized replacement for per-notification X-System-Sender patches:
+        // stamp every outgoing mail (notifications AND mailables) with the
+        // Killa Asset sender header instead of editing app/Notifications/*.
+        Event::listen(MessageSending::class, function (MessageSending $event) {
+            $headers = $event->message->getHeaders();
+            $headers->remove('X-System-Sender');
+            $headers->addTextHeader('X-System-Sender', 'Killa Asset');
+        });
+        // [killa branding] END
 
         View::composer('layouts.default', SidebarComposer::class);
         View::composer('partials.impersonation-banner', ImpersonationBannerComposer::class);

@@ -401,3 +401,64 @@ needed for fixed-seat licenses; they are untouched.
 
 If you added the scheduler line to `app/Console/Kernel.php`, remove it too.
 Fixed-seat licenses, seats, and their history are not affected at any point.
+
+## Scheduling status (KNOWN GAP)
+
+`floating-licenses:expire` is **registered by the service provider but not
+currently scheduled** in `app/Console/Kernel.php` on this repository's
+`master` (verified: no `floating` reference in the scheduler). Until the one
+line from **Scheduling** above is added, lease expiry and idle reclamation
+never fire automatically — run the command from cron if your pools use
+durations. Tracked as FL-13 in `docs/customizations/CUSTOMIZATION_INVENTORY.md`.
+
+## Core patch register cross-reference
+
+The fenced `[floating-licenses addon]` hunks in core files are registered in
+`docs/customizations/CORE_PATCH_REGISTER.md`:
+
+| KCP | Core file |
+|---|---|
+| KCP-001 | `LicenseCheckoutController.php` (checkout interception) |
+| KCP-002 | `LicenseCheckinController.php` (`floating:<id>` bulk checkin) |
+| KCP-003 | `Licenses/LicensesController.php` (post-save sync) |
+| KCP-005 | `Api/UsersController.php` (allocations in user licenses) |
+| KCP-006 | `SettingsController.php` (master switch persist) |
+| KCP-007 | `LicensesTransformer.php` (seat math + cost columns) — HIGH conflict risk |
+| KCP-008 | `LicenseSeatsTransformer.php` (suppress per-seat checkout) |
+| KCP-009 | `UsersTransformer.php` (allocation rows) |
+| KCP-010/011 | `LicensePresenter.php` (replaces purchase_cost column) / `UserPresenter.php` |
+| KCP-018 | `licenses/view.blade.php` (+320) — HIGH conflict risk |
+| KCP-019…023 | `licenses/edit|checkout`, `users/view`, `partials/bootstrap-table`, `settings/general` |
+
+## Compatibility
+
+| Requirement | Version |
+|---|---|
+| PHP | 8.2+ |
+| Laravel | 12 (Laravel 10 directory structure, as in this repo) |
+| Snipe-IT | v8.8.0 baseline (this fork) |
+| Databases | MySQL, PostgreSQL, SQLite (CI matrix; migrations are portable, no FK constraints) |
+
+## Troubleshooting
+
+| Symptom | Cause / fix |
+|---|---|
+| Package pages/API return 403 | Master switch off — enable **Admin > Settings > General > Floating Licenses (addon)**. |
+| `Class "SnipeIt\FloatingLicenses\..." not found` from a core file | Package not installed but fenced core hunks present — `composer update snipe-it/floating-licenses`, or remove the hunks (see Uninstall). |
+| Permission section missing on group/user pages | Config cache stale — `php artisan optimize:clear` (permissions are merged into `config('permissions')` at boot). |
+| Leases never expire | `floating-licenses:expire` not scheduled — see **Scheduling status** above. |
+| Tests not discovered | Root `composer.json` must map `SnipeIt\FloatingLicenses\Tests\` in `autoload-dev`; run `composer dump-autoload`. |
+| `floating_licenses_enabled` migration fatals on re-run | Known defect: that migration is unguarded (no `hasColumn`) — see CUSTOM_SCHEMA. |
+| Seat counts look wrong on licenses index | Expected when master switch is on: `Avail`/`Remaining` show floating math (`seats − active allocations`, may go negative). |
+
+## Test procedure
+
+```bash
+vendor/bin/phpunit --testsuite FloatingLicenses
+# or
+php artisan test packages/floating-licenses/tests
+```
+
+Local runs on the maintainer's Windows machine are currently blocked (no PHP
+runtime on `PATH`); the suite runs in CI. It is the regression canary after
+every upstream merge.

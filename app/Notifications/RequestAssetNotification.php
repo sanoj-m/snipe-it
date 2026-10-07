@@ -149,7 +149,7 @@ class RequestAssetNotification extends Notification implements ShouldQueue
             ->subject('👀 '.trans('mail.Item_Requested'))
             ->withSymfonyMessage(function (Email $message) {
                 $message->getHeaders()->addTextHeader(
-                    'X-System-Sender', 'Killa Asset'
+                    'X-System-Sender', 'Snipe-IT'
                 );
             });
 

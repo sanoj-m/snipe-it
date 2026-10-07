@@ -63,7 +63,7 @@ class License extends Depreciable
         'category_id' => 'integer',
         'company_id' => 'integer',
         'requestable' => 'boolean',
-        'perpetual' => 'boolean',
+        'perpetual' => 'boolean', // [perpetual-licenses addon]
     ];
 
     protected $rules = [
@@ -80,7 +80,7 @@ class License extends Depreciable
         'termination_date' => 'date_format:Y-m-d|nullable|max:10',
         'min_amt' => 'numeric|nullable|gte:0',
         'requestable' => 'nullable|boolean',
-        'perpetual' => 'nullable|boolean',
+        'perpetual' => 'nullable|boolean', // [perpetual-licenses addon]
     ];
 
     /**
@@ -100,7 +100,7 @@ class License extends Depreciable
         'name',
         'notes',
         'order_number',
-        'perpetual',
+        'perpetual', // [perpetual-licenses addon]
         'purchase_cost',
         'purchase_date',
         'purchase_order',
@@ -184,6 +184,19 @@ class License extends Depreciable
                 return static::adjustSeatCount($license, $oldSeatCount, $newSeatCount);
             }
         );
+        // [perpetual-licenses addon] BEGIN
+        // A perpetual license never expires. Collapses the "clear
+        // expiration_date when perpetual is truthy" rule that was previously
+        // duplicated across the web/API license controllers and the CSV
+        // importer into one place at save time.
+        static::saving(
+            function ($license) {
+                if ($license->perpetual) {
+                    $license->expiration_date = null;
+                }
+            }
+        );
+        // [perpetual-licenses addon] END
     }
 
     public function isDeletable()
@@ -220,6 +233,7 @@ class License extends Depreciable
         $this->attributes['requestable'] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
+    // [perpetual-licenses addon]
     public function setPerpetualAttribute($value)
     {
         if ($value == '') {
@@ -438,6 +452,7 @@ class License extends Depreciable
 
     public function isExpired(): bool
     {
+        // [perpetual-licenses addon] perpetual licenses never expire
         if ($this->perpetual) {
             return false;
         }

@@ -219,9 +219,8 @@ class LicensesController extends Controller
         $this->authorize('create', License::class);
         $license = new License;
         $license->fill($request->all());
-        if ($license->perpetual) {
-            $license->expiration_date = null;
-        }
+        // [perpetual-licenses addon] expiration_date is cleared at save time
+        // by the License::saving listener when perpetual is truthy.
         $license->created_by = auth()->id();
         $license->company_id = Company::getIdForCurrentUser($request->input('company_id'));
 
@@ -267,9 +266,8 @@ class LicensesController extends Controller
 
         $license = License::findOrFail($id);
         $license->fill($request->all());
-        if ($license->perpetual) {
-            $license->expiration_date = null;
-        }
+        // [perpetual-licenses addon] expiration_date is cleared at save time
+        // by the License::saving listener when perpetual is truthy.
         $license->company_id = Company::getIdForCurrentUser($request->input('company_id'));
 
         if ($license->save()) {
