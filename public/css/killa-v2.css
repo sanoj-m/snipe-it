@@ -1403,7 +1403,6 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu {
 }
 
 body.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu,
-body.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu,
 body.sidebar-collapse .sidebar-menu > li > .treeview-menu:hover {
     visibility: visible;
     opacity: 1;
@@ -1419,7 +1418,6 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
 }
 
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu,
-body.sidebar-mini.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu,
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu:hover {
     visibility: visible;
     opacity: 1;
