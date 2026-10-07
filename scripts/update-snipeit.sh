@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Update Killa Asset (Snipe-IT fork) to a new upstream release and deploy it.
 #
-# Usage:   SERVER=user@host ./update-snipeit.sh v8.9.0
-#          SKIP_MERGE=1 SERVER=user@host ./update-snipeit.sh v8.9.0  # after resolving conflicts
+# Usage:   SERVER=user@host ./scripts/update-snipeit.sh v8.9.0
+#          SKIP_MERGE=1 SERVER=user@host ./scripts/update-snipeit.sh v8.9.0  # after resolving conflicts
 #
 # What it does:
 #   1. Fetches the upstream tag from grokability/snipe-it and merges it into

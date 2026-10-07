@@ -18,7 +18,7 @@ Correct resolution = NEW UPSTREAM BEHAVIOR + REAPPLIED KILLA INTENT
 - Production backup taken (DB dump + uploads + `.env`).
 - Read: AGENTS.md, docs/upstream/UPSTREAM_BASELINE.md,
   docs/customizations/CUSTOMIZATION_INVENTORY.md,
-  docs/customizations/CORE_PATCH_REGISTER.md, CHANGELOG-KILLA.md.
+  docs/customizations/CORE_PATCH_REGISTER.md, docs/CHANGELOG-KILLA.md.
 
 ## 1. Local preparation
 
@@ -83,11 +83,11 @@ new migrations where safe.
 ## 6. Verification gates (all must pass before deploy)
 
 ```bash
-vendor/bin/pint --test --format agent
-vendor/bin/phpstan analyse                 # if configured
-vendor/bin/phpunit --testsuite Unit
-vendor/bin/phpunit --testsuite Feature
-vendor/bin/phpunit --testsuite FloatingLicenses
+vendor/bin/pint --test --config .ci/pint.json --format agent
+vendor/bin/phpstan analyse -c .ci/phpstan.neon.dist                 # if configured
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite Unit
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite Feature
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite FloatingLicenses
 scripts/test-upgrade-regression.sh         # Killa smoke suite
 ```
 
@@ -104,7 +104,7 @@ were weakened during conflict resolution.
 ```bash
 # 1. Backup: DB dump + storage/app + private_uploads + .env
 # 2. php artisan down
-# 3. deploy code (git archive/rsync or update-snipeit.sh)
+# 3. deploy code (git archive/rsync or scripts/update-snipeit.sh)
 # 4. composer install --no-dev --optimize-autoloader
 # 5. php artisan migrate --force
 # 6. php artisan optimize:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache
@@ -134,11 +134,11 @@ git push origin master --tags
 
 Update: docs/upstream/UPSTREAM_BASELINE.md (new base tag, new divergence stats),
 docs/upgrades/UPGRADE_HISTORY.md (full entry: conflicts, patches reapplied/
-removed, migrations, test results), CHANGELOG-KILLA.md, CORE_PATCH_REGISTER.md
+removed, migrations, test results), docs/CHANGELOG-KILLA.md, CORE_PATCH_REGISTER.md
 (patches added/removed).
 
 ## Notes
 
-- `update-snipeit.sh` automates steps 3+7 for the current single-server deploy
+- `scripts/update-snipeit.sh` automates steps 3+7 for the current single-server deploy
   (hardcoded IP; treats merge conflicts per the fence convention). It is a
   convenience, not a replacement for this runbook's analysis and gates.

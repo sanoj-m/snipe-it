@@ -1,13 +1,13 @@
 includes:
-    - ./vendor/larastan/larastan/extension.neon
+    - ../vendor/larastan/larastan/extension.neon
     - phpstan-baseline.neon
 
 parameters:
     paths:
-        - app
-        - config
-        - database
-        - routes
+        - ../app
+        - ../config
+        - ../database
+        - ../routes
 
     # Level 4 catches dead code branches, always-false instanceof,
     # unreachable code after return, and most type-mismatch classes
@@ -50,4 +50,4 @@ parameters:
         -
             message: '#Call to an undefined method Illuminate\\Database\\Eloquent\\Builder#'
             paths:
-                - app/Models/*.php
+                - ../app/Models/*.php

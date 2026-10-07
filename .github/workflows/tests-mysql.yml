@@ -86,7 +86,7 @@ jobs:
           DB_USERNAME: root
           LOG_CHANNEL: single
           LOG_LEVEL: debug
-        run: php artisan test --parallel
+        run: php artisan test --parallel -c .ci/phpunit.xml
 
       - name: Upload Laravel logs as artifacts
         if: always()

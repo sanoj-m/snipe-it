@@ -72,9 +72,9 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 
 | ID | File | Reason | Risk |
 |---|---|---|---|
-| TL-01 | `update-snipeit.sh` | Upstream-merge + scp deploy workflow; hardcoded prod IP; `SKIP_MERGE` documented but unimplemented | LOW |
+| TL-01 | `scripts/update-snipeit.sh` | Upstream-merge + scp deploy workflow; hardcoded prod IP; `SKIP_MERGE` documented but unimplemented | LOW |
 | TL-02 | `package.json` puppeteer/ssh2 in `dependencies` (should be devDependencies) | Screenshotter/deploy tooling | LOW |
-| TL-03 | `deploy-server.sh` (untracked), `.vscode/` (untracked) | Local ops | — |
+| TL-03 | `scripts/deploy-server.sh`, `.vscode/` (untracked) | Local ops | — |
 
 ## Known functional defects found during inventory
 

@@ -290,7 +290,7 @@ hosting today.
 
 # Laravel Pint Code Formatter
 
-- If you have modified any PHP files, you must run `vendor/bin/pint --dirty --format agent` before finalizing changes to ensure your code matches the project's expected style.
-- Do not run `vendor/bin/pint --test --format agent`, simply run `vendor/bin/pint --format agent` to fix any formatting issues.
+- If you have modified any PHP files, you must run `vendor/bin/pint --dirty --config .ci/pint.json --format agent` before finalizing changes to ensure your code matches the project's expected style.
+- Do not run `vendor/bin/pint --test --config .ci/pint.json --format agent`, simply run `vendor/bin/pint --config .ci/pint.json --format agent` to fix any formatting issues.
 
 </laravel-boost-guidelines>

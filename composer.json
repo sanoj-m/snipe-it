@@ -145,16 +145,16 @@
     "post-create-project-cmd": [
       "php artisan key:generate"
     ],
-    "coverage:herd:clover": "herd coverage vendor/bin/phpunit --coverage-clover tests/coverage/clover.xml",
-    "coverage:herd:html": "herd coverage vendor/bin/phpunit --coverage-html tests/coverage/html",
+    "coverage:herd:clover": "herd coverage vendor/bin/phpunit -c .ci/phpunit.xml --coverage-clover tests/coverage/clover.xml",
+    "coverage:herd:html": "herd coverage vendor/bin/phpunit -c .ci/phpunit.xml --coverage-html tests/coverage/html",
     "analyse": [
       "@analyse:phpstan",
       "@analyse:phpmd"
     ],
-    "analyse:phpstan": "phpstan analyse --memory-limit=2G",
-    "analyse:phpstan:baseline": "phpstan analyse --memory-limit=2G --generate-baseline=phpstan-baseline.neon",
-    "analyse:phpmd": "phpmd app text phpmd-ruleset.xml --baseline-file phpmd.baseline.xml",
-    "analyse:phpmd:baseline": "phpmd app xml phpmd-ruleset.xml --generate-baseline"
+    "analyse:phpstan": "phpstan analyse -c .ci/phpstan.neon.dist --memory-limit=2G",
+    "analyse:phpstan:baseline": "phpstan analyse -c .ci/phpstan.neon.dist --memory-limit=2G --generate-baseline=.ci/phpstan-baseline.neon",
+    "analyse:phpmd": "phpmd app text .ci/phpmd-ruleset.xml --baseline-file .ci/phpmd.baseline.xml",
+    "analyse:phpmd:baseline": "phpmd app xml .ci/phpmd-ruleset.xml --generate-baseline > .ci/phpmd.baseline.xml"
   },
   "config": {
     "preferred-install": "dist",

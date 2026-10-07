@@ -42,6 +42,7 @@ AdminLTE 2 / Bootstrap 3 / jQuery / select2 / bootstrap-table · Livewire v4
 | Routes | `routes/web.php` + `routes/web/*.php` + `routes/api.php` (every UI route needs a breadcrumb) |
 | Floating Licenses | `packages/floating-licenses/` (README there is authoritative) |
 | Theme layer | `public/css/killa-v2*.css` (zero-build, loaded after `all.css`) |
+| QA tool configs | `.ci/` (phpunit.xml, pint.json, phpstan*, phpmd* — pass `-c .ci/...`) |
 | Design rules | `skills/killa-design/SKILL.md` (read before ANY UI work) |
 | Project rules | `.ai/rules/index.md` → per-area rules (globs map; **read matching rules before editing**) |
 | Killa divergence docs | `docs/upstream/`, `docs/customizations/`, `docs/database/`, `docs/upgrades/` |
@@ -85,12 +86,12 @@ Documentation required:
 ## Commands
 
 ```bash
-vendor/bin/pint --dirty --format agent        # after ANY PHP change (required)
+vendor/bin/pint --dirty --config .ci/pint.json --format agent        # after ANY PHP change (required)
 php artisan optimize:clear                    # after config/route changes
-vendor/bin/phpunit --testsuite Unit           # tests
-vendor/bin/phpunit --testsuite Feature
-vendor/bin/phpunit --testsuite FloatingLicenses
-vendor/bin/phpstan analyse                    # static analysis (if configured)
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite Unit           # tests
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite Feature
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite FloatingLicenses
+vendor/bin/phpstan analyse -c .ci/phpstan.neon.dist                    # static analysis (if configured)
 npm run dev                                   # frontend build (Mix, not Vite)
 scripts/check-upstream-conflicts.sh vX.Y.Z    # before any upstream merge
 scripts/test-upgrade-regression.sh            # Killa smoke suite

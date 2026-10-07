@@ -22,7 +22,7 @@ On future upstream merges, treat their absence as intentional — do not
 
 - `ansible/` (freebsd, ubuntu playbooks) — upstream leftover, no CI, not Killa-maintained
 - `Vagrantfile`, `Procfile`, `app.json` — Heroku/Vagrant hosting legacy
-- `install.sh`, `snipeit.sh`, `upgrade.php` — upstream installer scripts (Killa deploys via `update-snipeit.sh` / `deploy-server.sh`)
+- `install.sh`, `snipeit.sh`, `upgrade.php` — upstream installer scripts (Killa deploys via `scripts/update-snipeit.sh` / `scripts/deploy-server.sh`)
 - `_config.yml` — 0-byte GitHub Pages stub
 - `crowdin.yml`, `.github/workflows/crowdin-upload.yml` — upstream translation pipeline
 - `psalm.xml` — unused analyzer config (no composer script/CI reference; gates are Pint + Larastan/PHPStan + PHPMD + CodeQL)

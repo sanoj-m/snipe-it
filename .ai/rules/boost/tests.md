@@ -17,6 +17,6 @@ paths:
 
 ## Running Tests
 
-- Run the narrowest set of tests that covers the change. Pass a file path or `--filter=testName` to `php artisan test --compact`.
+- Run the narrowest set of tests that covers the change. Pass a file path or `--filter=testName` to `php artisan test -c .ci/phpunit.xml --compact`.
 - Rerun a test after each change to it.
-- Run `vendor/bin/phpunit` to call the test runner directly. It accepts the same file path and `--filter=testName` arguments.
+- Run `vendor/bin/phpunit -c .ci/phpunit.xml` to call the test runner directly. It accepts the same file path and `--filter=testName` arguments.

@@ -59,4 +59,4 @@ Killa's 55 commits consist of exactly four feature/theme tracks:
 
 ## Upgrade tooling already present
 
-`update-snipeit.sh` — fetch-tag → `git merge` → archive/scp deploy to hardcoded server IP. Documents the "keep both sides, re-apply `[floating-licenses addon]`" convention, but references an unimplemented `SKIP_MERGE=1` flag and an out-of-repo server-side script.
+`scripts/update-snipeit.sh` — fetch-tag → `git merge` → archive/scp deploy to hardcoded server IP. Documents the "keep both sides, re-apply `[floating-licenses addon]`" convention, but references an unimplemented `SKIP_MERGE=1` flag and an out-of-repo server-side script.

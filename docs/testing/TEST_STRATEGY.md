@@ -16,18 +16,16 @@
 | `Feature` | `tests/Feature` (~67 domain dirs) | HTTP/DB feature tests: Assets, Checkouts, Checkins, Api, Importer, Ldap, Fmcs, Livewire, Blade, Console… |
 | `FloatingLicenses` | `packages/floating-licenses/tests` | Package feature tests (17 files, ~114 tests); runs against host `Tests\TestCase`, master switch enabled in `setUp()` |
 
-Also: `tests/pa11y` for accessibility.
-
 ## Commands
 
 ```bash
-vendor/bin/phpunit --testsuite Unit
-vendor/bin/phpunit --testsuite Feature
-vendor/bin/phpunit --testsuite FloatingLicenses
-vendor/bin/phpunit --filter SomeTest          # single test
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite Unit
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite Feature
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite FloatingLicenses
+vendor/bin/phpunit -c .ci/phpunit.xml --filter SomeTest          # single test
 vendor/bin/paratest                           # parallel
-vendor/bin/pint --dirty --format agent        # style gate, after any PHP change
-vendor/bin/phpstan analyse                    # static analysis
+vendor/bin/pint --dirty --config .ci/pint.json --format agent        # style gate, after any PHP change
+vendor/bin/phpstan analyse -c .ci/phpstan.neon.dist                    # static analysis
 ```
 
 New tests via artisan (PHPUnit, not Pest):

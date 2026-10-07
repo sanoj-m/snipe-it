@@ -403,9 +403,9 @@ autoloader, the root `composer.json` registers the test namespace itself
 Run `composer dump-autoload` after adding that, then:
 
 ```bash
-vendor/bin/phpunit --testsuite FloatingLicenses
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite FloatingLicenses
 # or
-php artisan test packages/floating-licenses/tests
+php artisan test -c .ci/phpunit.xml packages/floating-licenses/tests
 ```
 
 ## Upgrade guide
@@ -484,9 +484,9 @@ The fenced `[floating-licenses addon]` hunks in core files are registered in
 ## Test procedure
 
 ```bash
-vendor/bin/phpunit --testsuite FloatingLicenses
+vendor/bin/phpunit -c .ci/phpunit.xml --testsuite FloatingLicenses
 # or
-php artisan test packages/floating-licenses/tests
+php artisan test -c .ci/phpunit.xml packages/floating-licenses/tests
 ```
 
 Local runs on the maintainer's Windows machine are currently blocked (no PHP

@@ -28,7 +28,7 @@ iterated defect-fix loop driven by real screenshots of the live site.
   nav_link_color `#374151`, skin `black-light`, link colors blue — Snipe-IT's
   own theming engine (tenant CSS vars with `!important`) was the root cause of
   most "mystery" dark/white control colors.
-- `update-snipeit.sh` (repo root) + `/usr/local/sbin/snipeit-apply-update.sh`
+- `scripts/update-snipeit.sh` + `/usr/local/sbin/snipeit-apply-update.sh`
   (server): merge upstream tag → archive → backup (rotated, sessions/uploads
   excluded) → rsync → composer.lock plugin patch → migrate → caches.
 - Server disk filled to 100% by 1.5 GB backups once; rotation added (4 DB

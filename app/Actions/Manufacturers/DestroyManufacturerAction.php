@@ -55,7 +55,6 @@ class DestroyManufacturerAction
         }
 
         $manufacturer->delete();
-        // dd($manufacturer);
 
         return true;
     }

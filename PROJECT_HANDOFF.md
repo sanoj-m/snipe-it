@@ -150,7 +150,6 @@ Notable console commands (~60): `LdapSync`, `LdapTroubleshooter`,
 - PHPUnit 11, three testsuites: `tests/Unit`, `tests/Feature` (~67 dirs, organized
   per domain: Assets, Checkouts, Checkins, Api, Importer, Ldap, Fmcs, Livewire,
   Blade, Console…), and `packages/floating-licenses/tests`.
-- `tests/pa11y` for accessibility.
 - CI workflows (`.github/workflows/`): tests on **MySQL, PostgreSQL, SQLite**,
   larastan static analysis, CodeQL, docker builds (alpine/ubuntu).
 - Behavior/logic changes should come with tests; layout-only changes don't need
@@ -158,7 +157,7 @@ Notable console commands (~60): `LdapSync`, `LdapTroubleshooter`,
 
 ## 8. Style & workflow gates (mandatory after PHP edits)
 
-1. Run `vendor/bin/pint --dirty --format agent` before finalizing PHP changes.
+1. Run `vendor/bin/pint --dirty --config .ci/pint.json --format agent` before finalizing PHP changes.
 2. Clear caches after config/route changes: `php artisan optimize:clear`.
 3. If a frontend change doesn't show up: `npm run dev` or `npm run watch` (Mix,
    not Vite).
@@ -173,8 +172,10 @@ Notable console commands (~60): `LdapSync`, `LdapTroubleshooter`,
   **Grokability-managed hosting** (stock-source only — code changes are not
   possible there, only supported `.env` config). This local repo, however, is a
   full fork ("Killa Asset") and is free to modify.
-- Docker support in `docker/` (apache/fpm, alpine/ubuntu), Ansible playbooks in
-  `ansible/`.
+- Docker support in `docker/` (apache/fpm, alpine/ubuntu). Upstream-only
+  leftovers (Ansible playbooks, Vagrant/Heroku/installer scripts, Crowdin,
+  psalm/phpmd configs, pa11y) were pruned in the 2026 repo cleanup — see
+  `docs/upgrades/UPGRADE_HISTORY.md`.
 - Served locally by Laravel Herd at `https://snipe-it.test`.
 
 ## 10. Constraints & traps for anyone proposing changes
