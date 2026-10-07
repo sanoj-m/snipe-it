@@ -21,9 +21,20 @@ sources, in this precedence order when they conflict:
 
 - AdminLTE 2 / Bootstrap 3 Blade views. No Tailwind, no CSS-in-JS, no Inertia.
 - Frontend builds with Laravel Mix (`npm run dev`). Prefer **zero-build**
-  changes: the v2 theme is a plain committed stylesheet
-  `public/css/killa-v2.css` loaded once in `layouts/default.blade.php` after
-  `all.css`. Blade edits are allowed; new build steps are not.
+  changes: the v2 theme is six plain committed stylesheets in `public/css/`,
+  loaded in order in `layouts/default.blade.php` and `layouts/basic.blade.php`
+  after `all.css`:
+  1. `killa-v2.css` — tokens (`:root` + dark block) + app shell (sidebar,
+     navbar, flyout menus, login)
+  2. `killa-v2-forms.css` — form controls, inputs, select2 chrome
+  3. `killa-v2-tables.css` — bootstrap-table chrome, .table variants, print
+  4. `killa-v2-widgets.css` — dashboard widgets, timeline, panels, progress
+  5. `killa-v2-overlays.css` — modals, dropdowns, popovers, tooltips, pickers
+  6. `killa-v2-dark.css` — dark-mode completeness layer (ONLY
+     `html[data-theme='dark']` rules + dark token overrides)
+  They are cache-busted with `?v={{ config('version.app_version') }}` — busts
+  on each release, zero per-request disk reads. Blade edits are allowed; new
+  build steps are not.
 - This repo is a fork that merges upstream Snipe-IT releases. All theme work
   must be **additive and override-based** (CSS cascade + tokens), so upstream
   merges never wipe it. Mark custom Blade blocks with
@@ -38,6 +49,13 @@ All visual decisions reference tokens defined at the top of
 outside the token block (hallmark "locked tokens" gate). If a needed value
 is missing, add a named token, then use it.
 
+Token single-source-of-truth rule: each `--k-*` token is defined exactly
+once — the light value in `killa-v2.css` `:root` (or in the owning domain
+file's `:root` for domain-private tokens), and the dark value ONLY in the
+`html[data-theme='dark']` block of the same file, or in `killa-v2-dark.css`
+for shared tokens (`--k-input-disabled-bg`, `--k-scrollbar-thumb`). Never
+define the same token in two files.
+
 Current token set (v2 "Atelier" theme):
 - Color: `--k-bg` (cool neutral page), `--k-surface` (cards),
   `--k-border`, `--k-text`, `--k-text-muted`, `--k-accent` (Killa red
@@ -46,9 +64,14 @@ Current token set (v2 "Atelier" theme):
 - Type: `--k-font` system-first stack (Inter when self-hosted, fallback
   -apple-system/Segoe UI). 13px base stays (dense admin), headings roman
   only, weight carries hierarchy — never italic headers (hallmark gate).
-- Shape: `--k-radius` 6px cards / 4px inputs, `--k-shadow-1` hairline +
-  faint lift, no heavy AdminLTE drop shadows.
+- Shape: `--k-radius` 12px cards / `--k-radius-sm` 6px inputs,
+  `--k-shadow-1` hairline + faint lift, no heavy AdminLTE drop shadows.
 - Space: 4px grid; card padding 16/20px; section rhythm 24px.
+
+When `!important` is justified: only to beat AdminLTE 2 / Bootstrap 3 rules
+that themselves carry `!important` (e.g. collapsed-sidebar flyout
+positioning) — that is the blanket case. Any other new `!important` needs a
+comment naming the rule it defeats.
 
 ## The six operating rules (impeccable + hallmark, condensed)
 

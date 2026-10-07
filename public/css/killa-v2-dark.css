@@ -8,13 +8,14 @@
    ========================================================================== */
 
 /* Component tokens introduced by this file (light values for completeness;
-   the dark block below is the one actually consumed by these rules). */
+   the dark block below is the one actually consumed by these rules).
+   --k-input-disabled-bg and --k-scrollbar-thumb are shared tokens: their
+   single light source is killa-v2.css :root; this file carries ONLY the
+   dark overrides. */
 :root {
     --k-code-bg: #f4f5f7;
     --k-code-text: #b03548;
-    --k-input-disabled-bg: #eef0f2;
     --k-scrollbar-track: #eef0f2;
-    --k-scrollbar-thumb: #c9ced6;
     --k-scrollbar-thumb-hover: #aab1bb;
 }
 

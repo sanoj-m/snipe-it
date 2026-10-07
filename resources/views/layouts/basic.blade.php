@@ -18,13 +18,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700&display=swap">
-    {{-- [killa-v2] theme layer --}}
-    <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}?v={{ substr(md5_file(public_path('css/killa-v2.css')), 0, 8) }}">
-    <link rel="stylesheet" href="{{ url('css/killa-v2-forms.css') }}?v={{ substr(md5_file(public_path('css/killa-v2-forms.css')), 0, 8) }}">
-    <link rel="stylesheet" href="{{ url('css/killa-v2-tables.css') }}?v={{ substr(md5_file(public_path('css/killa-v2-tables.css')), 0, 8) }}">
-    <link rel="stylesheet" href="{{ url('css/killa-v2-widgets.css') }}?v={{ substr(md5_file(public_path('css/killa-v2-widgets.css')), 0, 8) }}">
-    <link rel="stylesheet" href="{{ url('css/killa-v2-overlays.css') }}?v={{ substr(md5_file(public_path('css/killa-v2-overlays.css')), 0, 8) }}">
-    <link rel="stylesheet" href="{{ url('css/killa-v2-dark.css') }}?v={{ substr(md5_file(public_path('css/killa-v2-dark.css')), 0, 8) }}">
+    {{-- [killa-v2] theme layer: plain committed stylesheets, no build step. Cache-busted on app version (changes each release), not per-request md5_file(). --}}
+    <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}?v={{ config('version.app_version') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-forms.css') }}?v={{ config('version.app_version') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-tables.css') }}?v={{ config('version.app_version') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-widgets.css') }}?v={{ config('version.app_version') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-overlays.css') }}?v={{ config('version.app_version') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-dark.css') }}?v={{ config('version.app_version') }}">
 
     @include('partials.theme-mode-tenant-vars')
 

@@ -18,6 +18,10 @@
     --k-hover-tint: #f3f4f6;
     --k-table-head-bg: #f9fafb;
     --k-row-hover: #fafbfc;
+    /* shared component tokens (single source of truth; dark overrides live
+       ONLY in killa-v2-dark.css — domain files must not re-define these) */
+    --k-input-disabled-bg: #eef0f2;
+    --k-scrollbar-thumb: #c9ced6;
 
     /* brand */
     --k-accent: #E63B2E;
@@ -1371,28 +1375,9 @@ body.sidebar-collapse .sidebar-menu .treeview-menu > li > a:hover {
     color: var(--k-accent) !important;
 }
 
-/* hover bridge: keep the flyout open while the pointer crosses the gap
-   between the collapsed sidebar icon and the menu card */
-body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: -250px;
-    width: 250px;
-    top: -80px;
-    bottom: -20px;
-    background: transparent;
-}
-
-/* the hover bridge must win hit-testing over the following sibling anchors */
-body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
-    z-index: 1000;
-}
-
 /* --------------------------------------------------------------------------
    Hover-intent: keep collapsed flyouts rendered but hidden, and delay the
-   hide by 180ms so the pointer can cross from the icon to the menu without
+   hide by 0.5s so the pointer can cross from the icon to the menu without
    losing it (pure display:none racing made the menu vanish instantly).
    -------------------------------------------------------------------------- */
 body.sidebar-collapse .sidebar-menu > li > .treeview-menu {
@@ -1440,57 +1425,16 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li {
     position: relative;
 }
 
-/* --------------------------------------------------------------------------
-   Deterministic hover corridor: the flyout's own padding box IS the bridge
-   (padding hit-tests as the element; pseudo-elements proved unreliable).
-   Card visuals move to an inner ::after so the padding stays invisible.
-   -------------------------------------------------------------------------- */
-body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
-    padding: 80px 20px 20px 250px;
-    margin: -80px -20px -20px -250px;
-    background: transparent !important;
-    border: none !important;
-    box-shadow: none !important;
-    border-radius: 0;
-}
-
-body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
-    content: none;
-}
-
-body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::after {
-    content: '';
-    position: absolute;
-    top: 80px;
-    left: 250px;
-    right: 20px;
-    bottom: 20px;
-    background: var(--k-surface);
-    border: 1px solid var(--k-border);
-    border-radius: var(--k-radius-chip);
-    box-shadow: var(--k-shadow-2);
-    z-index: -1;
-}
-
+/* flyout items keep a local stacking context (leftover from the removed
+   corridor experiment; harmless and still applied) */
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu > li {
     position: relative;
     z-index: 1;
 }
 
-/* flyout content zone needs a usable width after the 250px+20px corridor */
-body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
-    min-width: 480px;
-    max-width: 560px;
-}
-
-/* tuck the card next to the sidebar; the corridor extends invisibly to its left */
-body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
-    left: -190px;
-}
-
 /* --------------------------------------------------------------------------
-   SIMPLIFY: drop the corridor experiments. The flyout stays flush beside the
-   sidebar (x=50); the 350ms visibility grace alone covers the crossing.
+   Flyout geometry: flush beside the sidebar (x=50); the 0.5s visibility
+   grace alone covers the pointer crossing.
    -------------------------------------------------------------------------- */
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     left: 50px;
@@ -1517,7 +1461,8 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     top: 0;
 }
 
-/* JS hover-intent hold: li keeps this class for 400ms after mouseleave */
+/* JS hover-intent hold: li keeps this class for 800ms after mouseleave
+   (see default.blade.php [killa-v2] hover-intent script) */
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li.k-flyout-hold > .treeview-menu {
     visibility: visible;
     opacity: 1;

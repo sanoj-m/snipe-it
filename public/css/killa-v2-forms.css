@@ -8,16 +8,16 @@
    ========================================================================== */
 
 /* Component tokens specific to forms. Defined for BOTH themes per the
-   killa-v2 rule: no raw hex outside these blocks. */
+   killa-v2 rule: no raw hex outside these blocks. (--k-input-disabled-bg is
+   shared with the dark layer — its single source is killa-v2.css :root with
+   the dark override in killa-v2-dark.css.) */
 :root {
-    --k-input-disabled-bg: #f3f4f6;
     --k-input-disabled-text: #9aa3ad;
     --k-form-choice-bg: #fdeceb;
     --k-form-choice-border: rgba(230, 59, 46, 0.25);
 }
 
 html[data-theme='dark'] {
-    --k-input-disabled-bg: #22262d;
     --k-input-disabled-text: #6b7280;
     --k-form-choice-bg: #3a2220;
     --k-form-choice-border: rgba(240, 87, 75, 0.3);

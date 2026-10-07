@@ -7,10 +7,11 @@
    ========================================================================== */
 
 :root {
-    /* table-domain tokens (dark counterparts below) */
+    /* table-domain tokens (dark counterparts below; --k-scrollbar-thumb is
+       shared — single source in killa-v2.css :root, dark override in
+       killa-v2-dark.css) */
     --k-table-stripe: rgba(31, 41, 51, 0.03);
     --k-table-selected-bg: color-mix(in srgb, var(--k-accent) 8%, var(--k-surface));
-    --k-scrollbar-thumb: #c6ccd3;
     --k-accent-contrast: #ffffff;
     --k-print-border: #b8bcc2;
 
@@ -24,7 +25,6 @@
 html[data-theme='dark'] {
     --k-table-stripe: rgba(255, 255, 255, 0.03);
     --k-table-selected-bg: color-mix(in srgb, var(--k-accent) 14%, var(--k-surface));
-    --k-scrollbar-thumb: #3d454e;
     --k-accent-contrast: #14171b;
     --k-print-border: #b8bcc2;
 
