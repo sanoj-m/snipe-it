@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # Update Killa Asset (Snipe-IT fork) to a new upstream release and deploy it.
 #
-# Usage:   ./update-snipeit.sh v8.9.0
+# Usage:   SERVER=user@host ./update-snipeit.sh v8.9.0
+#          SKIP_MERGE=1 SERVER=user@host ./update-snipeit.sh v8.9.0  # after resolving conflicts
 #
 # What it does:
 #   1. Fetches the upstream tag from grokability/snipe-it and merges it into
@@ -13,30 +14,36 @@
 #   3. Runs snipeit-apply-update.sh on the server (backup, rsync, composer,
 #      migrate, caches).
 #
-# Prereqs: ssh key auth to the server (ssh root@40.30.20.6 works without a
+# Prereqs: ssh key auth to the server (ssh user@host works without a
 # password), or set SSH="plink -pw ..." below.
 set -e
 
 TAG=$1
-SERVER=${SERVER:-root@40.30.20.6}
 SSH=${SSH:-ssh}
 SCP=${SCP:-scp}
 
-[ -n "$TAG" ] || { echo "usage: $0 <upstream-tag>  e.g. $0 v8.9.0"; exit 1; }
+[ -n "$TAG" ] || { echo "usage: SERVER=user@host $0 <upstream-tag>  e.g. SERVER=root@example.com $0 v8.9.0"; exit 1; }
+[ -n "${SERVER:-}" ] || { echo "error: SERVER env var is required (SERVER=user@host $0 $TAG)"; exit 1; }
 
 cd "$(dirname "$0")"
 
-echo "==> Fetch upstream"
-git remote get-url upstream >/dev/null 2>&1 || \
-    git remote add upstream https://github.com/grokability/snipe-it.git
-git fetch upstream --tags
+if [ "${SKIP_MERGE:-0}" = "1" ]; then
+    [ -z "$(git ls-files -u)" ] && [ -z "$(git status --porcelain)" ] || {
+        echo "error: SKIP_MERGE=1 requires a clean tree with no merge in progress"; exit 1; }
+    echo "==> SKIP_MERGE=1: skipping fetch/merge"
+else
+    echo "==> Fetch upstream"
+    git remote get-url upstream >/dev/null 2>&1 || \
+        git remote add upstream https://github.com/grokability/snipe-it.git
+    git fetch upstream --tags
 
-echo "==> Merge $TAG"
-if ! git merge "$TAG" --no-edit; then
-    echo "!! Resolve the conflicts (watch for '[floating-licenses addon]' and"
-    echo "!! branding blocks — keep both sides), then: git add -A && git commit"
-    echo "!! and re-run this script with: SKIP_MERGE=1 $0 $TAG"
-    exit 1
+    echo "==> Merge $TAG"
+    if ! git merge "$TAG" --no-edit; then
+        echo "!! Resolve the conflicts (watch for '[floating-licenses addon]' and"
+        echo "!! branding blocks — keep both sides), then: git add -A && git commit"
+        echo "!! and re-run this script with: SKIP_MERGE=1 SERVER=$SERVER $0 $TAG"
+        exit 1
+    fi
 fi
 
 echo "==> Archive + ship"
