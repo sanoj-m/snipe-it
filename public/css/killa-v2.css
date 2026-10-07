@@ -1708,3 +1708,23 @@ html[data-theme='dark'] body.sidebar-mini.sidebar-collapse .sidebar-menu > li > 
     border-color: var(--k-border) !important;
     box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
 }
+
+/* --------------------------------------------------------------------------
+   [killa-v2] 768px responsive floor (SKILL.md "Responsive floor", UI-A-07):
+   clamp the collapsed-sidebar flyout so it can never overflow the viewport.
+   Below 768px AdminLTE uses the off-canvas sidebar (sidebar-open transform)
+   with inline-expanding treeviews, so this is a safeguard, not a behavior
+   change — desktop rules above are untouched. Pseudo-elements are already
+   content:none globally (line ~1453); repeated here only to keep them dead
+   if that block is ever removed.
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+    body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+        max-width: calc(100vw - 60px);
+    }
+
+    body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::before,
+    body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::after {
+        content: none;
+    }
+}

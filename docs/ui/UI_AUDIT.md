@@ -17,8 +17,8 @@ UPSTREAM-DIVERGENCE. Severities: HIGH / MEDIUM / LOW.
 | UI-A-04 | 6× `md5_file()` per request (cache-busting) in both layouts | `layouts/default.blade.php`, `layouts/basic.blade.php` | BUG (perf) | MEDIUM | FIXED — replaced with `?v={{ config('version.app_version') }}` in both layouts (busts per release, no per-request disk reads) |
 | UI-A-05 | SKILL.md drift: says 1 CSS file / 6px radius; reality 6 files / 12px | `skills/killa-design/SKILL.md` vs `public/css/killa-v2*.css` | INCONSISTENCY | LOW | FIXED — SKILL.md lists the six stylesheets, `--k-radius: 12px`, token single-source rule, version-based cache-bust, and an !important-justification note |
 | UI-A-06 | `licenses/view.blade.php`: inline styles + ~320-line divergence from upstream | KCP-018 | UPSTREAM-DIVERGENCE | HIGH | OPEN |
-| UI-A-07 | No responsive rules below 768px anywhere in the theme | `public/css/killa-v2*.css` | RESPONSIVE | MEDIUM | OPEN |
-| UI-A-08 | Google Fonts CDN loaded on login pages (GDPR/offline concern) | `layouts/basic.blade.php` | ACCESSIBILITY/privacy | MEDIUM | OPEN |
+| UI-A-07 | No responsive rules below 768px anywhere in the theme | `public/css/killa-v2*.css` | RESPONSIVE | MEDIUM | FIXED — added `@media (max-width: 767px)` block in killa-v2.css clamping the collapsed flyout to `calc(100vw - 60px)` (safeguard only; AdminLTE below 768px uses off-canvas sidebar, flyouts don't apply) |
+| UI-A-08 | Google Fonts CDN loaded on login pages (GDPR/offline concern) | `layouts/basic.blade.php` | ACCESSIBILITY/privacy | MEDIUM | FIXED — self-hosted Inter/Inter Tight variable woff2 (latin, 91KB) in `public/fonts/vendor/inter/` + `killa-v2-fonts.css`; CDN links removed from both layouts |
 | UI-A-09 | Flyout hover JS inlined in layout instead of a JS file | `layouts/default.blade.php` | DESIGN-SYSTEM | LOW | OPEN |
 | UI-A-10 | Footer links deleted from upstream layout (attribution/community links) | `layouts/default.blade.php` (KCP-025), BR-04 | UPSTREAM-DIVERGENCE | MEDIUM (compliance) | OPEN |
 

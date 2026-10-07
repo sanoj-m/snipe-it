@@ -21,9 +21,11 @@ sources, in this precedence order when they conflict:
 
 - AdminLTE 2 / Bootstrap 3 Blade views. No Tailwind, no CSS-in-JS, no Inertia.
 - Frontend builds with Laravel Mix (`npm run dev`). Prefer **zero-build**
-  changes: the v2 theme is six plain committed stylesheets in `public/css/`,
+  changes: the v2 theme is seven plain committed stylesheets in `public/css/`,
   loaded in order in `layouts/default.blade.php` and `layouts/basic.blade.php`
   after `all.css`:
+  0. `killa-v2-fonts.css` — self-hosted Inter/Inter Tight @font-face
+     (files in `public/fonts/vendor/inter/`, latin variable woff2)
   1. `killa-v2.css` — tokens (`:root` + dark block) + app shell (sidebar,
      navbar, flyout menus, login)
   2. `killa-v2-forms.css` — form controls, inputs, select2 chrome
@@ -61,7 +63,8 @@ Current token set (v2 "Atelier" theme):
   `--k-border`, `--k-text`, `--k-text-muted`, `--k-accent` (Killa red
   `#E63B2E`, from the Killa Design logo — the ONE brand color),
   semantic `--k-success/warning/danger/info` muted to match.
-- Type: `--k-font` system-first stack (Inter when self-hosted, fallback
+- Type: `--k-font` system-first stack (self-hosted Inter via
+  `killa-v2-fonts.css` / `public/fonts/vendor/inter/`, fallback
   -apple-system/Segoe UI). 13px base stays (dense admin), headings roman
   only, weight carries hierarchy — never italic headers (hallmark gate).
 - Shape: `--k-radius` 12px cards / `--k-radius-sm` 6px inputs,
