@@ -1443,3 +1443,8 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu
     opacity: 0;
     transition: opacity 0.12s ease, visibility 0s linear 0.35s;
 }
+
+/* the flyout's containing block must not jump when hover leaves the li */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li {
+    position: relative;
+}
