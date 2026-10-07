@@ -1399,7 +1399,7 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     display: block !important;
     visibility: hidden;
     opacity: 0;
-    transition: opacity 0.12s ease, visibility 0s linear 0.35s;
+    transition: opacity 0.12s ease, visibility 0s linear 0.5s;
 }
 
 body.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu,
@@ -1414,7 +1414,7 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     display: block !important;
     visibility: hidden;
     opacity: 0;
-    transition: opacity 0.12s ease, visibility 0s linear 0.35s;
+    transition: opacity 0.12s ease, visibility 0s linear 0.5s;
 }
 
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu,
@@ -1509,4 +1509,10 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::before,
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::after {
     content: none;
+}
+
+/* align flyout with the item top (native AdminLTE geometry — tall menus then
+   overlap the anchor row itself, so there is no vertical gap to cross) */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    top: 0;
 }
