@@ -20,8 +20,6 @@ class FloatingLicenseAllocation extends Model
 
     public const STATUS_EXPIRED = 'expired';
 
-    public const STATUS_REVOKED = 'revoked';
-
     protected $table = 'floating_license_allocations';
 
     protected $fillable = [

@@ -153,6 +153,43 @@ class FloatingCheckoutInterceptionTest extends TestCase
             ->assertRedirect(route('floating-licenses.show', $config));
     }
 
+    public function test_web_release_with_external_referer_falls_back_to_pool_page()
+    {
+        $config = $this->createFloatingConfig();
+        $user = $this->createUserWithFloatingPermissions(['floating_licenses.allocate']);
+        $allocation = app(FloatingLicenseService::class)->allocate($config, $user);
+
+        $this->actingAs($user)
+            ->withHeader('Referer', 'https://evil.example.com/phishing')
+            ->post(route('floating-licenses.allocations.release', $allocation))
+            ->assertRedirect(route('floating-licenses.show', $config));
+    }
+
+    public function test_web_release_with_lookalike_host_referer_falls_back_to_pool_page()
+    {
+        $config = $this->createFloatingConfig();
+        $user = $this->createUserWithFloatingPermissions(['floating_licenses.allocate']);
+        $allocation = app(FloatingLicenseService::class)->allocate($config, $user);
+
+        $this->actingAs($user)
+            ->withHeader('Referer', 'http://localhost.evil.example.com/phishing')
+            ->post(route('floating-licenses.allocations.release', $allocation))
+            ->assertRedirect(route('floating-licenses.show', $config));
+    }
+
+    public function test_web_release_with_local_referer_is_honored()
+    {
+        $license = License::factory()->create();
+        $config = $this->createFloatingConfig($license);
+        $user = $this->createUserWithFloatingPermissions(['floating_licenses.allocate']);
+        $allocation = app(FloatingLicenseService::class)->allocate($config, $user);
+
+        $this->actingAs($user)
+            ->withHeader('Referer', route('licenses.show', $license))
+            ->post(route('floating-licenses.allocations.release', $allocation))
+            ->assertRedirect(route('licenses.show', $license));
+    }
+
     public function test_checkout_on_fixed_license_with_master_off_does_normal_seat_checkout()
     {
         $this->disableFloatingLicenses();

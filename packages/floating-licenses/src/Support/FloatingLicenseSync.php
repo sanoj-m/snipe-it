@@ -37,9 +37,9 @@ class FloatingLicenseSync
      *
      * The license's own attributes are the source of truth: seats = pool size,
      * purchase_cost = per-unit (per seat) price, so the pool's total cost is
-     * purchase_cost × seats. Called from LicensesController::store() and
-     * ::update() right after the license is saved; a no-op when the master
-     * switch is off.
+     * purchase_cost × seats. Triggered by the License saved listener in
+     * FloatingLicensesServiceProvider (gated to the licenses.store /
+     * licenses.update form routes); a no-op when the master switch is off.
      */
     public static function syncFromRequest(License $license, Request $request): void
     {

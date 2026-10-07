@@ -2,7 +2,9 @@
 
 namespace SnipeIt\FloatingLicenses\Models;
 
+use App\Models\Company;
 use App\Models\License;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -36,6 +38,21 @@ class FloatingLicenseConfig extends Model
         'lease_duration_minutes' => 'integer',
         'idle_timeout_minutes' => 'integer',
     ];
+
+    /**
+     * Scope pool configs to the current user's companies under Full Multiple
+     * Company Support, via the underlying license (configs carry no
+     * company_id of their own). No-op when FMCS is off, for superusers, or
+     * on the CLI — the same rules Company::scopeCompanyables() applies.
+     */
+    public function scopeCompanyScoped(Builder $query): Builder
+    {
+        if (! Company::isFullMultipleCompanySupportEnabled()) {
+            return $query;
+        }
+
+        return $query->whereHas('license', fn (Builder $licenseQuery) => Company::scopeCompanyables($licenseQuery));
+    }
 
     /**
      * The underlying Snipe-IT license this pool is attached to.

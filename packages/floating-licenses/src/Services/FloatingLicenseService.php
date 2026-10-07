@@ -133,31 +133,6 @@ class FloatingLicenseService
     }
 
     /**
-     * Administratively revoke an active allocation.
-     *
-     * @throws InvalidAllocationException When the allocation is not active.
-     */
-    public function revoke(FloatingLicenseAllocation $allocation, User $actor): FloatingLicenseAllocation
-    {
-        if (! $allocation->isActive()) {
-            throw new InvalidAllocationException(trans('floating-licenses::floating.error.not_active'));
-        }
-
-        $allocation->status = FloatingLicenseAllocation::STATUS_REVOKED;
-        $allocation->released_at = Carbon::now();
-        $allocation->save();
-
-        $this->writeAuditLog($allocation->license_id, $allocation->user_id, 'floating.revoke',
-            trans('floating-licenses::floating.log.revoke', ['id' => $allocation->id]), $actor);
-
-        if ($config = $this->configFor($allocation)) {
-            $this->recalculateCosts($config);
-        }
-
-        return $allocation;
-    }
-
-    /**
      * Expire allocations whose lease has run out or that have gone idle.
      *
      * Only allocations whose pool config HAS durations set are touched:

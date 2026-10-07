@@ -159,9 +159,10 @@ class LicenseImporter extends ItemImporter
         // setRequestableAttribute normalizes "0"/"1"/"true"/"false"/""
         // so any of the common CSV shapes lands correctly.
         $this->setItemFromCsvIfPresent($row, 'requestable');
-        // Accepts 1/0, true/false, yes/no via License's setPerpetualAttribute
-        // mutator. When truthy, the expiration date is cleared below since a
-        // perpetual license never expires.
+        // [perpetual-licenses addon] Accepts 1/0, true/false, yes/no via
+        // License's setPerpetualAttribute mutator. When truthy, the
+        // License::saving listener clears expiration_date at save time since
+        // a perpetual license never expires.
         $this->setItemFromCsvIfPresent($row, 'perpetual');
 
         // Dates need parseOrNullDate after the raw value is in $this->item.
@@ -176,10 +177,6 @@ class LicenseImporter extends ItemImporter
                     $this->item[$dateField] = null;
                 }
             }
-        }
-
-        if (filter_var($this->item['perpetual'] ?? false, FILTER_VALIDATE_BOOLEAN)) {
-            $this->item['expiration_date'] = null;
         }
 
         if ($editingLicense) {

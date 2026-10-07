@@ -32,11 +32,17 @@ class LicenseUsersController extends Controller
             $out = fopen('php://output', 'w');
             fputcsv($out, ['username', 'first_name', 'last_name', 'email', 'assignment_type', 'assigned_at']);
 
+            // One query for all seats of this license, grouped per assignee,
+            // instead of a per-user lookup inside the loop.
+            $seatsByUser = LicenseSeat::where('license_id', $license->id)
+                ->whereNotNull('assigned_to')
+                ->whereNull('deleted_at')
+                ->orderBy('id')
+                ->get()
+                ->groupBy('assigned_to');
+
             foreach ($bulk->seatAssignedUsers($license) as $user) {
-                $seat = LicenseSeat::where('license_id', $license->id)
-                    ->where('assigned_to', $user->id)
-                    ->whereNull('deleted_at')
-                    ->first();
+                $seat = $seatsByUser->get($user->id)?->first();
 
                 fputcsv($out, [$user->username, $user->first_name, $user->last_name, $user->email, 'seat', $seat?->created_at]);
             }

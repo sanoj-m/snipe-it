@@ -37,7 +37,7 @@ class FloatingLicenseController extends Controller
     {
         $this->authorize('floating_licenses.view');
 
-        $configs = FloatingLicenseConfig::with('license')->get();
+        $configs = FloatingLicenseConfig::with('license')->companyScoped()->get();
 
         $stats = [];
         foreach ($configs as $config) {
@@ -54,6 +54,7 @@ class FloatingLicenseController extends Controller
     public function show(FloatingLicenseConfig $config): View
     {
         $this->authorize('floating_licenses.view');
+        $this->abortIfLicenseOutOfCompanyScope($config);
 
         $config->load('license');
 
@@ -120,6 +121,7 @@ class FloatingLicenseController extends Controller
     public function edit(FloatingLicenseConfig $config): View
     {
         $this->authorize('floating_licenses.manage');
+        $this->abortIfLicenseOutOfCompanyScope($config);
 
         $config->load('license');
 
@@ -132,6 +134,7 @@ class FloatingLicenseController extends Controller
     public function update(Request $request, FloatingLicenseConfig $config): RedirectResponse
     {
         $this->authorize('floating_licenses.manage');
+        $this->abortIfLicenseOutOfCompanyScope($config);
 
         $validated = $request->validate([
             'pool_size' => 'required|integer|min:1',
@@ -158,6 +161,7 @@ class FloatingLicenseController extends Controller
     public function destroy(FloatingLicenseConfig $config): RedirectResponse
     {
         $this->authorize('floating_licenses.manage');
+        $this->abortIfLicenseOutOfCompanyScope($config);
 
         if ($config->activeAllocations()->count() > 0) {
             return redirect()->route('floating-licenses.show', $config)
@@ -176,6 +180,7 @@ class FloatingLicenseController extends Controller
     public function allocate(Request $request, FloatingLicenseConfig $config): RedirectResponse
     {
         $this->authorize('floating_licenses.allocate');
+        $this->abortIfLicenseOutOfCompanyScope($config);
 
         $validated = $request->validate([
             'user_id' => 'required|integer|exists:users,id',
@@ -185,6 +190,14 @@ class FloatingLicenseController extends Controller
 
         $user = User::findOrFail($validated['user_id']);
         $asset = isset($validated['asset_id']) ? Asset::find($validated['asset_id']) : null;
+
+        // FMCS: a pool slot may only go to a user the license's company can
+        // check out to (same rule core seat checkout enforces).
+        $config->loadMissing('license');
+        if ($config->license && ! $config->license->canCheckoutTo($user)) {
+            return redirect()->route('floating-licenses.show', $config)
+                ->with('error', trans('floating-licenses::floating.error.company_mismatch'));
+        }
 
         try {
             $this->service->allocate($config, $user, $asset, $validated['notes'] ?? null);
@@ -213,6 +226,9 @@ class FloatingLicenseController extends Controller
             $this->authorize('floating_licenses.allocate');
         }
 
+        // FMCS: the allocation inherits its scope from the license.
+        abort_unless(License::where('id', $allocation->license_id)->exists(), 404);
+
         try {
             $this->service->release($allocation, $user);
         } catch (InvalidAllocationException) {
@@ -226,8 +242,35 @@ class FloatingLicenseController extends Controller
             ? route('floating-licenses.show', $config)
             : route('floating-licenses.index');
 
-        return redirect()->to($request->headers->get('referer') ?: $fallback)
+        return redirect()->to($this->safeRedirectTarget($request, $fallback))
             ->with('success', trans('floating-licenses::floating.message.released'));
+    }
+
+    /**
+     * Honor the Referer header as a redirect target only when it points back
+     * at this host (same-host absolute URL or a relative path); anything else
+     * (external host, header spoofing a lookalike host) falls back to the
+     * pool page so the release button cannot be abused as an open redirect.
+     */
+    protected function safeRedirectTarget(Request $request, string $fallback): string
+    {
+        $referer = $request->headers->get('referer');
+
+        if (! $referer) {
+            return $fallback;
+        }
+
+        if (str_starts_with($referer, '/')) {
+            return $referer;
+        }
+
+        $host = parse_url($referer, PHP_URL_HOST);
+
+        if ($host !== null && strcasecmp($host, $request->getHost()) === 0) {
+            return $referer;
+        }
+
+        return $fallback;
     }
 
     /**
@@ -270,6 +313,15 @@ class FloatingLicenseController extends Controller
             'user_ids.*' => 'integer|exists:users,id',
         ]);
 
+        // FMCS: reject the whole batch when any selected user belongs to a
+        // company the license cannot be checked out to.
+        foreach (User::whereIn('id', $validated['user_ids'])->get() as $user) {
+            if (! $license->canCheckoutTo($user)) {
+                return redirect()->route('licenses.show', $license)
+                    ->with('error', trans('floating-licenses::floating.error.company_mismatch'));
+            }
+        }
+
         $result = $bulk->addUsers($license, array_map('intval', $validated['user_ids']));
 
         return redirect()->route('licenses.show', $license)
@@ -292,5 +344,17 @@ class FloatingLicenseController extends Controller
 
         return redirect()->route('licenses.show', $license)
             ->with($result['failed'] > 0 ? 'warning' : 'success', trans('floating-licenses::floating.message.bulk_remove_result', $result));
+    }
+
+    /**
+     * FMCS guard for routes bound to a pool config (which has no company_id
+     * of its own): under Full Multiple Company Support the License global
+     * scope hides other companies' licenses, so an invisible license means
+     * this pool is out of the user's scope — respond 404 like core route
+     * model binding does.
+     */
+    protected function abortIfLicenseOutOfCompanyScope(FloatingLicenseConfig $config): void
+    {
+        abort_unless(License::where('id', $config->license_id)->exists(), 404);
     }
 }

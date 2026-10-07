@@ -75,6 +75,11 @@ class FloatingLicenseApiController extends Controller
         $user = User::findOrFail($validated['user_id']);
         $asset = isset($validated['asset_id']) ? Asset::find($validated['asset_id']) : null;
 
+        // FMCS: refuse cross-company targets (same rule as core checkout).
+        if (! $license->canCheckoutTo($user)) {
+            return response()->json(Helper::formatStandardApiResponse('error', null, trans('floating-licenses::floating.error.company_mismatch')), 422);
+        }
+
         try {
             $allocation = $this->service->allocate($config, $user, $asset, $validated['notes'] ?? null);
         } catch (PoolExhaustedException) {

@@ -86,20 +86,21 @@ is safe to re-apply after a Snipe-IT upgrade (see below):
 
 | Core file | Change |
 |---|---|
-| `app/Http/Controllers/Licenses/LicensesController.php` | One line at the top of the `if ($license->save())` block in **both** `store()` and `update()`: `\SnipeIt\FloatingLicenses\Support\FloatingLicenseSync::syncFromRequest($license, $request);` (no-op when the master switch is off). |
-| `resources/views/licenses/edit.blade.php` | A "Floating / Concurrent" section before the form footer: `floating_enabled` checkbox, `floating_cost_mode` select, `floating_allow_over_allocation` checkbox (hidden 0 + checkbox 1). Whole block wrapped in `@if (($snipeSettings->floating_licenses_enabled ?? '0') == '1')`. |
-| `resources/views/licenses/view.blade.php` | A guarded `@php` block at the top of `@section('content')` resolving the floating config via `\SnipeIt\FloatingLicenses\Support\FloatingLicenseSync::configForLicense($license)`; floating info **rows inside the license info panel** (default slot of `x-info-panel`: License Type, Pool Size, Assigned Users, Available, Total Cost, Cost Per User); a floating-assigned-users table + over-allocation warning label inside the Assigned seats tab pane (with a per-row Checkin button posting to the release route); a Bootstrap-3 "Bulk User Actions" dropdown in the info-panel buttons slot; an info callout in the Available tab explaining that per-seat checkout is disabled for floating licenses; and a small `<script id="floating-remaining-override">` that replaces the core "Remaining" info row's value client-side with the floating availability (the row lives in the shared `x-info-panel` component, which stays untouched). Everything is wrapped in the master-switch guard and `@can` permission gates. |
+| `app/Http/Controllers/Licenses/LicensesController.php` | **No code change needed** — the pool config sync runs via a `License::saved` listener registered in `FloatingLicensesServiceProvider`, gated to the `licenses.store` / `licenses.update` form routes (API and importer saves deliberately do not sync). The core controller only carries comment pointers. |
+| `resources/views/licenses/edit.blade.php` | One fenced include: `@include('floating-licenses::partials.license-form-floating')`, rendering the "Floating / Concurrent" section (`floating_enabled` checkbox, `floating_cost_mode` select, `floating_allow_over_allocation` hidden 0 + checkbox 1) when the master switch is on. |
+| `resources/views/licenses/view.blade.php` | Five fenced includes of package partials (`partials/license-view-{data,assignments,info,actions,scripts}`) plus tight `@if (! $floatingConfig)` wrappers around the upstream "available" tab nav-item, seat-table bulk bar, assigned seats table, and available tab pane. All floating markup/JS lives in the package. |
 | `app/Http/Transformers/LicensesTransformer.php` | One commented hunk at the end of `transformLicenses()` (`// [floating-licenses addon] BEGIN/END`): when the master switch is on, one query on `floating_license_configs` + one grouped count query on `floating_license_allocations` for the page's license ids, then `free_seats_count` / `remaining` are recomputed as `seats - active floating allocations` (may go negative) and `percent_remaining` is recomputed clamped to 0-100. |
 | `app/Http/Transformers/LicenseSeatsTransformer.php` | One commented hunk in `transformLicenseSeats()`: one query collecting which of the page's licenses have a floating pool, then `available_actions.checkout` and `user_can_checkout` are forced `false` on those seats so `licenseSeatInOutFormatter` renders no per-seat Checkout button (checkin of genuinely seat-assigned rows is untouched). |
 | `app/Http/Controllers/SettingsController.php` | One line in `postSettings()` next to the other checkbox settings: `$setting->floating_licenses_enabled = $request->input('floating_licenses_enabled', '0');` |
 | `resources/views/settings/general.blade.php` | One `x-form.checkbox-row` ("Floating Licenses (addon)") after the Shortcuts checkbox. |
+| `app/Console/Kernel.php` | Fenced `[floating-licenses addon]` block next to the ldap-sync schedule: runs `floating-licenses:expire` every five minutes while the master switch is on. |
 | `app/Models/Setting.php` | **No change needed** — the setting is assigned directly (like `shortcuts_enabled`), not mass-assigned, and the column is created by a package migration. |
 | `app/Http/Controllers/Licenses/LicenseCheckoutController.php` | One commented hunk in `store()` (`// [floating-licenses addon] BEGIN/END`), anchored right after `$this->authorize('checkout', $license);`: when `FloatingLicenseSync::configForLicense($license)` returns a config, resolve the user target (`assigned_user`, or the assigned asset's current user, mirroring `checkoutToAsset()`) and delegate to `FloatingLicenseService::allocate()` instead of a seat checkout; `PoolExhaustedException` redirects to the license page with an error flash. Pure asset checkouts with no resolvable user fall through to the core flow. The `LicenseCheckoutRequest` form request is untouched. |
 | `resources/views/licenses/checkout.blade.php` | One commented hunk at the top of `@section('content')` resolving the floating config/stats; the `x-box` header's `seat_count` uses pool availability (`pool - active`) when floating; a `callout callout-warning` is shown when the pool is exhausted and over-allocation is off. |
 
 ### Re-applying after a Snipe-IT upgrade
 
-1. Pull/upgrade Snipe-IT core as usual; if any of the twelve edited files
+1. Pull/upgrade Snipe-IT core as usual; if any of the thirteen edited files
    conflict, take the upstream version and re-apply the hunks listed in the
    table above (they are intentionally tiny and self-contained; PHP hunks are
    delimited by `// [floating-licenses addon] BEGIN/END` comments).
@@ -285,17 +286,39 @@ Stale allocations are reclaimed by:
 php artisan floating-licenses:expire
 ```
 
-### Scheduling (the one optional core edit)
+### Scheduling
 
-Snipe-IT schedules commands in `app/Console/Kernel.php`. To expire stale
-allocations automatically, add one line to `schedule()`:
+In this repository the command is already scheduled — a fenced
+`[floating-licenses addon]` block in `app/Console/Kernel.php` runs
+`floating-licenses:expire` every five minutes whenever the addon's master
+switch is on. When installing into a different Snipe-IT checkout, add one
+line to `schedule()`:
 
 ```php
 $schedule->command('floating-licenses:expire')->everyFiveMinutes();
 ```
 
-This is optional — the command can also be run from cron directly, and pools
-without durations never need it.
+Pools without durations never need it, but scheduling it unconditionally is
+harmless (it no-ops when nothing is stale).
+
+## Full Multiple Company Support (FMCS)
+
+When `full_multiple_companies_support` is enabled, the addon follows core's
+company scoping:
+
+- Pool lists (`/floating-licenses`) only show pools whose license belongs to
+  the current user's companies (`FloatingLicenseConfig::companyScoped()` —
+  configs carry no `company_id`, so scoping goes through the license
+  relation; superusers and CLI are unscoped, exactly like
+  `Company::scopeCompanyables()`).
+- Pool detail/edit pages for another company's license 404, matching core
+  route-model-binding behavior (the License global scope hides the license).
+- Allocating (web form, bulk-add, and the API allocate endpoint) rejects
+  users from a different company than the license, reusing the same
+  `CompanyableTrait::canCheckoutTo()` rule core seat checkout enforces
+  (web: redirect with error flash; API: 422 error envelope).
+- The API availability endpoint is scoped automatically — its `{license}`
+  route binding resolves through the globally scoped License model.
 
 ## Permissions
 
@@ -341,7 +364,6 @@ user, so floating activity shows up in the standard activity report:
 |---|---|
 | `floating.allocate` | Slot allocated. |
 | `floating.release` | Allocation released. |
-| `floating.revoke` | Allocation administratively revoked (`FloatingLicenseService::revoke()`). |
 | `floating.expire` | Allocation expired by `floating-licenses:expire`. |
 | `floating.heartbeat` | Heartbeat received (only when `log_heartbeats` is enabled). |
 | `floating.capacity_exceeded` | Allocation denied because the pool was full. |
@@ -399,17 +421,15 @@ needed for fixed-seat licenses; they are untouched.
 4. `composer update snipe-it/floating-licenses`
 5. `php artisan optimize:clear`
 
-If you added the scheduler line to `app/Console/Kernel.php`, remove it too.
+Remove the fenced `[floating-licenses addon]` scheduler block from `app/Console/Kernel.php` (KCP-031).
 Fixed-seat licenses, seats, and their history are not affected at any point.
 
-## Scheduling status (KNOWN GAP)
+## Scheduling status
 
-`floating-licenses:expire` is **registered by the service provider but not
-currently scheduled** in `app/Console/Kernel.php` on this repository's
-`master` (verified: no `floating` reference in the scheduler). Until the one
-line from **Scheduling** above is added, lease expiry and idle reclamation
-never fire automatically — run the command from cron if your pools use
-durations. Tracked as FL-13 in `docs/customizations/CUSTOMIZATION_INVENTORY.md`.
+`floating-licenses:expire` is scheduled in `app/Console/Kernel.php` on this
+repository's `master`: a fenced `[floating-licenses addon]` block (KCP-031)
+runs it every five minutes whenever the master switch is on. Lease expiry and
+idle reclamation fire automatically; no manual cron entry is needed.
 
 ## Core patch register cross-reference
 
@@ -428,6 +448,7 @@ The fenced `[floating-licenses addon]` hunks in core files are registered in
 | KCP-009 | `UsersTransformer.php` (allocation rows) |
 | KCP-010/011 | `LicensePresenter.php` (replaces purchase_cost column) / `UserPresenter.php` |
 | KCP-018 | `licenses/view.blade.php` (+320) — HIGH conflict risk |
+| KCP-031 | `app/Console/Kernel.php` (expire scheduler block) |
 | KCP-019…023 | `licenses/edit|checkout`, `users/view`, `partials/bootstrap-table`, `settings/general` |
 
 ## Compatibility
@@ -446,9 +467,9 @@ The fenced `[floating-licenses addon]` hunks in core files are registered in
 | Package pages/API return 403 | Master switch off — enable **Admin > Settings > General > Floating Licenses (addon)**. |
 | `Class "SnipeIt\FloatingLicenses\..." not found` from a core file | Package not installed but fenced core hunks present — `composer update snipe-it/floating-licenses`, or remove the hunks (see Uninstall). |
 | Permission section missing on group/user pages | Config cache stale — `php artisan optimize:clear` (permissions are merged into `config('permissions')` at boot). |
-| Leases never expire | `floating-licenses:expire` not scheduled — see **Scheduling status** above. |
+| Leases never expire | Check that the scheduler runs (`php artisan schedule:run` / cron) and the master switch is on — see **Scheduling status** above. |
 | Tests not discovered | Root `composer.json` must map `SnipeIt\FloatingLicenses\Tests\` in `autoload-dev`; run `composer dump-autoload`. |
-| `floating_licenses_enabled` migration fatals on re-run | Known defect: that migration is unguarded (no `hasColumn`) — see CUSTOM_SCHEMA. |
+| `floating_licenses_enabled` migration fatals on re-run | Fixed: the migration is guarded with `Schema::hasColumn` in both directions (same pattern as the LDAP deactivate-missing migration). |
 | Seat counts look wrong on licenses index | Expected when master switch is on: `Avail`/`Remaining` show floating math (`seats − active allocations`, may go negative). |
 
 ## Test procedure

@@ -24,6 +24,11 @@ class Kernel extends ConsoleKernel
         if (Setting::getSettings()?->ldap_enabled == '1') {
             $schedule->command('snipeit:ldap-sync')->daily();
         }
+        // [floating-licenses addon] BEGIN
+        if (Setting::getSettings()?->floating_licenses_enabled == '1') {
+            $schedule->command('floating-licenses:expire')->everyFiveMinutes();
+        }
+        // [floating-licenses addon] END
         $schedule->command('snipeit:backup')->weekly();
         $schedule->command('backup:clean')->daily();
         $schedule->command('auth:clear-resets')->everyFifteenMinutes();

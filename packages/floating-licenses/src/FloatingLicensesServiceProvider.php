@@ -2,11 +2,13 @@
 
 namespace SnipeIt\FloatingLicenses;
 
+use App\Models\License;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SnipeIt\FloatingLicenses\Console\ConvertFloatingLicensesToStandard;
 use SnipeIt\FloatingLicenses\Console\ExpireFloatingAllocations;
+use SnipeIt\FloatingLicenses\Support\FloatingLicenseSync;
 
 class FloatingLicensesServiceProvider extends ServiceProvider
 {
@@ -35,6 +37,7 @@ class FloatingLicensesServiceProvider extends ServiceProvider
 
         $this->registerGates();
         $this->mergePermissions();
+        $this->registerLicenseFormSync();
 
         if ($this->app->runningInConsole()) {
             $this->commands([
@@ -46,6 +49,29 @@ class FloatingLicensesServiceProvider extends ServiceProvider
                 __DIR__.'/../config/floating-licenses.php' => config_path('floating-licenses.php'),
             ], 'floating-licenses-config');
         }
+    }
+
+    /**
+     * Sync a license's floating pool config after the license create/edit
+     * form is saved. Previously an explicit call in the core
+     * LicensesController store()/update() methods; moved here so no core
+     * controller is touched.
+     *
+     * Gated to the licenses.store / licenses.update routes so other save
+     * paths (API, CSV importer, checkout/checkin, console) keep their exact
+     * upstream behavior — the API deliberately never synced, and the
+     * importer must not soft-delete configs. Outside an HTTP route match
+     * (console, tests calling syncFromRequest() directly) this is a no-op.
+     */
+    protected function registerLicenseFormSync(): void
+    {
+        License::saved(function (License $license) {
+            $route = request()->route();
+
+            if ($route && $route->named('licenses.store', 'licenses.update')) {
+                FloatingLicenseSync::syncFromRequest($license, request());
+            }
+        });
     }
 
     /**

@@ -14,7 +14,9 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->boolean('floating_licenses_enabled')->default(false);
+            if (! Schema::hasColumn('settings', 'floating_licenses_enabled')) {
+                $table->boolean('floating_licenses_enabled')->default(false);
+            }
         });
     }
 
@@ -24,7 +26,9 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('settings', function (Blueprint $table) {
-            $table->dropColumn('floating_licenses_enabled');
+            if (Schema::hasColumn('settings', 'floating_licenses_enabled')) {
+                $table->dropColumn('floating_licenses_enabled');
+            }
         });
     }
 };
