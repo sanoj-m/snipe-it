@@ -52,25 +52,54 @@ Initial Killa fork: 55 commits on top of upstream tag `v8.8.0`
 
 ### Security
 
-- **Known open issue:** open redirect in
-  `FloatingLicenseController::release()` (redirects to attacker-controlled
-  `Referer` header) — HIGH, tracked in CUSTOMIZATION_INVENTORY defects.
-- **Known open issue:** no FMCS company scoping in floating licenses —
-  cross-company allocate/list possible when FMCS is enabled.
-- `general.php footer_credit` replaces Grokability/AGPL attribution —
-  compliance concern under review (BR-04).
+- **FIXED 2026-10-07:** open redirect in `FloatingLicenseController::release()`
+  — Referer now honored only for relative or same-host URLs (`safeRedirectTarget()`).
+- **FIXED 2026-10-07:** FMCS company scoping added across floating licenses
+  (`scopeCompanyScoped()`, cross-company allocate/bulk/API rejected, 404s via
+  License global scope). 10 new tests in `FmcsScopingTest`.
+- **FIXED 2026-10-07:** `footer_credit` now preserves the upstream Grokability
+  attribution verbatim with the Killa credit appended.
+
+### Hardening release — 2026-10-07 (upstream base unchanged: v8.8.0)
+
+- Perpetual expiration-clearing consolidated from 5 duplicated call sites into a
+  single fenced `License::saving` hook in `app/Models/License.php`.
+- `FloatingLicenseSync::syncFromRequest` moved out of core
+  `LicensesController` into a package `License::saved` observer gated on the
+  `licenses.store`/`licenses.update` routes (2 core hunks removed).
+- `licenses/view.blade.php` 511 → 225 lines: floating blocks extracted into 5
+  package partials (`floating-licenses::partials/*`); edit form section
+  extracted likewise (KCP-018/019 conflict surface greatly reduced).
+- Notification branding centralized: global `MessageSending` listener in
+  `AppServiceProvider` sets `X-System-Sender: Killa Asset`; **16 notification
+  files reverted byte-identical to upstream** (KCP-030 now 1 file).
+- `floating-licenses:expire` scheduled (every 5 min, gated on master switch) —
+  KCP-031 fenced block in `app/Console/Kernel.php`.
+- `floating_licenses_enabled` migration now `hasColumn`-guarded.
+- Dead code removed: `FloatingLicenseService::revoke()`, `STATUS_REVOKED`.
+- Breadcrumbs added to all package UI routes; `exportUsers()` N+1 fixed.
+- Broken gitlink `snipe-it-floating-license-plugin` removed.
+- puppeteer/ssh2 moved to `devDependencies` (run `npm install` to refresh lock).
+- UI: dead flyout corridor CSS removed (~65 lines), `--k-*` token duplicates
+  unified (single source of truth), stylesheet cache-bust switched from
+  per-request `md5_file()` to `config('version.app_version')`, SKILL.md synced
+  to reality, stale timing comments fixed.
+- Upgrade simulation vs `upstream/master` (112 unreleased commits): **1 merge
+  conflict** (`sync_adapters.php` lang branding); collision candidates 9 → 8.
+
+### Fixed
+
+- `users/ldap.blade.php` — guards for summary rows with missing keys (KCP-024).
 
 ### Upgrade Notes
 
 - Run `php artisan migrate` — adds `settings.ldap_deactivate_missing`,
   `licenses.perpetual`, `settings.floating_licenses_enabled`, and the two
-  floating tables (all migrations FK-free; note:
-  `floating_licenses_enabled` migration is unguarded — known defect).
-- `floating-licenses:expire` is registered but **not yet scheduled** in
-  `app/Console/Kernel.php` — add
-  `$schedule->command('floating-licenses:expire')->everyFiveMinutes();`
-  or run it from cron if pools use durations.
-- After upgrade: `composer dump-autoload`, `php artisan optimize:clear`,
-  `npm run dev` (Mix, not Vite).
-- Broken gitlink `snipe-it-floating-license-plugin` (legacy duplicate) is
-  pending removal.
+  floating tables (all migrations FK-free and idempotent-guarded).
+- `floating-licenses:expire` is scheduled automatically (no action needed).
+- After upgrade: `composer install`, `php artisan optimize:clear`,
+  `npm install && npm run dev` (Mix, not Vite).
+- **Pending maintainer verification (no PHP runtime on the commit machine):**
+  `vendor/bin/pint --dirty --format agent`, full PHPUnit suites
+  (`Unit`, `Feature`, `FloatingLicenses`), `php artisan schedule:list`,
+  browser check of floating license pages and collapsed-sidebar flyouts.
