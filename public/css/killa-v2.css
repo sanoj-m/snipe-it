@@ -1378,9 +1378,10 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
     position: absolute;
     top: 0;
     bottom: 0;
-    left: -190px;
-    width: 190px;
-    top: -60px;
+    left: -250px;
+    width: 250px;
+    top: -80px;
+    bottom: -20px;
     background: transparent;
 }
 
@@ -1398,7 +1399,7 @@ body.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     display: block !important;
     visibility: hidden;
     opacity: 0;
-    transition: opacity 0.12s ease, visibility 0s linear 0.18s;
+    transition: opacity 0.12s ease, visibility 0s linear 0.35s;
 }
 
 body.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu,
@@ -1414,7 +1415,7 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     display: block !important;
     visibility: hidden;
     opacity: 0;
-    transition: opacity 0.12s ease, visibility 0s linear 0.18s;
+    transition: opacity 0.12s ease, visibility 0s linear 0.35s;
 }
 
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li:hover > .treeview-menu,
@@ -1440,5 +1441,5 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu:not(:hover) {
     visibility: hidden;
     opacity: 0;
-    transition: opacity 0.12s ease, visibility 0s linear 0.18s;
+    transition: opacity 0.12s ease, visibility 0s linear 0.35s;
 }
