@@ -1516,3 +1516,9 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::after {
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     top: 0;
 }
+
+/* JS hover-intent hold: li keeps this class for 400ms after mouseleave */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li.k-flyout-hold > .treeview-menu {
+    visibility: visible;
+    opacity: 1;
+}

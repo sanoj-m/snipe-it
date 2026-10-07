@@ -1083,6 +1083,22 @@
         @section('moar_scripts')
         @show
 
+        {{-- [killa-v2] hover-intent for collapsed-sidebar flyout menus --}}
+        <script nonce="{{ csrf_token() }}">
+            document.querySelectorAll('.sidebar-menu > li.treeview').forEach(function (li) {
+                var timer;
+                li.addEventListener('mouseenter', function () {
+                    clearTimeout(timer);
+                    li.classList.add('k-flyout-hold');
+                });
+                li.addEventListener('mouseleave', function () {
+                    timer = setTimeout(function () {
+                        li.classList.remove('k-flyout-hold');
+                    }, 400);
+                });
+            });
+        </script>
+
 
         <script nonce="{{ csrf_token() }}">
 
