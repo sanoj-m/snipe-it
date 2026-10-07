@@ -1448,3 +1448,40 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li {
     position: relative;
 }
+
+/* --------------------------------------------------------------------------
+   Deterministic hover corridor: the flyout's own padding box IS the bridge
+   (padding hit-tests as the element; pseudo-elements proved unreliable).
+   Card visuals move to an inner ::after so the padding stays invisible.
+   -------------------------------------------------------------------------- */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    padding: 80px 20px 20px 250px;
+    margin: -80px -20px -20px -250px;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0;
+}
+
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::before {
+    content: none;
+}
+
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::after {
+    content: '';
+    position: absolute;
+    top: 80px;
+    left: 250px;
+    right: 20px;
+    bottom: 20px;
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-chip);
+    box-shadow: var(--k-shadow-2);
+    z-index: -1;
+}
+
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu > li {
+    position: relative;
+    z-index: 1;
+}
