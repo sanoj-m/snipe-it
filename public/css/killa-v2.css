@@ -1476,3 +1476,9 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu > li {
     position: relative;
     z-index: 1;
 }
+
+/* flyout content zone needs a usable width after the 250px+20px corridor */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    min-width: 480px;
+    max-width: 560px;
+}
