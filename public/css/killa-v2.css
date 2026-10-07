@@ -1436,13 +1436,6 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     z-index: 1000;
 }
 
-/* the page-active (menu-open) flyout must also stay closed until hovered —
-   otherwise it permanently covers the sidebar items below it */
-body.sidebar-mini.sidebar-collapse .sidebar-menu > li.menu-open > .treeview-menu:not(:hover) {
-    visibility: hidden;
-    opacity: 0;
-    transition: opacity 0.12s ease, visibility 0s linear 0.35s;
-}
 
 /* the flyout's containing block must not jump when hover leaves the li */
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li {
