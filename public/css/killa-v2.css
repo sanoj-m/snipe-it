@@ -1482,3 +1482,8 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     min-width: 480px;
     max-width: 560px;
 }
+
+/* tuck the card next to the sidebar; the corridor extends invisibly to its left */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    left: -190px;
+}
