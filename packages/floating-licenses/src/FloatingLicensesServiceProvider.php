@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 use SnipeIt\FloatingLicenses\Console\ConvertFloatingLicensesToStandard;
 use SnipeIt\FloatingLicenses\Console\ExpireFloatingAllocations;
+use SnipeIt\FloatingLicenses\Models\FloatingLicenseConfig;
+use SnipeIt\FloatingLicenses\Policies\FloatingLicenseConfigPolicy;
 use SnipeIt\FloatingLicenses\Support\FloatingLicenseSync;
 
 class FloatingLicensesServiceProvider extends ServiceProvider
@@ -77,12 +79,19 @@ class FloatingLicensesServiceProvider extends ServiceProvider
     /**
      * Define authorization gates, mirroring how AuthServiceProvider defines
      * gates such as reports.view. Kept here so no core files are touched.
+     *
+     * The string gates stay even though a policy class now covers the
+     * model-level checks: they feed the runtime-merged config('permissions')
+     * UI and the non-model authorize() calls (license-bound routes,
+     * own-vs-admin release/heartbeat ownership).
      */
     protected function registerGates(): void
     {
         foreach (self::permissions() as $permission) {
             Gate::define($permission, fn ($user) => $user->hasAccess($permission));
         }
+
+        Gate::policy(FloatingLicenseConfig::class, FloatingLicenseConfigPolicy::class);
     }
 
     /**

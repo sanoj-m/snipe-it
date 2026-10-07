@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use SnipeIt\FloatingLicenses\Exceptions\InvalidAllocationException;
 use SnipeIt\FloatingLicenses\Exceptions\PoolExhaustedException;
+use SnipeIt\FloatingLicenses\Http\Transformers\FloatingLicenseAllocationsTransformer;
 use SnipeIt\FloatingLicenses\Models\FloatingLicenseAllocation;
 use SnipeIt\FloatingLicenses\Models\FloatingLicenseConfig;
 use SnipeIt\FloatingLicenses\Services\FloatingLicenseService;
@@ -86,7 +87,7 @@ class FloatingLicenseApiController extends Controller
             return response()->json(Helper::formatStandardApiResponse('error', null, trans('floating-licenses::floating.error.pool_exhausted')), 422);
         }
 
-        return response()->json(Helper::formatStandardApiResponse('success', $allocation, trans('floating-licenses::floating.message.allocated')));
+        return response()->json(Helper::formatStandardApiResponse('success', (new FloatingLicenseAllocationsTransformer)->transformAllocation($allocation), trans('floating-licenses::floating.message.allocated')));
     }
 
     /**
@@ -108,7 +109,7 @@ class FloatingLicenseApiController extends Controller
             return response()->json(Helper::formatStandardApiResponse('error', null, trans('floating-licenses::floating.error.not_active')), 422);
         }
 
-        return response()->json(Helper::formatStandardApiResponse('success', $allocation, trans('floating-licenses::floating.message.heartbeat')));
+        return response()->json(Helper::formatStandardApiResponse('success', (new FloatingLicenseAllocationsTransformer)->transformAllocation($allocation), trans('floating-licenses::floating.message.heartbeat')));
     }
 
     /**
@@ -130,7 +131,7 @@ class FloatingLicenseApiController extends Controller
             return response()->json(Helper::formatStandardApiResponse('error', null, trans('floating-licenses::floating.error.not_active')), 422);
         }
 
-        return response()->json(Helper::formatStandardApiResponse('success', $allocation, trans('floating-licenses::floating.message.released')));
+        return response()->json(Helper::formatStandardApiResponse('success', (new FloatingLicenseAllocationsTransformer)->transformAllocation($allocation), trans('floating-licenses::floating.message.released')));
     }
 
     /**

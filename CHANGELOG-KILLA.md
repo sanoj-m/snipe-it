@@ -78,6 +78,11 @@ Initial Killa fork: 55 commits on top of upstream tag `v8.8.0`
 - `floating_licenses_enabled` migration now `hasColumn`-guarded.
 - Dead code removed: `FloatingLicenseService::revoke()`, `STATUS_REVOKED`.
 - Breadcrumbs added to all package UI routes; `exportUsers()` N+1 fixed.
+- Floating Licenses rule deviations fixed: `FloatingLicenseConfigPolicy` now
+  backs the model-level controller checks (string gates kept intentionally for
+  the permissions config UI and non-model abilities), and API
+  allocate/release/heartbeat payloads go through a whitelisting
+  `FloatingLicenseAllocationsTransformer` instead of raw model serialization.
 - Broken gitlink `snipe-it-floating-license-plugin` removed.
 - puppeteer/ssh2 moved to `devDependencies` (run `npm install` to refresh lock).
 - UI: dead flyout corridor CSS removed (~65 lines), `--k-*` token duplicates

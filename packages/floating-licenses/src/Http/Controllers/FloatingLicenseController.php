@@ -35,7 +35,7 @@ class FloatingLicenseController extends Controller
      */
     public function index(): View
     {
-        $this->authorize('floating_licenses.view');
+        $this->authorize('viewAny', FloatingLicenseConfig::class);
 
         $configs = FloatingLicenseConfig::with('license')->companyScoped()->get();
 
@@ -53,7 +53,7 @@ class FloatingLicenseController extends Controller
      */
     public function show(FloatingLicenseConfig $config): View
     {
-        $this->authorize('floating_licenses.view');
+        $this->authorize('view', $config);
         $this->abortIfLicenseOutOfCompanyScope($config);
 
         $config->load('license');
@@ -75,7 +75,7 @@ class FloatingLicenseController extends Controller
      */
     public function create(): View
     {
-        $this->authorize('floating_licenses.manage');
+        $this->authorize('create', FloatingLicenseConfig::class);
 
         $configuredLicenseIds = FloatingLicenseConfig::withTrashed()->pluck('license_id');
         $licenses = License::whereNotIn('id', $configuredLicenseIds)->orderBy('name')->get(['id', 'name']);
@@ -88,7 +88,7 @@ class FloatingLicenseController extends Controller
      */
     public function store(Request $request, License $license): RedirectResponse
     {
-        $this->authorize('floating_licenses.manage');
+        $this->authorize('create', FloatingLicenseConfig::class);
 
         $validated = $request->validate([
             'pool_size' => 'required|integer|min:1',
@@ -120,7 +120,7 @@ class FloatingLicenseController extends Controller
      */
     public function edit(FloatingLicenseConfig $config): View
     {
-        $this->authorize('floating_licenses.manage');
+        $this->authorize('update', $config);
         $this->abortIfLicenseOutOfCompanyScope($config);
 
         $config->load('license');
@@ -133,7 +133,7 @@ class FloatingLicenseController extends Controller
      */
     public function update(Request $request, FloatingLicenseConfig $config): RedirectResponse
     {
-        $this->authorize('floating_licenses.manage');
+        $this->authorize('update', $config);
         $this->abortIfLicenseOutOfCompanyScope($config);
 
         $validated = $request->validate([
@@ -160,7 +160,7 @@ class FloatingLicenseController extends Controller
      */
     public function destroy(FloatingLicenseConfig $config): RedirectResponse
     {
-        $this->authorize('floating_licenses.manage');
+        $this->authorize('delete', $config);
         $this->abortIfLicenseOutOfCompanyScope($config);
 
         if ($config->activeAllocations()->count() > 0) {
@@ -179,7 +179,7 @@ class FloatingLicenseController extends Controller
      */
     public function allocate(Request $request, FloatingLicenseConfig $config): RedirectResponse
     {
-        $this->authorize('floating_licenses.allocate');
+        $this->authorize('allocate', $config);
         $this->abortIfLicenseOutOfCompanyScope($config);
 
         $validated = $request->validate([

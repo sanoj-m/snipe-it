@@ -162,4 +162,51 @@ class ApiTest extends TestCase
 
         $this->assertTrue($allocation->refresh()->isActive());
     }
+
+    public function test_api_allocate_payload_is_transformed_and_whitelisted()
+    {
+        $config = $this->createFloatingConfig();
+        $apiUser = $this->createUserWithFloatingPermissions(['floating_licenses.allocate']);
+        $target = User::factory()->create();
+
+        $response = $this->actingAsForApi($apiUser)
+            ->postJson(route('api.floating-licenses.allocate', $config->license_id), [
+                'user_id' => $target->id,
+                'notes' => 'secret internal note',
+            ])
+            ->assertOk();
+
+        $payload = $response->json('payload');
+
+        $this->assertEqualsCanonicalizing(
+            ['id', 'license', 'user', 'asset', 'status', 'allocated_at', 'expires_at', 'allocated_cost'],
+            array_keys($payload)
+        );
+        $this->assertEquals($config->license_id, $payload['license']['id']);
+        $this->assertEquals($target->id, $payload['user']['id']);
+        $this->assertEquals('active', $payload['status']);
+        // Raw-model attributes must not leak through the transformer.
+        $this->assertArrayNotHasKey('notes', $payload);
+        $this->assertArrayNotHasKey('license_id', $payload);
+        $this->assertArrayNotHasKey('deleted_at', $payload);
+    }
+
+    public function test_api_release_payload_uses_transformer_shape()
+    {
+        $config = $this->createFloatingConfig();
+        $user = $this->createUserWithFloatingPermissions(['floating_licenses.allocate']);
+        $allocation = app(FloatingLicenseService::class)->allocate($config, $user);
+
+        $response = $this->actingAsForApi($user)
+            ->postJson(route('api.floating-license-allocations.release', $allocation))
+            ->assertOk()
+            ->assertJson(['status' => 'success']);
+
+        $payload = $response->json('payload');
+
+        $this->assertEquals($allocation->id, $payload['id']);
+        $this->assertEquals('released', $payload['status']);
+        $this->assertEquals($user->id, $payload['user']['id']);
+        $this->assertArrayNotHasKey('notes', $payload);
+    }
 }

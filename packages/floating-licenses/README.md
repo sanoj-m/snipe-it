@@ -76,6 +76,15 @@ The provider:
   defines gates such as `reports.view`),
 - registers the `floating-licenses:expire` console command.
 
+Model-level authorization uses `src/Policies/FloatingLicenseConfigPolicy.php`
+(registered via `Gate::policy()`), mapping `viewAny`/`view`/`create`/`update`/
+`delete`/`allocate`/`release` onto the same permission strings. API allocation
+payloads go through `src/Http/Transformers/FloatingLicenseAllocationsTransformer.php`
+(explicit field whitelist, core-style id/name sub-objects) — no raw model
+serialization. The string gates remain for the permissions config UI and the
+non-model abilities (license-bound bulk routes, own-vs-admin
+release/heartbeat ownership).
+
 After migrating, turn the addon on via **Admin > Settings > General >
 Floating Licenses (addon)**.
 
