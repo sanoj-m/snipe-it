@@ -46,7 +46,7 @@ marking them is Phase 3 work.
 | KCP-030a | `snipe-it-floating-license-plugin` (broken gitlink) | Removed legacy gitlink (no .gitmodules, unreachable target); canonical code lives in `packages/floating-licenses` | −1 gitlink | N/A | NONE | Done — deleted |
 | KCP-031 | `resources/views/vendor/mail/{html,markdown}/message.blade.php`, `vendor/notifications/email.blade.php` | Mail branding | ±5 | No | LOW | Keep |
 | KCP-032 | `resources/views/setup/done.blade.php` | Branding + **deleted community-links block** | +5/−13 | No | LOW-MED | Reconsider deletion |
-| KCP-033 | 6 × `resources/lang/en-US/*.php` | Branding + 3 functional keys; `footer_credit` now **preserves upstream Grokability attribution** with " — Killa Asset by Sanoj Maliyekkal" appended | ~60 lines | No | HIGH-freq | Brand-name lang key |
+| KCP-033 | 5 × `resources/lang/en-US/*.php` | Branding + 3 functional keys; `footer_credit` now **preserves upstream Grokability attribution** with " — Killa Asset by Sanoj Maliyekkal" appended. **`admin/settings/sync_adapters.php` reverted to upstream** (was branding-only swaps, the sole recurring merge conflict per ADR-0001) | ~55 lines | No | HIGH-freq | Brand-name lang key |
 | KCP-034 | 5 × console commands (DisableLDAP, DisableSAML, FixDoubleEscape, GeneratePersonalAccessToken, LdapTroubleshooter) | Branding strings | 1–3 lines each | No | HIGH-freq | Drop or centralize |
 | KCP-035 | `composer.json`, `phpunit.xml`, `package.json` | Package/test/tooling wiring | +16 | N/A | LOW | Keep |
 

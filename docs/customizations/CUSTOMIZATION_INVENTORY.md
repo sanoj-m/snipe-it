@@ -53,7 +53,7 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 |---|---|---|---|---|---|---|
 | BR-01 | ~~21 `app/Notifications/*.php`~~ → `app/Providers/AppServiceProvider.php` (KCP-030) | +10 in one file | `X-System-Sender: Killa Asset` now applied via a global `MessageSending` listener; **all 16 notification files reverted to upstream — FIXED** | Done | LOW | — |
 | BR-02 | 3 mail vendor views + `setup/done.blade.php` | ~±20 | Footer/header branding; **deletes upstream community-links block** | Partial | LOW-MED | — |
-| BR-03 | 6 `lang/en-US/*` files | ~60 lines | String swaps (+3 functional keys: perpetual, ldap_deactivate_missing×2) | Partial (brand-name key) | HIGH frequency | — |
+| BR-03 | 5 `lang/en-US/*` files | ~55 lines | String swaps (+3 functional keys: perpetual, ldap_deactivate_missing×2). **`admin/settings/sync_adapters.php` reverted to upstream** — branding-only swaps; it was the sole dry-run merge conflict vs upstream/master (ADR-0001 trade) | Partial (brand-name key) | HIGH frequency | — |
 | BR-04 | `general.php footer_credit` | 1 | **CHANGED — FIXED**: upstream Grokability/AGPL attribution restored verbatim, " — Killa Asset by Sanoj Maliyekkal" appended | Done | LOW | — |
 | BR-05 | 5 console commands (DisableLDAP/SAML, FixDoubleEscape, GenPAT, LdapTroubleshooter) | 1–3 lines each | Name swap | No | HIGH frequency | — |
 
