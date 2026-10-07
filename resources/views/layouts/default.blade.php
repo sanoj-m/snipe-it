@@ -1094,7 +1094,7 @@
                 li.addEventListener('mouseleave', function () {
                     timer = setTimeout(function () {
                         li.classList.remove('k-flyout-hold');
-                    }, 400);
+                    }, 800);
                 });
             });
         </script>

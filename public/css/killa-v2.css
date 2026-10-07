@@ -1744,3 +1744,22 @@ body.sidebar-collapse .sidebar-menu > li > a svg {
     font-size: 15px;
     width: auto;
 }
+
+/* --------------------------------------------------------------------------
+   Flyout attachment: panel opens flush against the clicked icon (top of its
+   row), never detached. Defined edge: hairline border + soft shadow.
+   AdminLTE positions the flyout with !important, so we must too.
+   -------------------------------------------------------------------------- */
+body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    top: 0 !important;
+    left: 50px !important;
+    margin-top: -6px;
+    border: 1px solid var(--k-border) !important;
+    border-radius: 10px;
+    box-shadow: 0 8px 30px rgba(16, 24, 40, 0.14);
+}
+
+html[data-theme='dark'] body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
+    border-color: var(--k-border) !important;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.55);
+}
