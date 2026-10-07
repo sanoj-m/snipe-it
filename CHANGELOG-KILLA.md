@@ -86,6 +86,15 @@ Initial Killa fork: 55 commits on top of upstream tag `v8.8.0`
   to reality, stale timing comments fixed.
 - Upgrade simulation vs `upstream/master` (112 unreleased commits): **1 merge
   conflict** (`sync_adapters.php` lang branding); collision candidates 9 → 8.
+- `resources/lang/en-US/admin/settings/sync_adapters.php` **reverted to
+  upstream** — its diff was purely "Snipe-IT → Killa Asset" branding swaps, so
+  it was traded for zero recurring merge conflicts (ADR-0001). Re-run of
+  `git merge-tree --write-tree HEAD upstream/master` after the revert: **0
+  conflicts** (clean exit, tree `b1b1097`). KCP-033/BR-03 now cover 5 lang
+  files.
+- `update-snipeit.sh`: `SERVER` env var is now required (hardcoded production
+  IP default removed); `SKIP_MERGE=1` implemented — skips fetch/merge after
+  verifying a clean tree with no merge in progress.
 
 ### Fixed
 
