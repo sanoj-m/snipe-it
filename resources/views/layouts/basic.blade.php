@@ -14,10 +14,8 @@
 
     {{-- stylesheets --}}
     <link rel="stylesheet" href="{{ url(mix('css/dist/all.css')) }}">
-    {{-- [killa-v2] fonts: Inter (UI) + Inter Tight (display) --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@600;700&display=swap">
+    {{-- [killa-v2] fonts: self-hosted Inter (UI) + Inter Tight (display), no Google CDN (UI-A-08) --}}
+    <link rel="stylesheet" href="{{ url('css/killa-v2-fonts.css') }}?v={{ config('version.app_version') }}">
     {{-- [killa-v2] theme layer: plain committed stylesheets, no build step. Cache-busted on app version (changes each release), not per-request md5_file(). --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}?v={{ config('version.app_version') }}">
     <link rel="stylesheet" href="{{ url('css/killa-v2-forms.css') }}?v={{ config('version.app_version') }}">
