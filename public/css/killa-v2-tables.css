@@ -11,6 +11,10 @@
        shared — single source in killa-v2.css :root, dark override in
        killa-v2-dark.css) */
     --k-table-stripe: rgba(31, 41, 51, 0.03);
+    /* solid equivalent of --k-table-stripe composited on --k-surface, for
+       sticky/pinned cells where the translucent stripe can't composite
+       (adapts to dark via --k-text/--k-surface, so no dark override) */
+    --k-table-stripe-solid: color-mix(in srgb, var(--k-text) 3%, var(--k-surface));
     --k-table-selected-bg: color-mix(in srgb, var(--k-accent) 8%, var(--k-surface));
     --k-accent-contrast: #ffffff;
     --k-print-border: #b8bcc2;
@@ -576,22 +580,43 @@ body form .btn[type="submit"].btn-default {
 }
 
 /* --------------------------------------------------------------------------
-   Sticky/pinned columns: the transparent-cells rule above knocked out the
-   opaque backer upstream gives pinned cells, so scrolled content bled
-   through. Restore the opaque base; upstream's translucent stripe overlay
-   (linear-gradient) keeps the zebra continuous across the pinned boundary.
-   Selected rows stay on the accent tint end-to-end.
+   Sticky/pinned columns (CSS position:sticky from overrides.less via the
+   snipe-table--sticky-left-N / snipe-table--sticky-right-N classes — the
+   bootstrap-table fixed-columns extension is NOT in the bundle; pinned
+   cells are the real <td>/<th>).
+
+   The zebra is painted per-cell here, not per-row: the "density repairs"
+   transparent-cells rule above would otherwise knock out the opaque backer
+   and scrolled content would bleed through pinned cells. Painting every
+   cell of the row the SAME opaque color (base / stripe / hover / selected)
+   keeps the band continuous across the pinned boundary. background-image
+   is killed because upstream layers a translucent stripe gradient over its
+   own base, which double-paints against these solids.
    -------------------------------------------------------------------------- */
-body table[class*="snipe-table--sticky"] > tbody > tr > td,
-body table[class*="snipe-table--sticky"] > thead > tr > th {
+body .table[class*="snipe-table--sticky"] > tbody > tr > td,
+body .table[class*="snipe-table--sticky"] > thead > tr > th {
     background-color: var(--k-surface) !important;
+    background-image: none !important;
 }
 
-body table[class*="snipe-table--sticky"].table-striped > tbody > tr:nth-of-type(even) > td {
-    background-color: var(--k-table-stripe) !important;
+body .table[class*="snipe-table--sticky"] > thead > tr > th {
+    background-color: var(--k-table-head-bg) !important;
 }
 
-body table[class*="snipe-table--sticky"] > tbody > tr.selected > td {
+body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td {
+    background-color: var(--k-table-stripe-solid) !important;
+}
+
+/* hover: one color across pinned + flexible cells of the row */
+body .table[class*="snipe-table--sticky"] > tbody > tr:hover > td,
+body .table[class*="snipe-table--sticky"] > tbody > tr:hover > th {
+    background-color: var(--k-row-hover) !important;
+}
+
+/* selected rows: accent tint end-to-end, wins over stripe and hover
+   (matches the specificity of the .selected rule above) */
+body .bootstrap-table .fixed-table-container .table[class*="snipe-table--sticky"] > tbody > tr.selected > td,
+body .bootstrap-table .fixed-table-container .table[class*="snipe-table--sticky"] > tbody > tr.selected:hover > td {
     background-color: var(--k-table-selected-bg) !important;
     background-image: none !important;
 }
@@ -621,35 +646,4 @@ body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marke
 body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marker input[type="checkbox"] {
     margin: 0;
     flex: none;
-}
-
-/* specificity tie-break: the transparent-cells zebra rule above must NOT
-   apply inside sticky-column tables (pinned cells need their opaque backer) */
-body .table[class*="snipe-table--sticky"] > tbody > tr > td,
-body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td,
-body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(even) > td {
-    background-color: var(--k-surface) !important;
-}
-
-body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td {
-    background-color: var(--k-table-stripe) !important;
-}
-
-/* stripe token is translucent by design (composites over the row) — pinned
-   cells need the solid composited equivalent so nothing bleeds through */
-body .table[class*="snipe-table--sticky"] > tbody > tr > td,
-body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(even) > td {
-    background-color: var(--k-surface) !important;
-}
-
-body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td {
-    background-color: color-mix(in srgb, var(--k-text) 3%, var(--k-surface)) !important;
-}
-
-/* one solid color per row, end to end: remove upstream's translucent
-   gradient overlay on pinned cells (it double-painted over our solid base) */
-body .table[class*="snipe-table--sticky"] > tbody > tr > td,
-body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(odd) > td,
-body .table-striped[class*="snipe-table--sticky"] > tbody > tr:nth-of-type(even) > td {
-    background-image: none !important;
 }
