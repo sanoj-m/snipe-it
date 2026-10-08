@@ -50,16 +50,28 @@
     --k-tint-alpha-active: 14%;
     --k-tint-border: 30%;
 
-    /* app shell: light sidebar in light mode (dark values below) */
-    --k-sidebar-bg: #fafbfc;
-    --k-sidebar-border: #e5e7eb;
-    --k-sidebar-text: #4b5563;
-    --k-sidebar-text-active: #1f2933;
-    --k-sidebar-hover-bg: #f0f2f5;
-    --k-sidebar-header: #9ca3af;
-    --k-sidebar-active-bg: var(--k-accent-tint);
-    --k-sidebar-active-text: var(--k-accent);
-    --k-logo-text: var(--k-text);
+    /* app shell: charcoal nav rail — deliberately dark in BOTH themes
+       (single definition; the dark block does not re-define these) */
+    --k-sidebar-bg: #17191d;
+    --k-sidebar-border: rgba(255, 255, 255, 0.07);
+    --k-sidebar-text: #c9cdd4;
+    --k-sidebar-text-active: #ffffff;
+    --k-sidebar-muted: #8a919c;
+    --k-sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+    --k-sidebar-icon-well: rgba(255, 255, 255, 0.06);
+    --k-sidebar-icon-well-hover: rgba(255, 255, 255, 0.12);
+    --k-sidebar-icon-well-active: rgba(255, 255, 255, 0.18);
+    --k-sidebar-panel: rgba(255, 255, 255, 0.03);
+    --k-sidebar-active-bg: var(--k-accent);
+    --k-sidebar-active-text: #ffffff;
+    --k-sidebar-active-shadow: 0 2px 10px rgba(230, 59, 46, 0.35);
+    --k-sidebar-child-active-bg: rgba(230, 59, 46, 0.22);
+    --k-sidebar-badge-bg: rgba(255, 255, 255, 0.09);
+    --k-sidebar-badge-text: #c9cdd4;
+    --k-sidebar-badge-active-bg: #ffffff;
+    --k-sidebar-scrollbar: rgba(255, 255, 255, 0.18);
+    --k-sidebar-flyout-bg: #1f2227;
+    --k-logo-text: #ffffff;
     --k-check-border: #d1d5db;
     --k-navbar-bg: #ffffff;
     --k-navbar-text: #4b5563;
@@ -121,15 +133,10 @@ html[data-theme='dark'] {
     --k-tile-purple: #9a80d4;
     --k-tile-yellow: #d19a2b;
     --k-tile-light-blue: #4a90c2;
-    --k-sidebar-bg: #0f1115;
-    --k-sidebar-border: rgba(255, 255, 255, 0.06);
-    --k-sidebar-text: #9aa3b2;
-    --k-sidebar-text-active: #ffffff;
-    --k-sidebar-hover-bg: rgba(255, 255, 255, 0.06);
-    --k-sidebar-header: #5c6470;
-    --k-sidebar-active-bg: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
-    --k-sidebar-active-text: #ffffff;
-    --k-logo-text: #ffffff;
+    /* rail is dark in both themes; only the accent-tinted glows track the
+       (brighter) dark accent */
+    --k-sidebar-active-shadow: 0 2px 10px rgba(240, 87, 75, 0.35);
+    --k-sidebar-child-active-bg: rgba(240, 87, 75, 0.25);
     --k-check-border: #4b5563;
     --k-tint-alpha: 18%;
     --k-tint-border: 40%;
@@ -172,14 +179,14 @@ body a {
 
 /* --------------------------------------------------------------------------
    App shell: logo + white navbar with hairline. The sidebar rail itself is
-   styled by the "Sidebar rail" block at the end of this file (final
-   authority over AdminLTE/overrides.less !important sidenav rules).
+   styled by the "[killa-v2] CHARCOAL NAV RAIL" block at the end of this file
+   (final authority over AdminLTE/overrides.less !important sidenav rules).
    -------------------------------------------------------------------------- */
 body .main-header .logo {
     background-color: var(--k-sidebar-bg);
     color: var(--k-logo-text);
     border-bottom: 1px solid var(--k-sidebar-border);
-    border-right: 1px solid var(--k-sidebar-border);
+    border-inline-end: 1px solid var(--k-sidebar-border);
     font-family: var(--k-font-display);
     font-weight: 700;
     letter-spacing: -0.01em;
@@ -1123,92 +1130,63 @@ body .main-header .logo.navbar-brand {
 }
 
 /* ==========================================================================
-   [killa-v2] SIDEBAR RAIL — final authority over AdminLTE 2 / overrides.less
-   sidenav rules (which use !important on link colors, so link colors below
-   must too; everything else wins on body-prefix specificity + source order).
+   [killa-v2] CHARCOAL NAV RAIL — final authority over AdminLTE 2 /
+   overrides.less sidenav rules (upstream uses !important on link colors, so
+   link colors below must too; the rest wins on body-prefix specificity +
+   source order after all.css).
 
-   Design contract:
-   - ONE active mechanism: accent-tinted pill (--k-sb-active-bg) + accent
-     text/icon, applied identically to top-level and treeview-child rows.
-   - Hover: soft neutral pill (--k-sb-hover-bg), distinct from active.
-   - Rows are a flex baseline grid: icon (18px cell) / label (grows,
-     ellipsizes) / badge or caret (pushed to the inline-end edge).
-   - Treeview children nest under a hairline indent guide aligned to the
-     parent icon center; the caret rotates on expand (JS slides the panel).
-   - Logical properties throughout, so RTL inherits the mirror for free.
+   A deep charcoal rail in BOTH themes (tokens live in :root above). Design
+   contract — deliberately different from the previous light-rail iteration:
+   - Each top-level icon sits in a rounded-square well (translucent white);
+     the well brightens on hover and inverts to a light chip on the red row.
+   - Active top-level row: SOLID accent rounded rect, white text, soft red
+     glow shadow (--k-sidebar-active-shadow) — the system's ONE flourish.
+   - Treeview children sit on a faint inset panel (no hairline guide);
+     child active = soft accent background + white text (one mechanism).
+   - Badges: translucent-white pills; solid white pill with accent text on
+     the active row.
+   - Logical properties where cheap, so RTL mirrors for free.
    ========================================================================== */
-:root {
-    --k-sb-bg: #ffffff;
-    --k-sb-border: #eceef0;
-    --k-sb-text: #4b5563;
-    --k-sb-text-strong: #1f2933;
-    --k-sb-icon: #9ca3af;
-    --k-sb-hover-bg: #f4f5f6;
-    --k-sb-active-bg: var(--k-accent-tint);
-    --k-sb-active-text: var(--k-accent-hover); /* #E63B2E on the tint is only ~3.8:1; the hover shade clears 4.5:1 */
-    --k-sb-header: #a1a8b0;
-    --k-sb-badge-bg: #f0f2f4;
-    --k-sb-badge-text: #6b7280;
-}
 
-html[data-theme='dark'] {
-    --k-sb-bg: #15181c;
-    --k-sb-border: #262b31;
-    --k-sb-text: #9aa3b2;
-    --k-sb-text-strong: #f2f4f6;
-    --k-sb-icon: #5f6873;
-    --k-sb-hover-bg: rgba(255, 255, 255, 0.05);
-    --k-sb-active-bg: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
-    --k-sb-active-text: var(--k-accent);
-    --k-sb-header: #565f6a;
-    --k-sb-badge-bg: rgba(255, 255, 255, 0.09);
-    --k-sb-badge-text: #c3cad2;
-}
-
-/* --- rail surfaces ------------------------------------------------------- */
+/* --- rail surfaces -------------------------------------------------------- */
 body .main-sidebar,
 body .left-side,
 body .sidebar,
 body .sidebar-menu,
 body .main-header .logo,
 body .main-header .logo:hover {
-    background-color: var(--k-sb-bg) !important;
-}
-
-body .main-sidebar,
-body .sidebar {
-    border-inline-end: 1px solid var(--k-sb-border);
+    background-color: var(--k-sidebar-bg) !important;
 }
 
 body .main-header .logo,
 body .main-header .logo:hover {
-    color: var(--k-sb-text-strong) !important;
-    border-inline-end: 1px solid var(--k-sb-border);
+    color: var(--k-logo-text) !important;
+    border-bottom: 1px solid var(--k-sidebar-border);
 }
 
 body .sidebar {
     padding-bottom: var(--k-space-6);
     scrollbar-width: thin;
-    scrollbar-color: var(--k-scrollbar-thumb) transparent;
+    scrollbar-color: var(--k-sidebar-scrollbar) transparent;
 }
 
 body .sidebar::-webkit-scrollbar {
     width: 6px;
 }
 
-body .sidebar::-webkit-scrollbar-thumb {
-    background-color: var(--k-scrollbar-thumb);
-    border-radius: var(--k-radius-pill);
-}
-
 body .sidebar::-webkit-scrollbar-track {
     background: transparent;
 }
 
-/* --- section headers ------------------------------------------------------ */
+body .sidebar::-webkit-scrollbar-thumb {
+    background-color: var(--k-sidebar-scrollbar);
+    border-radius: var(--k-radius-pill);
+}
+
+/* --- section headers ------------------------------------------------------- */
 body .sidebar-menu li.header {
     background: transparent;
-    color: var(--k-sb-header) !important;
+    color: var(--k-sidebar-muted) !important;
     font-size: 10px;
     font-weight: 600;
     text-transform: uppercase;
@@ -1216,34 +1194,40 @@ body .sidebar-menu li.header {
     padding: var(--k-space-5) var(--k-space-5) var(--k-space-2);
 }
 
-/* --- top-level rows: icon + label + badge/caret on one flex baseline ------ */
+/* --- top-level rows: icon well + label + badge/caret ----------------------- */
 body .sidebar-menu > li > a,
 body .sidebar-menu > li > a:link,
 body .sidebar-menu > li > a:visited {
     display: flex;
     align-items: center;
-    gap: var(--k-space-2);
-    margin: 1px var(--k-space-2);
-    padding: 8px var(--k-space-3);
+    gap: 10px;
+    margin: 2px var(--k-space-3);
+    padding: 5px var(--k-space-3);
     border: none !important; /* kills upstream's 3px active border-left */
     border-radius: var(--k-radius-sm);
     background-color: transparent !important;
-    color: var(--k-sb-text) !important;
-    font-size: 12.5px;
+    color: var(--k-sidebar-text) !important;
+    font-size: 13px;
     font-weight: 500;
     line-height: 1.4;
+    cursor: pointer;
     transition: background-color var(--k-motion), color var(--k-motion);
 }
 
+/* the icon well: ~30px rounded square, translucent white */
 body .sidebar-menu > li > a > .fa,
 body .sidebar-menu > li > a > .fas,
 body .sidebar-menu > li > a > .far {
-    width: 18px;
+    width: 30px;
+    height: 30px;
     flex: none;
-    font-size: 14px;
+    line-height: 30px;
+    font-size: 13px;
     text-align: center;
-    color: var(--k-sb-icon) !important;
-    transition: color var(--k-motion), transform var(--k-motion);
+    border-radius: var(--k-radius-sm);
+    background-color: var(--k-sidebar-icon-well);
+    color: var(--k-sidebar-text) !important;
+    transition: background-color var(--k-motion), color var(--k-motion);
 }
 
 body .sidebar-menu > li > a > span {
@@ -1254,21 +1238,22 @@ body .sidebar-menu > li > a > span {
     white-space: nowrap;
 }
 
-/* hover: soft neutral pill (li itself stays unpainted — upstream paints a
-   dark block on li:hover behind the link) */
+/* hover: faint row wash + brightened well + white label (li itself stays
+   unpainted — upstream paints a dark block on li:hover behind the link) */
 body .sidebar-menu > li:hover {
     background-color: transparent !important;
 }
 
 body .sidebar-menu > li > a:hover,
 body .sidebar-menu > li:hover > a {
-    background-color: var(--k-sb-hover-bg) !important;
-    color: var(--k-sb-text-strong) !important;
+    background-color: var(--k-sidebar-hover-bg) !important;
+    color: var(--k-sidebar-text-active) !important;
 }
 
 body .sidebar-menu > li > a:hover > .fa,
 body .sidebar-menu > li:hover > a > .fa {
-    color: var(--k-sb-text-strong) !important;
+    background-color: var(--k-sidebar-icon-well-hover);
+    color: var(--k-sidebar-text-active) !important;
 }
 
 body .sidebar-menu > li > a:focus-visible {
@@ -1276,37 +1261,40 @@ body .sidebar-menu > li > a:focus-visible {
     outline-offset: -2px;
 }
 
-/* active: the ONE mechanism — accent-tinted pill + accent text/icon */
+/* active: solid accent rounded rect, white text, soft red glow */
 body .sidebar-menu > li.active > a,
 body .sidebar-menu > li.active > a:link,
 body .sidebar-menu > li.active > a:visited,
 body .sidebar-menu > li.active > a:hover {
-    background-color: var(--k-sb-active-bg) !important;
-    color: var(--k-sb-active-text) !important;
+    background-color: var(--k-sidebar-active-bg) !important;
+    color: var(--k-sidebar-active-text) !important;
     font-weight: 600;
+    box-shadow: var(--k-sidebar-active-shadow);
 }
 
-body .sidebar-menu > li.active > a > .fa {
-    color: var(--k-sb-active-text) !important;
+/* the well inverts to a light chip on the red row; icon stays white */
+body .sidebar-menu > li.active > a > .fa,
+body .sidebar-menu > li.active > a:hover > .fa {
+    background-color: var(--k-sidebar-icon-well-active);
+    color: var(--k-sidebar-active-text) !important;
 }
 
-/* expanded-but-not-current parent: strong text, no pill */
+/* expanded-but-not-current parent: white text, no fill */
 body .sidebar-menu > li.menu-open:not(.active) > a {
-    color: var(--k-sb-text-strong) !important;
+    color: var(--k-sidebar-text-active) !important;
 }
 
-body .sidebar-menu > li.menu-open:not(.active) > a > .fa {
-    color: var(--k-sb-text-strong) !important;
-}
-
-/* caret: floats are inert on flex items, so the pull-right caret simply
-   takes the inline-end slot; rotate on expand (AdminLTE toggles .menu-open) */
+/* caret: muted chevron, rotates on expand (floats are inert on flex items,
+   so the pull-right caret simply takes the inline-end slot) */
 body .sidebar-menu > li > a > .fa-angle-left.pull-right,
 body .sidebar-menu > li > a > .pull-right-container > .fa {
     width: auto;
+    height: auto;
+    line-height: 1.4;
     margin-inline-start: auto;
+    background-color: transparent;
     font-size: 11px;
-    color: var(--k-sb-icon) !important;
+    color: var(--k-sidebar-muted) !important;
     transition: transform var(--k-motion), color var(--k-motion);
 }
 
@@ -1315,15 +1303,19 @@ body .sidebar-menu > li.menu-open > a > .pull-right-container > .fa-angle-left {
     transform: rotate(-90deg);
 }
 
-/* --- treeview submenu: hairline indent guide aligned to the parent icon --- */
+/* muted caret is unreadable on the solid red row — flip it to white */
+body .sidebar-menu > li.active > a > .fa-angle-left.pull-right,
+body .sidebar-menu > li.active > a > .pull-right-container > .fa {
+    color: var(--k-sidebar-active-text) !important;
+}
+
+/* --- treeview submenu: faint inset panel, no guide line --------------------- */
 body .sidebar-menu > li > .treeview-menu,
 body .sidebar-menu > li.menu-open > .treeview-menu {
-    background-color: transparent !important;
-    margin: 2px var(--k-space-2) var(--k-space-1);
-    margin-inline-start: 28px;
-    padding: 0;
-    padding-inline-start: var(--k-space-2);
-    border-inline-start: 1px solid var(--k-sb-border);
+    background-color: var(--k-sidebar-panel) !important;
+    border-radius: var(--k-radius-sm);
+    margin: 2px var(--k-space-3) var(--k-space-2);
+    padding: var(--k-space-1);
 }
 
 body .sidebar-menu .treeview-menu > li,
@@ -1339,14 +1331,16 @@ body .sidebar-menu .treeview-menu > li > a:visited {
     align-items: center;
     gap: var(--k-space-2);
     background-color: transparent !important;
-    color: var(--k-sb-text) !important;
-    font-size: 12px;
+    color: var(--k-sidebar-text) !important;
+    font-size: 12.5px;
     font-weight: 500;
     padding: 6px var(--k-space-2);
     border-radius: var(--k-radius-sm);
     transition: background-color var(--k-motion), color var(--k-motion);
 }
 
+/* status dots / semantic child icons keep their own colors (text-* classes
+   and inline styles); only size is normalized */
 body .sidebar-menu .treeview-menu > li > a > .fa,
 body .sidebar-menu .treeview-menu > li > a > .fas {
     flex: none;
@@ -1354,8 +1348,8 @@ body .sidebar-menu .treeview-menu > li > a > .fas {
 }
 
 body .sidebar-menu .treeview-menu > li > a:hover {
-    background-color: var(--k-sb-hover-bg) !important; /* beats overrides.less' !important */
-    color: var(--k-sb-text-strong) !important;
+    background-color: var(--k-sidebar-hover-bg) !important; /* beats overrides.less' !important */
+    color: var(--k-sidebar-text-active) !important;
 }
 
 body .sidebar-menu .treeview-menu > li > a:focus-visible {
@@ -1363,26 +1357,23 @@ body .sidebar-menu .treeview-menu > li > a:focus-visible {
     outline-offset: -2px;
 }
 
-/* child active: same accent-pill mechanism as top level */
+/* child active: soft accent background + white text (the ONE mechanism) */
 body .sidebar-menu .treeview-menu > li.active > a,
 body .sidebar-menu .treeview-menu > li.active > a:hover {
-    background-color: var(--k-sb-active-bg) !important;
-    color: var(--k-sb-active-text) !important;
+    background-color: var(--k-sidebar-child-active-bg) !important;
+    color: var(--k-sidebar-text-active) !important;
     font-weight: 600;
 }
 
-/* status dots / semantic child icons keep their own colors (inline styles
-   and text-* classes), only their size is normalized above */
-
-/* --- badges: quiet pills pinned to the inline-end edge -------------------- */
+/* --- badges: translucent pills; solid white + accent text on the active row  */
 body .sidebar-menu > li .badge,
 body .sidebar-menu .treeview-menu > li .badge,
 body .sidebar-menu > li > a > .pull-right-container .label {
     filter: none !important; /* upstream darkens badges with brightness(70%) */
     margin: 0;
     margin-inline-start: auto;
-    background-color: var(--k-sb-badge-bg) !important;
-    color: var(--k-sb-badge-text) !important;
+    background-color: var(--k-sidebar-badge-bg) !important;
+    color: var(--k-sidebar-badge-text) !important;
     font-size: 10px !important;
     font-weight: 600;
     line-height: 1.4;
@@ -1392,43 +1383,33 @@ body .sidebar-menu > li > a > .pull-right-container .label {
 
 body .sidebar-menu > li.active .badge,
 body .sidebar-menu .treeview-menu > li.active .badge {
-    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-soft), transparent) !important;
-    color: var(--k-sb-active-text) !important;
+    background-color: var(--k-sidebar-badge-active-bg) !important;
+    color: var(--k-accent) !important;
 }
 
-/* --- user panel / sidebar search follow the rail --------------------------- */
-body .user-panel,
-body .user-panel > .info,
-body .user-panel > .info > a {
-    background-color: transparent;
-    color: var(--k-sb-text) !important;
-}
-
-body .user-panel {
-    border-bottom: 1px solid var(--k-sb-border);
-}
-
-/* --- collapsed (mini) rail ------------------------------------------------ */
+/* --- collapsed (mini) rail: centered icon wells only ------------------------- */
 body.sidebar-collapse .sidebar-menu > li > a {
     justify-content: center;
     gap: 0;
-    margin: 2px var(--k-space-2);
-    padding: 9px 0;
+    margin: 3px var(--k-space-2);
+    padding: 4px 0;
 }
 
 body.sidebar-collapse .sidebar-menu > li > a > .fa,
 body.sidebar-collapse .sidebar-menu > li > a > .fas,
 body.sidebar-collapse .sidebar-menu > li > a > .far {
-    width: auto;
-    font-size: 15px;
+    width: 34px;
+    height: 34px;
+    line-height: 34px;
+    font-size: 14px;
 }
 
-/* --- collapsed flyout menus ------------------------------------------------
-   Mechanics (unchanged): AdminLTE's collapsed-mode display:none !important
-   is beaten by display:block + visibility/opacity, with a 0.5s hide delay
-   and the JS .k-flyout-hold class (default.blade.php [killa-v2] script) so
-   the pointer can cross from icon to panel. Position is absolute at the
-   inline-end edge of the 50px rail, top-aligned with the anchor row.
+/* --- collapsed flyout menus: dark panels matching the rail --------------------
+   Mechanics (unchanged): display:block beats AdminLTE's collapsed
+   display:none !important; visibility/opacity with a 0.5s hide delay plus the
+   JS .k-flyout-hold class (default.blade.php [killa-v2] script) lets the
+   pointer cross from icon to panel. Position absolute at the inline-end edge
+   of the 50px rail, top-aligned with the anchor row.
    -------------------------------------------------------------------------- */
 body.sidebar-mini.sidebar-collapse .sidebar-menu > li {
     position: relative;
@@ -1447,10 +1428,10 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu {
     min-width: 200px;
     max-width: 320px;
     margin: 0;
-    margin-block-start: -6px;
+    margin-block-start: -4px;
     padding: var(--k-space-1);
-    background: var(--k-surface) !important;
-    border: 1px solid var(--k-border) !important;
+    background-color: var(--k-sidebar-flyout-bg) !important;
+    border: 1px solid var(--k-sidebar-border) !important;
     border-radius: var(--k-radius-chip);
     box-shadow: var(--k-shadow-lg);
     transition: opacity 0.12s ease, visibility 0s linear 0.5s;
@@ -1471,7 +1452,7 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu > li > .treeview-menu::after {
     content: none;
 }
 
-/* flyout items: card text colors (the rail tokens would be off-surface here) */
+/* flyout items keep rail colors (the panel is dark like the rail) */
 body.sidebar-collapse .sidebar-menu .treeview-menu > li,
 body.sidebar-collapse .sidebar-menu .treeview-menu > li:hover,
 body.sidebar-collapse .sidebar-menu .treeview-menu > li.active,
@@ -1489,21 +1470,21 @@ body.sidebar-collapse .sidebar-menu .treeview-menu > li > a:visited,
 body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li > a,
 body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li > a:link,
 body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li > a:visited {
-    color: var(--k-text) !important;
+    color: var(--k-sidebar-text) !important;
 }
 
 body.sidebar-collapse .sidebar-menu .treeview-menu > li > a:hover,
 body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li > a:hover {
-    background: var(--k-hover-tint) !important;
-    color: var(--k-accent) !important;
+    background-color: var(--k-sidebar-hover-bg) !important;
+    color: var(--k-sidebar-text-active) !important;
 }
 
 body.sidebar-collapse .sidebar-menu .treeview-menu > li.active > a,
 body.sidebar-collapse .sidebar-menu .treeview-menu > li.active > a:hover,
 body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li.active > a,
 body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li.active > a:hover {
-    background-color: var(--k-sb-active-bg) !important;
-    color: var(--k-sb-active-text) !important;
+    background-color: var(--k-sidebar-child-active-bg) !important;
+    color: var(--k-sidebar-text-active) !important;
 }
 
 /* [killa-v2] 768px responsive floor: below 768px AdminLTE uses the
