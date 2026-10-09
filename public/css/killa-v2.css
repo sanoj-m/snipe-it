@@ -1487,6 +1487,33 @@ body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li.active > a:
     color: var(--k-sidebar-text-active) !important;
 }
 
+/* --- motion: AdminLTE's shell transitions are slow by default (.3s on
+   .main-sidebar/.content-wrapper/.main-header/.navbar/.logo, .5s on the
+   treeview caret) — tighten everything to the standard fast motion ------- */
+body .main-sidebar,
+body .left-side {
+    transition: transform var(--k-motion), width var(--k-motion);
+}
+
+body .content-wrapper,
+body .main-footer {
+    transition: transform var(--k-motion), margin var(--k-motion);
+}
+
+body .main-header,
+body .main-header .navbar {
+    transition: margin-left var(--k-motion);
+}
+
+body .main-header .logo {
+    transition: width var(--k-motion), background-color var(--k-motion);
+}
+
+body .sidebar-menu li > a > .pull-right-container > .fa-angle-left,
+body .sidebar-menu li > a > .fa-angle-left.pull-right {
+    transition: transform var(--k-motion), color var(--k-motion);
+}
+
 /* [killa-v2] 768px responsive floor: below 768px AdminLTE uses the
    off-canvas sidebar (sidebar-open transform) with inline-expanding
    treeviews; clamp the flyout so it can never overflow the viewport. */

@@ -1081,6 +1081,18 @@
         @section('moar_scripts')
         @show
 
+        {{-- [killa-v2] faster treeview slide: the bundled AdminLTE Tree
+             plugin (js/dist/all.js, "lte.tree") hard-codes animationSpeed:500
+             and reads its options from the clicked anchor's data-* attributes
+             at first click (lazy init, no $.AdminLTE.options in this bundle).
+             Stamping data-animation-speed here — after all.js, before any
+             click — is all the plugin ever reads. --}}
+        <script nonce="{{ csrf_token() }}">
+            document.querySelectorAll('.sidebar-menu .treeview > a').forEach(function (a) {
+                a.setAttribute('data-animation-speed', '180');
+            });
+        </script>
+
         {{-- [killa-v2] hover-intent for collapsed-sidebar flyout menus --}}
         <script nonce="{{ csrf_token() }}">
             document.querySelectorAll('.sidebar-menu > li.treeview').forEach(function (li) {
