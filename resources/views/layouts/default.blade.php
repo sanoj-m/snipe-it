@@ -1099,6 +1099,11 @@
                 var timer;
                 li.addEventListener('mouseenter', function () {
                     clearTimeout(timer);
+                    document.querySelectorAll('.sidebar-menu > li.treeview.k-flyout-hold').forEach(function (other) {
+                        if (other !== li) {
+                            other.classList.remove('k-flyout-hold');
+                        }
+                    });
                     li.classList.add('k-flyout-hold');
                 });
                 li.addEventListener('mouseleave', function () {

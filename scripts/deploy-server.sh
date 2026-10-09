@@ -85,6 +85,9 @@ sudo -u $WEBUSER composer dump-autoload
 sudo -u $WEBUSER $PHP artisan package:discover
 
 echo "==> Migrate + caches"
+# Stamp a per-deploy version so the killa-v2*.css ?v= cache-buster changes on
+# every deploy (theme-only deploys don't change the git tag).
+sed -i "s/'app_version' => '[^']*'/'app_version' => 'v8.8.0+d$TS'/" config/version.php
 sudo -u $WEBUSER $PHP artisan migrate --force
 sudo -u $WEBUSER $PHP artisan optimize:clear
 sudo -u $WEBUSER $PHP artisan config:cache

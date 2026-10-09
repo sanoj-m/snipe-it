@@ -107,7 +107,7 @@
     --k-motion: 160ms ease;
 }
 
-/* Dark theme: same structure, darker surfaces. Sidebar stays dark. */
+/* Dark theme: same structure, darker surfaces. Sidebar: charcoal (light in light mode). */
 html[data-theme='dark'] {
     --k-bg: #121417;
     --k-surface: #1a1d23;
@@ -221,14 +221,16 @@ body .main-header .navbar {
 body .main-header .navbar .nav > li > a,
 body .main-header .navbar .nav > li > a:link,
 body .main-header .navbar .nav > li > a:visited,
-body .main-header .navbar .sidebar-toggle {
+body .main-header .navbar .sidebar-toggle,
+body .main-header .navbar .sidebar-toggle-mobile {
     background-color: transparent !important;
     color: var(--k-navbar-text) !important;
     transition: color var(--k-motion), background-color var(--k-motion);
 }
 
 body .main-header .navbar .nav > li > a:hover,
-body .main-header .navbar .sidebar-toggle:hover {
+body .main-header .navbar .sidebar-toggle:hover,
+body .main-header .navbar .sidebar-toggle-mobile:hover {
     color: var(--k-accent);
     background-color: transparent;
 }
@@ -1157,8 +1159,9 @@ body .main-header .logo.navbar-brand {
    link colors below must too; the rest wins on body-prefix specificity +
    source order after all.css).
 
-   A deep charcoal rail in BOTH themes (tokens live in :root above). Design
-   contract — deliberately different from the previous light-rail iteration:
+   A light rail in light mode, charcoal in dark mode (tokens live in :root
+   above, dark overrides in the dark token block). Design contract —
+   deliberately different from the previous neutral-pill iteration:
    - Each top-level icon sits in a rounded-square well (translucent white);
      the well brightens on hover and inverts to a light chip on the red row.
    - Active top-level row: SOLID accent rounded rect, white text, soft red
