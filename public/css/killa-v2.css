@@ -71,7 +71,6 @@
     --k-sidebar-badge-active-bg: #ffffff;
     --k-sidebar-scrollbar: rgba(255, 255, 255, 0.18);
     --k-sidebar-flyout-bg: #1f2227;
-    --k-logo-text: #ffffff;
     --k-check-border: #d1d5db;
     --k-navbar-bg: #ffffff;
     --k-navbar-text: #4b5563;
@@ -178,23 +177,24 @@ body a {
 }
 
 /* --------------------------------------------------------------------------
-   App shell: logo + white navbar with hairline. The sidebar rail itself is
-   styled by the "[killa-v2] CHARCOAL NAV RAIL" block at the end of this file
-   (final authority over AdminLTE/overrides.less !important sidenav rules).
+   App shell: logo + white navbar with hairline. The logo is a navbar-brand
+   INSIDE the navbar (not AdminLTE's split header), so it follows the navbar
+   surface, not the sidebar rail. The rail itself is styled by the
+   "[killa-v2] CHARCOAL NAV RAIL" block at the end of this file.
    -------------------------------------------------------------------------- */
 body .main-header .logo {
-    background-color: var(--k-sidebar-bg);
-    color: var(--k-logo-text);
-    border-bottom: 1px solid var(--k-sidebar-border);
-    border-inline-end: 1px solid var(--k-sidebar-border);
+    background-color: var(--k-navbar-bg);
+    color: var(--k-text);
+    border: none; /* the navbar's own bottom hairline handles separation */
     font-family: var(--k-font-display);
     font-weight: 700;
     letter-spacing: -0.01em;
-    transition: background-color var(--k-motion);
+    transition: background-color var(--k-motion), color var(--k-motion);
 }
 
 body .main-header .logo:hover {
-    background-color: var(--k-sidebar-bg);
+    background-color: var(--k-navbar-bg);
+    color: var(--k-accent); /* matches navbar link hover */
 }
 
 body .main-header .navbar {
@@ -1024,8 +1024,12 @@ body .main-header .navbar .navbar-form {
 
 body .main-header .logo,
 body .main-header .logo:hover {
-    background-color: var(--k-sidebar-bg) !important;
-    color: var(--k-logo-text, var(--k-text)) !important;
+    background-color: var(--k-navbar-bg) !important;
+    color: var(--k-text) !important;
+}
+
+body .main-header .logo:hover {
+    color: var(--k-accent) !important;
 }
 
 body .main-header .navbar .nav > li > a,
@@ -1148,20 +1152,13 @@ body .main-header .logo.navbar-brand {
    - Logical properties where cheap, so RTL mirrors for free.
    ========================================================================== */
 
-/* --- rail surfaces -------------------------------------------------------- */
+/* --- rail surfaces (the header logo is NOT part of the rail — it is a
+   navbar-brand inside the navbar and follows the navbar surface) ---------- */
 body .main-sidebar,
 body .left-side,
 body .sidebar,
-body .sidebar-menu,
-body .main-header .logo,
-body .main-header .logo:hover {
+body .sidebar-menu {
     background-color: var(--k-sidebar-bg) !important;
-}
-
-body .main-header .logo,
-body .main-header .logo:hover {
-    color: var(--k-logo-text) !important;
-    border-bottom: 1px solid var(--k-sidebar-border);
 }
 
 body .sidebar {
