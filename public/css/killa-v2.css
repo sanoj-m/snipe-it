@@ -50,27 +50,29 @@
     --k-tint-alpha-active: 14%;
     --k-tint-border: 30%;
 
-    /* app shell: charcoal nav rail — deliberately dark in BOTH themes
-       (single definition; the dark block does not re-define these) */
-    --k-sidebar-bg: #17191d;
-    --k-sidebar-border: rgba(255, 255, 255, 0.07);
-    --k-sidebar-text: #c9cdd4;
-    --k-sidebar-text-active: #ffffff;
-    --k-sidebar-muted: #8a919c;
-    --k-sidebar-hover-bg: rgba(255, 255, 255, 0.05);
-    --k-sidebar-icon-well: rgba(255, 255, 255, 0.06);
-    --k-sidebar-icon-well-hover: rgba(255, 255, 255, 0.12);
-    --k-sidebar-icon-well-active: rgba(255, 255, 255, 0.18);
-    --k-sidebar-panel: rgba(255, 255, 255, 0.03);
+    /* app shell: nav rail — light in light mode, charcoal in dark mode
+       (dark overrides live in the html[data-theme='dark'] block; tokens
+       expressed as color-mix of --k-text adapt to both modes by themselves) */
+    --k-sidebar-bg: #ffffff;
+    --k-sidebar-border: #e5e7eb;
+    --k-sidebar-text: #4b5563;
+    --k-sidebar-text-active: #1f2933;
+    --k-sidebar-muted: #6b7280;
+    --k-sidebar-hover-bg: #f4f5f6;
+    --k-sidebar-icon-well: color-mix(in srgb, var(--k-text) 5%, transparent);
+    --k-sidebar-icon-well-hover: color-mix(in srgb, var(--k-text) 9%, transparent);
+    --k-sidebar-icon-well-active: rgba(255, 255, 255, 0.22); /* chip ON the red row, both modes */
+    --k-sidebar-panel: color-mix(in srgb, var(--k-text) 3%, transparent);
     --k-sidebar-active-bg: var(--k-accent);
     --k-sidebar-active-text: #ffffff;
     --k-sidebar-active-shadow: 0 2px 10px rgba(230, 59, 46, 0.35);
-    --k-sidebar-child-active-bg: rgba(230, 59, 46, 0.22);
-    --k-sidebar-badge-bg: rgba(255, 255, 255, 0.09);
-    --k-sidebar-badge-text: #c9cdd4;
+    --k-sidebar-child-active-bg: var(--k-accent-tint);
+    --k-sidebar-child-active-text: var(--k-accent-hover);
+    --k-sidebar-badge-bg: #eef0f2;
+    --k-sidebar-badge-text: #6b7280;
     --k-sidebar-badge-active-bg: #ffffff;
-    --k-sidebar-scrollbar: rgba(255, 255, 255, 0.18);
-    --k-sidebar-flyout-bg: #1f2227;
+    --k-sidebar-scrollbar: var(--k-scrollbar-thumb);
+    --k-sidebar-flyout-bg: var(--k-surface);
     --k-check-border: #d1d5db;
     --k-navbar-bg: #ffffff;
     --k-navbar-text: #4b5563;
@@ -132,10 +134,22 @@ html[data-theme='dark'] {
     --k-tile-purple: #9a80d4;
     --k-tile-yellow: #d19a2b;
     --k-tile-light-blue: #4a90c2;
-    /* rail is dark in both themes; only the accent-tinted glows track the
-       (brighter) dark accent */
+    /* nav rail: charcoal in dark mode (light values in :root; wells/panel
+       are color-mixes of --k-text and adapt on their own) */
+    --k-sidebar-bg: #17191d;
+    --k-sidebar-border: rgba(255, 255, 255, 0.07);
+    --k-sidebar-text: #c9cdd4;
+    --k-sidebar-text-active: #ffffff;
+    --k-sidebar-muted: #8a919c;
+    --k-sidebar-hover-bg: rgba(255, 255, 255, 0.05);
+    --k-sidebar-icon-well-active: rgba(255, 255, 255, 0.18);
     --k-sidebar-active-shadow: 0 2px 10px rgba(240, 87, 75, 0.35);
     --k-sidebar-child-active-bg: rgba(240, 87, 75, 0.25);
+    --k-sidebar-child-active-text: #ffffff;
+    --k-sidebar-badge-bg: rgba(255, 255, 255, 0.09);
+    --k-sidebar-badge-text: #c3cad2;
+    --k-sidebar-scrollbar: rgba(255, 255, 255, 0.18);
+    --k-sidebar-flyout-bg: #1f2227;
     --k-check-border: #4b5563;
     --k-tint-alpha: 18%;
     --k-tint-border: 40%;
@@ -998,11 +1012,15 @@ body .navbar-nav > li > .dropdown-menu > li > a .fa {
 
 /* ==========================================================================
    Sidebar width: 230px -> 250px for menu depth (collapsed/mini stays 50px).
-   All sidebar rail styling lives in the "Sidebar rail" block at the end of
-   this file (final authority over AdminLTE/overrides.less sidenav rules).
+   .main-header MUST track the rail width exactly — overrides.less offsets it
+   by the stock 230px, which let the white header box (z-index 1030) overlap
+   the top 50px padding zone of the 250px rail and show as a white slab at
+   the corner. All sidebar rail styling lives in the "[killa-v2] CHARCOAL NAV
+   RAIL" block at the end of this file.
    ========================================================================== */
 @media (min-width: 768px) {
     body:not(.sidebar-collapse) .main-sidebar { width: 250px; }
+    body:not(.sidebar-collapse) .main-header { margin-left: 250px; }
     body:not(.sidebar-collapse) .main-header .logo { width: 250px; }
     body:not(.sidebar-collapse) .main-header .navbar { margin-left: 250px; }
     body:not(.sidebar-collapse) .content-wrapper,
@@ -1159,6 +1177,13 @@ body .left-side,
 body .sidebar,
 body .sidebar-menu {
     background-color: var(--k-sidebar-bg) !important;
+}
+
+/* hairline separating the rail from the page (visible in light mode,
+   near-invisible on the dark rail) */
+body .main-sidebar,
+body .sidebar {
+    border-inline-end: 1px solid var(--k-sidebar-border);
 }
 
 body .sidebar {
@@ -1354,11 +1379,11 @@ body .sidebar-menu .treeview-menu > li > a:focus-visible {
     outline-offset: -2px;
 }
 
-/* child active: soft accent background + white text (the ONE mechanism) */
+/* child active: soft accent background + accent/white text (the ONE mechanism) */
 body .sidebar-menu .treeview-menu > li.active > a,
 body .sidebar-menu .treeview-menu > li.active > a:hover {
     background-color: var(--k-sidebar-child-active-bg) !important;
-    color: var(--k-sidebar-text-active) !important;
+    color: var(--k-sidebar-child-active-text) !important;
     font-weight: 600;
 }
 
@@ -1481,7 +1506,7 @@ body.sidebar-collapse .sidebar-menu .treeview-menu > li.active > a:hover,
 body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li.active > a,
 body.sidebar-mini.sidebar-collapse .sidebar-menu .treeview-menu > li.active > a:hover {
     background-color: var(--k-sidebar-child-active-bg) !important;
-    color: var(--k-sidebar-text-active) !important;
+    color: var(--k-sidebar-child-active-text) !important;
 }
 
 /* --- motion: AdminLTE's shell transitions are slow by default (.3s on
