@@ -12,6 +12,12 @@
 
 <x-container>
 
+    {{-- [killa-v2 insights dashboard] BEGIN --}}
+    <div class="k-dashboard-classic-bar">
+        <x-dashboard.view-switch active="classic" />
+    </div>
+    {{-- [killa-v2 insights dashboard] END --}}
+
     @if ($snipeSettings->dashboard_message != '')
         <div class="row">
             <div class="col-md-12">

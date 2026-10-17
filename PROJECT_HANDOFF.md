@@ -20,6 +20,10 @@
   4. **Killa branding + "killa-v2" theme** — name swaps, 6 zero-build CSS
      overlays in `public/css/killa-v2*.css`, dashboard/sidebar work.
   - `skills/killa-design` — design-system skill that governs all UI/UX work.
+  - Alternate Insights dashboard at `/dashboard/insights`: Classic/Insights switch,
+    permission-aware metrics, 30-day asset movement, and existing operational
+    widgets. Isolated in `app/Http/Controllers/Killa/` + `resources/views/killa/`;
+    core hooks are KCP-036/037.
   - `snipe-it-floating-license-plugin` is a **broken gitlink** (no `.gitmodules`)
     — legacy duplicate, pending removal.
 - **NOTE:** `Order`/`OrderItem`, `SyncAdapterConfig`/`SyncAdapterInstance`, and
@@ -209,4 +213,4 @@ To suggest a modification here you must know:
 
 Work sessions are logged in `docs/sessions/` (index: `docs/sessions/README.md`),
 maintained by the `skills/saver` skill (session log → docs update → commit at
-≥50 changes). Latest: 2026-10-05 killa-v2 UI/UX redesign & hardening.
+≥50 changes). Latest: 2026-10-17 Insights dashboard & production deploy.

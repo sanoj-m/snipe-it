@@ -49,8 +49,10 @@ marking them is Phase 3 work.
 | KCP-033 | 5 × `resources/lang/en-US/*.php` | Branding + 3 functional keys; `footer_credit` now **preserves upstream Grokability attribution** with " — Killa Asset by Sanoj Maliyekkal" appended. **`admin/settings/sync_adapters.php` reverted to upstream** (was branding-only swaps, the sole recurring merge conflict per ADR-0001) | ~55 lines | No | HIGH-freq | Brand-name lang key |
 | KCP-034 | 5 × console commands (DisableLDAP, DisableSAML, FixDoubleEscape, GeneratePersonalAccessToken, LdapTroubleshooter) | Branding strings | 1–3 lines each | No | HIGH-freq | Drop or centralize |
 | KCP-035 | `composer.json`, `phpunit.xml`, `package.json` | Package/test/tooling wiring | +16 | N/A | LOW | Keep |
+| KCP-036 | `routes/web.php` | Fenced `dashboard.insights` auth route and breadcrumb | +11 | Yes (`[killa-v2 insights dashboard]`) | LOW-MED | Remove route with the isolated Insights dashboard |
+| KCP-037 | `resources/views/dashboard.blade.php` | Fenced Classic/Insights view-switch include | +6 | Yes (`[killa-v2 insights dashboard]`) | LOW-MED | Remove include; classic dashboard otherwise unchanged |
 
-**Totals: 36 registered patches across 58 modified files (was 72 — 16 notification
+**Totals: 38 registered patches across 59 modified files (was 72 — 16 notification
 files reverted to upstream in Phase 3; gitlink removed). HIGH risk: 1 (KCP-007).
 MED-HIGH: 2 (KCP-010 and frequency-class branding).**
 

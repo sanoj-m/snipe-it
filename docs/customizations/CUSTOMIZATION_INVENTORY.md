@@ -67,6 +67,7 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 | UI-04 | `Helper::defaultChartColors()` | +12/−268 | 266-color palette → 10-color Killa palette (data only, **no code deleted**) | Could be config-driven | LOW | — |
 | UI-05 | `dashboard.blade.php` | 1 | Chart.js font colors | No | LOW | — |
 | UI-06 | `skills/killa-design/SKILL.md` | new | Design-system authority (note: drifted from reality — says 1 file/6px radius, actual 6 files/12px) | N/A | — | — |
+| UI-07 | `app/Http/Controllers/Killa/DashboardController.php`, `resources/views/killa/dashboard.blade.php`, `blade/dashboard/view-switch.blade.php`, `lang/en-US/killa.php`, `killa-v2-widgets.css`; fenced hooks in `routes/web.php` + `dashboard.blade.php` | new (+17 core lines) | Alternate Insights dashboard: permission-aware metrics, 30-day asset movement, status chart, prioritized widgets, Classic/Insights switch | Isolated except route + classic switch (KCP-036/037) | MEDIUM | `KillaDashboardTest` |
 
 ## 6. Tooling — KILLA-CONFIG
 

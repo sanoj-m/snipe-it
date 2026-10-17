@@ -1046,3 +1046,14 @@ Route::middleware(['auth'])->get(
 )->name('home')
     ->breadcrumbs(fn (Trail $trail) => $trail->push('Home', route('home'))
     );
+
+// [killa-v2 insights dashboard] BEGIN
+Route::middleware(['auth'])->get(
+    '/dashboard/insights',
+    [\App\Http\Controllers\Killa\DashboardController::class, 'index']
+)->name('dashboard.insights')
+    ->breadcrumbs(fn (Trail $trail) => $trail
+        ->push(trans('general.dashboard'), route('home'))
+        ->push(trans('killa.insights'), route('dashboard.insights'))
+    );
+// [killa-v2 insights dashboard] END
