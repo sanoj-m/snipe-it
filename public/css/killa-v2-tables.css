@@ -391,6 +391,12 @@ body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-load
     background: color-mix(in srgb, var(--k-surface) 97%, transparent);
     z-index: 10;
     transition: visibility 0s, opacity var(--k-motion);
+    /* bootstrap-table sets an inline width = full table width (all columns),
+       which pushes the centered text off-screen on wide tables. Pin the
+       overlay to the visible viewport of the scroll container instead. */
+    left: 0;
+    width: 100% !important;
+    max-width: 100%;
 }
 
 body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap {
