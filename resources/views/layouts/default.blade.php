@@ -59,6 +59,8 @@
         </style>
     @endif
 
+    {{-- [killa-v2] Notification navigation: load after tenant custom CSS so inaccessible contrast overrides cannot win. --}}
+    <link rel="stylesheet" href="{{ url('css/killa-v2-notifications.css') }}?v={{ config('version.app_version') }}">
 
     <script nonce="{{ csrf_token() }}">
         window.snipeit = {

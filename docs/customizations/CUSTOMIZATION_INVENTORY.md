@@ -61,12 +61,12 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 
 | ID | Files | Diff | Reason | Isolation possible? | Risk | Tests |
 |---|---|---|---|---|---|---|
-| UI-01 | `public/css/killa-v2*.css` (6 files, ~162KB, zero-build) | new | Theme layer — deliberately outside webpack | Already isolated | LOW | — |
-| UI-02 | `layouts/default.blade.php` + `basic.blade.php` | +32/−28 | CSS/font loader, footer-link deletions, inline flyout JS (800ms hold) | Partial (partial/@stack) | MEDIUM | — |
+| UI-01 | `public/css/killa-v2*.css` (8 files, zero-build) | new | Theme layer — deliberately outside webpack | Already isolated | LOW | — |
+| UI-02 | `layouts/default.blade.php` + `basic.blade.php` | +33/−28 | CSS/font loader (including post-custom notification layer), footer-link deletions, inline flyout JS (800ms hold) | Partial (partial/@stack) | MEDIUM | — |
 | UI-03 | `blade/dashboard/top-boxes.blade.php` | ~98 | k-tile restructure (keeps upstream hooks) | Partial | MEDIUM | — |
 | UI-04 | `Helper::defaultChartColors()` | +12/−268 | 266-color palette → 10-color Killa palette (data only, **no code deleted**) | Could be config-driven | LOW | — |
 | UI-05 | `dashboard.blade.php` | 1 | Chart.js font colors | No | LOW | — |
-| UI-06 | `skills/killa-design/SKILL.md` | new | Design-system authority (note: drifted from reality — says 1 file/6px radius, actual 6 files/12px) | N/A | — | — |
+| UI-06 | `skills/killa-design/SKILL.md` | new | Design-system authority | N/A | — | — |
 | UI-07 | `app/Http/Controllers/Killa/DashboardController.php`, `resources/views/killa/dashboard.blade.php`, `blade/dashboard/view-switch.blade.php`, `lang/en-US/killa.php`, `killa-v2-widgets.css`; fenced hooks in `routes/web.php` + `dashboard.blade.php` | new (+17 core lines) | Alternate Insights dashboard: permission-aware metrics, 30-day asset movement, status chart, prioritized widgets, Classic/Insights switch | Isolated except route + classic switch (KCP-036/037) | MEDIUM | `KillaDashboardTest` |
 
 ## 6. Tooling — KILLA-CONFIG

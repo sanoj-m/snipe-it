@@ -21,9 +21,9 @@ sources, in this precedence order when they conflict:
 
 - AdminLTE 2 / Bootstrap 3 Blade views. No Tailwind, no CSS-in-JS, no Inertia.
 - Frontend builds with Laravel Mix (`npm run dev`). Prefer **zero-build**
-  changes: the v2 theme is seven plain committed stylesheets in `public/css/`,
-  loaded in order in `layouts/default.blade.php` and `layouts/basic.blade.php`
-  after `all.css`:
+  changes: the v2 theme is eight plain committed stylesheets in `public/css/`.
+  Shared layers load in order in `layouts/default.blade.php` and
+  `layouts/basic.blade.php` after `all.css`:
   0. `killa-v2-fonts.css` — self-hosted Inter/Inter Tight @font-face
      (files in `public/fonts/vendor/inter/`, latin variable woff2)
   1. `killa-v2.css` — tokens (`:root` + dark block) + app shell (sidebar,
@@ -34,6 +34,8 @@ sources, in this precedence order when they conflict:
   5. `killa-v2-overlays.css` — modals, dropdowns, popovers, tooltips, pickers
   6. `killa-v2-dark.css` — dark-mode completeness layer (ONLY
      `html[data-theme='dark']` rules + dark token overrides)
+  7. `killa-v2-notifications.css` — navbar notification/task/message menus;
+     default layout only, loaded after tenant custom CSS
   They are cache-busted with `?v={{ config('version.app_version') }}` — busts
   on each release, zero per-request disk reads. Blade edits are allowed; new
   build steps are not.

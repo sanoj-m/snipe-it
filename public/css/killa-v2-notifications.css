@@ -1,0 +1,129 @@
+/* ==========================================================================
+   Killa Asset v2 navbar notification / task / message menus
+   Loaded in layouts/default.blade.php AFTER tenant custom CSS so inaccessible
+   white-on-light tenant overrides cannot win the cascade.
+   ========================================================================== */
+
+body .navbar-nav > .notifications-menu > .dropdown-menu,
+body .navbar-nav > .messages-menu > .dropdown-menu,
+body .navbar-nav > .tasks-menu > .dropdown-menu {
+    position: fixed;
+    top: calc(50px + var(--k-space-1));
+    right: var(--k-space-2);
+    left: auto;
+    z-index: 1100;
+    width: 420px;
+    max-width: calc(100vw - var(--k-space-4));
+    margin-right: 0;
+    background-color: var(--k-surface) !important;
+    color: var(--k-text) !important;
+    overflow: hidden;
+    padding: 0;
+}
+
+body .navbar-nav > .notifications-menu > .dropdown-menu > li.header:not(.alert-warning),
+body .navbar-nav > .messages-menu > .dropdown-menu > li.header:not(.alert-warning),
+body .navbar-nav > .tasks-menu > .dropdown-menu > li.header:not(.alert-warning) {
+    background-color: var(--k-table-head-bg) !important;
+    border-bottom: 1px solid var(--k-border);
+    color: var(--k-text) !important;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    padding: var(--k-space-3) var(--k-space-4);
+}
+
+body .navbar-nav > .notifications-menu > .dropdown-menu > li:not(.header):not(.footer),
+body .navbar-nav > .messages-menu > .dropdown-menu > li:not(.header):not(.footer),
+body .navbar-nav > .tasks-menu > .dropdown-menu > li:not(.header):not(.footer),
+body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu,
+body .navbar-nav > .messages-menu > .dropdown-menu > li .menu,
+body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu {
+    background-color: var(--k-surface) !important;
+    color: var(--k-text) !important;
+}
+
+/* SlimScroll writes a fixed inline height and hides native overflow. */
+body .navbar-nav > .notifications-menu > .dropdown-menu .slimScrollDiv,
+body .navbar-nav > .messages-menu > .dropdown-menu .slimScrollDiv,
+body .navbar-nav > .tasks-menu > .dropdown-menu .slimScrollDiv {
+    height: auto !important;
+    max-height: min(420px, calc(100vh - 140px));
+    overflow: visible !important;
+}
+
+body .navbar-nav > .notifications-menu > .dropdown-menu .menu,
+body .navbar-nav > .messages-menu > .dropdown-menu .menu,
+body .navbar-nav > .tasks-menu > .dropdown-menu .menu {
+    height: auto !important;
+    max-height: min(420px, calc(100vh - 140px));
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+    overscroll-behavior: contain;
+    scrollbar-color: var(--k-scrollbar-thumb) transparent;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+}
+
+body .navbar-nav > .notifications-menu > .dropdown-menu .slimScrollBar,
+body .navbar-nav > .notifications-menu > .dropdown-menu .slimScrollRail,
+body .navbar-nav > .messages-menu > .dropdown-menu .slimScrollBar,
+body .navbar-nav > .messages-menu > .dropdown-menu .slimScrollRail,
+body .navbar-nav > .tasks-menu > .dropdown-menu .slimScrollBar,
+body .navbar-nav > .tasks-menu > .dropdown-menu .slimScrollRail {
+    display: none !important;
+}
+
+body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a,
+body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a,
+body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a {
+    border-bottom: 1px solid var(--k-border-soft);
+    line-height: 1.4;
+    padding: var(--k-space-3) var(--k-space-4);
+    white-space: normal;
+}
+
+body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li:last-child > a,
+body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li:last-child > a,
+body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li:last-child > a {
+    border-bottom: 0;
+}
+
+body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li:hover > a,
+body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a:focus,
+body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li:hover > a,
+body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a:focus,
+body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li:hover > a,
+body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a:focus {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > .tasks-menu > .dropdown-menu .task_menu {
+    background-color: transparent !important;
+    color: var(--k-text) !important;
+    font-family: var(--k-font);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.4;
+    margin: 0 0 var(--k-space-2);
+}
+
+body .navbar-nav > .tasks-menu > .dropdown-menu .task_menu small {
+    color: var(--k-text-muted) !important;
+    font-size: 12px;
+    font-weight: 500;
+    line-height: inherit;
+    margin-left: var(--k-space-3);
+    white-space: nowrap;
+}
+
+body .navbar-nav > .tasks-menu > .dropdown-menu .progress.xs {
+    background-color: var(--k-progress-track);
+    height: 6px;
+    margin: 0;
+}
+
+body .navbar-nav > .tasks-menu > .dropdown-menu .progress-bar-yellow {
+    background-color: var(--k-warning);
+}

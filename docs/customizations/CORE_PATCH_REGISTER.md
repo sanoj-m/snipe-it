@@ -37,7 +37,7 @@ marking them is Phase 3 work.
 | KCP-022 | `resources/views/partials/bootstrap-table.blade.php` | Floating release formatter | +15 | Yes | LOW | Keep |
 | KCP-023 | `resources/views/settings/general.blade.php` | Master-switch checkbox | +8 | No | LOW | Keep |
 | KCP-024 | `resources/views/users/ldap.blade.php` | Summary-row key guards | +2 | No | LOW | Keep (defensive) |
-| KCP-025 | `resources/views/layouts/default.blade.php` | Theme CSS loader, footer-link deletions, flyout JS | +20/−23 | Partial | MEDIUM | Move loader to partial; reconsider deletions |
+| KCP-025 | `resources/views/layouts/default.blade.php` | Theme CSS loaders (shared + post-custom notifications), footer-link deletions, flyout JS | +21/−23 | Partial | MEDIUM | Move loader to partial; reconsider deletions |
 | KCP-026 | `resources/views/layouts/basic.blade.php` | Theme CSS loader, title | +12/−5 | Partial | LOW | Move loader to partial |
 | KCP-027 | `resources/views/blade/dashboard/top-boxes.blade.php` | k-tile restructure | ~98 | Yes ([killa-v2]) | MEDIUM | Keep (additive pattern preserved) |
 | KCP-028 | `app/Helpers/Helper.php` | Chart palette swap (data only) | +12/−268 | Yes | LOW | Config-driven palette |
