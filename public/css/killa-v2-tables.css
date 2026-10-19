@@ -387,23 +387,31 @@ body .bootstrap-table .fixed-table-container .fixed-table-body::-webkit-scrollba
    Loading overlay
    -------------------------------------------------------------------------- */
 body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading {
-    background: color-mix(in srgb, var(--k-surface) 92%, transparent);
+    background: var(--k-surface);
+    background: color-mix(in srgb, var(--k-surface) 97%, transparent);
     z-index: 10;
     transition: visibility 0s, opacity var(--k-motion);
 }
 
+body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap {
+    align-items: center;
+}
+
 body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .loading-text {
     color: var(--k-text);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.08em;
+    margin-right: var(--k-space-3);
 }
 
 body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .animation-dot,
 body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .animation-wrap::before,
 body .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading .loading-wrap .animation-wrap::after {
     background: var(--k-accent);
+    height: 8px;
+    width: 8px;
 }
 
 /* --------------------------------------------------------------------------
