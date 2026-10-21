@@ -66,7 +66,7 @@ class RenewalTrackerController extends Controller
 
         $status = 'none';
         if ($days !== null) {
-            $status = $days <= 30 ? 'danger' : ($days <= 90 ? 'warning' : 'success');
+            $status = $days <= 30 ? 'danger' : ($days <= 60 ? 'warning' : 'success');
         }
 
         // purchase_cost is per-seat (server convention); sheet costs are totals
