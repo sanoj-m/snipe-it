@@ -130,6 +130,8 @@ class LicensesTransformer
                 'name' => e($license->category->name),
                 'tag_color' => ($license->category->tag_color) ? e($license->category->tag_color) : null,
             ] : null,
+            // [killa license-grouping] scalar key for bootstrap-table group-by
+            'category_name' => $license->category ? e($license->category->name) : '',
             'created_by' => ($license->adminuser) ? [
                 'id' => (int) $license->adminuser->id,
                 'name' => e($license->adminuser->display_name),

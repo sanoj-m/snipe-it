@@ -661,3 +661,19 @@ body .bootstrap-table .fixed-table-toolbar .dropdown-menu li.dropdown-item-marke
     margin: 0;
     flex: none;
 }
+
+/* --------------------------------------------------------------------------
+   [killa license-grouping] group-by-v2 section header rows (licenses list)
+   -------------------------------------------------------------------------- */
+body .bootstrap-table .fixed-table-container .fixed-table-body tr.group-by td,
+body .bootstrap-table .fixed-table-body tr.group-by td {
+    background-color: var(--k-table-head-bg) !important;
+    color: var(--k-text-muted);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    border-top: 1px solid var(--k-border);
+}
+
+body .bootstrap-table .fixed-table-body tr.group-by:hover td {
+    background-color: var(--k-table-head-bg) !important;
+}

@@ -11,6 +11,10 @@
     'sort_order' => 'asc',
     'sort_field' => 'name',
     'aria_labelledby' => null,
+    {{-- [killa license-grouping] opt-in: default sort + bootstrap-table group-by-v2 --}}
+    'default_sort' => null,
+    'group_by' => null,
+    'page_size' => null,
 ])
 
 @aware(['name'])
@@ -66,6 +70,20 @@
         data-side-pagination="server"
         data-url="{!!  $api_url !!}"
     @endif
+
+    {{-- [killa license-grouping] BEGIN --}}
+    @if ($default_sort)
+        data-sort-name="{{ $default_sort }}"
+    @endif
+    @if ($group_by)
+        data-group-by="true"
+        data-group-by-field="{{ $group_by }}"
+        data-group-by-formatter="snipeGroupByFormatter"
+    @endif
+    @if ($page_size)
+        data-page-size="{{ $page_size }}"
+    @endif
+    {{-- [killa license-grouping] END --}}
 
     data-export-options='{
         "fileName": "{{ $export_filename }}",
