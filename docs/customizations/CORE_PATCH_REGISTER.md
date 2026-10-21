@@ -53,6 +53,10 @@ marking them is Phase 3 work.
 | KCP-037 | `resources/views/dashboard.blade.php` | Fenced Classic/Insights view-switch include | +6 | Yes (`[killa-v2 insights dashboard]`) | LOW-MED | Remove include; classic dashboard otherwise unchanged |
 | KCP-038 | `routes/web/licenses.php` | Fenced `licenses.renewals` route + breadcrumb (Renewal Tracker) | +8 | Yes (`[killa-v2 renewal tracker]`) | LOW | Keep |
 | KCP-039 | `resources/views/layouts/default.blade.php` | Licenses sidebar entry converted to treeview with "List All" + "Renewal Tracker" | +17/−7 | Yes (`[killa-v2] renewal tracker submenu`) | MEDIUM | Keep |
+| KCP-040 | `routes/web.php` | Fenced `settings.currency.*` routes (index/save/fetch) in admin group | +12 | Yes (`[killa currency]`) | LOW | Keep |
+| KCP-041 | `resources/views/settings/index.blade.php` | Currency settings tile | +17 | Yes (`[killa currency]`) | LOW | Keep |
+| KCP-042 | `resources/views/licenses/edit.blade.php`, `app/Http/Controllers/Licenses/LicensesController.php` | Currency select after purchase-cost + `$license->currency` assignment in store/update | +17/+2 | Yes (`[killa currency]`) | LOW | Keep |
+| KCP-043 | `app/Models/License.php`, `app/Models/Setting.php` | `currency` rule/fillable; `currency_exchange_rates` fillable | +3 | Yes (`[killa currency]`) | LOW | Keep |
 
 **Totals: 38 registered patches across 59 modified files (was 72 — 16 notification
 files reverted to upstream in Phase 3; gitlink removed). HIGH risk: 1 (KCP-007).

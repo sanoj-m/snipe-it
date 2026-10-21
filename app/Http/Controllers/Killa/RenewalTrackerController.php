@@ -67,7 +67,9 @@ class RenewalTrackerController extends Controller
             $status = $days <= 30 ? 'danger' : ($days <= 90 ? 'warning' : 'success');
         }
 
-        $cost = $license->purchase_cost !== null ? (float) $license->purchase_cost : null;
+        // purchase_cost is per-seat (server convention); sheet costs are totals
+        $cost = $license->purchase_cost !== null ? (float) $license->purchase_cost * max(1, (int) $license->seats) : null;
+        $currency = $license->currency ? strtoupper($license->currency) : null;
 
         return [
             'name' => $license->name,
@@ -82,6 +84,9 @@ class RenewalTrackerController extends Controller
             'status' => $status,
             'cost_monthly' => $cost !== null ? $cost / 12 : null,
             'cost_yearly' => $cost,
+            'currency' => $currency,
+            'cost_monthly_aed' => $cost !== null ? \App\Services\Killa\CurrencyConverter::toBase($cost / 12, $currency) : null,
+            'cost_yearly_aed' => $cost !== null ? \App\Services\Killa\CurrencyConverter::toBase($cost, $currency) : null,
             'notes' => $license->notes,
         ];
     }

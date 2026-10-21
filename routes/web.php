@@ -299,6 +299,19 @@ Route::group(['prefix' => 'admin', 'middleware' => ['auth', 'authorize:superuser
     Route::post('branding', [SettingsController::class, 'postBranding'])
         ->name('settings.branding.save');
 
+    // [killa currency] BEGIN
+    Route::get('currency', [\App\Http\Controllers\Killa\CurrencySettingsController::class, 'edit'])
+        ->name('settings.currency.index')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('settings.index')
+            ->push(trans('killa.currency.title'), route('settings.currency.index')));
+
+    Route::post('currency', [\App\Http\Controllers\Killa\CurrencySettingsController::class, 'update'])
+        ->name('settings.currency.save');
+
+    Route::post('currency/fetch', [\App\Http\Controllers\Killa\CurrencySettingsController::class, 'fetch'])
+        ->name('settings.currency.fetch');
+    // [killa currency] END
+
     Route::get('security', [SettingsController::class, 'getSecurity'])
         ->name('settings.security.index')
         ->breadcrumbs(fn (Trail $trail) => $trail->parent('settings.index')

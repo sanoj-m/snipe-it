@@ -96,10 +96,24 @@
                                         @endif
                                     </td>
                                     <td class="k-renewals-num">
-                                        {{ $row['cost_monthly'] !== null ? $snipeSettings->default_currency.' '.number_format($row['cost_monthly'], 2) : '—' }}
+                                        @if ($row['cost_monthly'] !== null)
+                                            {{ ($row['currency'] ?? $snipeSettings->default_currency).' '.number_format($row['cost_monthly'], 2) }}
+                                            @if ($row['cost_monthly_aed'] !== null)
+                                                <br><small class="k-renewals-muted">{{ trans('killa.currency.aed_equivalent', ['base' => $snipeSettings->default_currency, 'amount' => number_format($row['cost_monthly_aed'], 2)]) }}</small>
+                                            @endif
+                                        @else
+                                            —
+                                        @endif
                                     </td>
                                     <td class="k-renewals-num">
-                                        {{ $row['cost_yearly'] !== null ? $snipeSettings->default_currency.' '.number_format($row['cost_yearly'], 2) : '—' }}
+                                        @if ($row['cost_yearly'] !== null)
+                                            {{ ($row['currency'] ?? $snipeSettings->default_currency).' '.number_format($row['cost_yearly'], 2) }}
+                                            @if ($row['cost_yearly_aed'] !== null)
+                                                <br><small class="k-renewals-muted">{{ trans('killa.currency.aed_equivalent', ['base' => $snipeSettings->default_currency, 'amount' => number_format($row['cost_yearly_aed'], 2)]) }}</small>
+                                            @endif
+                                        @else
+                                            —
+                                        @endif
                                     </td>
                                     <td class="k-renewals-muted">{{ $row['notes'] }}</td>
                                 </tr>

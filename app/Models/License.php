@@ -81,6 +81,7 @@ class License extends Depreciable
         'min_amt' => 'numeric|nullable|gte:0',
         'requestable' => 'nullable|boolean',
         'perpetual' => 'nullable|boolean', // [perpetual-licenses addon]
+        'currency' => 'nullable|string|size:3', // [killa currency]
     ];
 
     /**
@@ -90,6 +91,7 @@ class License extends Depreciable
      */
     protected $fillable = [
         'company_id',
+        'currency', // [killa currency]
         'depreciation_id',
         'expiration_date',
         'license_email',

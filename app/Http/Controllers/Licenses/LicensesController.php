@@ -104,6 +104,7 @@ class LicensesController extends Controller
         $license->notes = $request->input('notes');
         $license->order_number = $request->input('order_number');
         $license->purchase_cost = $request->input('purchase_cost');
+        $license->currency = $request->input('currency'); // [killa currency]
         $license->purchase_date = $request->input('purchase_date');
         $license->purchase_order = $request->input('purchase_order');
         $license->purchase_order = $request->input('purchase_order');
@@ -201,6 +202,7 @@ class LicensesController extends Controller
         $license->notes = $request->input('notes');
         $license->order_number = $request->input('order_number');
         $license->purchase_cost = $request->input('purchase_cost');
+        $license->currency = $request->input('currency'); // [killa currency]
         $license->purchase_date = $request->input('purchase_date');
         $license->purchase_order = $request->input('purchase_order');
         $license->reassignable = $request->input('reassignable', 0);

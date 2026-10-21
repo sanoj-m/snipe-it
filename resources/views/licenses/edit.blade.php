@@ -117,6 +117,25 @@
                 />
                 <x-input.purchase-cost :item="$item"/>
 
+                {{-- [killa currency] BEGIN: per-license currency (rates in Admin > Settings > Currency) --}}
+                <x-form.row
+                    :label="trans('killa.currency.label')"
+                    name="currency"
+                    input_div_class="col-md-3"
+                    :help_text="trans('killa.currency.label_help', ['base' => \App\Services\Killa\CurrencyConverter::base()])"
+                >
+                    <x-slot:input>
+                        <x-input.select
+                            name="currency"
+                            id="currency"
+                            :options="\App\Services\Killa\CurrencyConverter::options()"
+                            :selected="old('currency', $item->currency ?? \App\Services\Killa\CurrencyConverter::base())"
+                            aria-label="currency"
+                        />
+                    </x-slot:input>
+                </x-form.row>
+                {{-- [killa currency] END --}}
+
                 <x-form.row
                     :label="trans('general.purchase_date')"
                     name="purchase_date"

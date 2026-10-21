@@ -67,6 +67,7 @@ class Setting extends Model
         'google_client_id',
         'google_client_secret',
         'manager_view_enabled',
+        'currency_exchange_rates', // [killa currency]
     ];
 
     protected $casts = [

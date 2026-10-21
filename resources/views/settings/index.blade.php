@@ -122,6 +122,23 @@
           </div>
         </div>
 
+        {{-- [killa currency] settings tile --}}
+        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
+          <div class="admin box box-default">
+            <div class="box-body text-center">
+              <h5>
+                <a href="{{ route('settings.currency.index') }}" class="settings_button">
+                  <x-icon type="cost" class="fa-4x"/>
+                  <br><br>
+                  <span class="name">{{ trans('killa.currency.title') }}</span>
+                </a>
+              </h5>
+              <p class="index-block">{{ trans('killa.currency.tile_help') }}</p>
+            </div>
+          </div>
+        </div>
+        {{-- [killa currency] END --}}
+
 
         <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
           <div class="admin box box-default">

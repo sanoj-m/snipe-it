@@ -9,6 +9,8 @@ Multi-DB (MySQL/PostgreSQL/SQLite) compatibility verified by CI.
 |---|---|---|---|---|---|
 | 2026_08_25_000000_add_ldap_deactivate_missing_to_settings_table | `settings.ldap_deactivate_missing` | tinyInteger NOT NULL default 0 | Yes (hasColumn up+down) | Drops column | Feeds LdapSync deactivate-missing (KCP-014) |
 | 2026_09_02_000000_add_perpetual_to_licenses_table | `licenses.perpetual` | tinyInteger NOT NULL default 0, after expiration_date | Yes | Drops column | `->after()` is MySQL-only hint, harmless elsewhere |
+| 2026_10_21_100000_killa_add_currency_to_licenses_table | `licenses.currency` | char(3) nullable, after purchase_cost | Yes | Drops column | Per-license currency (KCP-040–043); rates in settings |
+| 2026_10_21_100001_killa_add_exchange_rates_to_settings_table | `settings.currency_exchange_rates` | text nullable (JSON `{USD: 3.67, …}`), after default_currency | Yes | Drops column | `App\Services\Killa\CurrencyConverter`; Renewal Tracker AED equivalents |
 
 ## Package migrations (packages/floating-licenses/database/migrations/)
 
@@ -25,6 +27,8 @@ Multi-DB (MySQL/PostgreSQL/SQLite) compatibility verified by CI.
 - `ldap_deactivate_missing` → `LdapSettings` Livewire wizard, `LdapSync.php`, lang keys, LdapWizardTest.
 - `floating_licenses_enabled` → `FloatingLicenseSync::isEnabled()` master gate, `SettingsController`, settings/general view, conditional license UI.
 - `perpetual` (on licenses) → License model cast/rule/mutator + `isExpired()`, web+API controllers, importer, transformer, edit view.
+- `currency` (on licenses) → License model rule/fillable, license edit form select, `LicensesController` store/update, Renewal Tracker display.
+- `currency_exchange_rates` → `App\Services\Killa\CurrencyConverter`, `Killa\CurrencySettingsController`, `killa/settings/currency` view, Renewal Tracker AED equivalents.
 
 ## Collision-risk notes
 
