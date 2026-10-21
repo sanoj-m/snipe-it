@@ -14,8 +14,26 @@
 {{-- Page content --}}
 @section('content')
     {{-- [floating-licenses addon] BEGIN: data prep (master switch, pool
-         config, active allocations, availability stats) --}}
-    @include('floating-licenses::partials.license-view-data')
+         config, active allocations, availability stats). Inlined here (not an
+         @include) because Blade includes render in their own scope — variables
+         set inside the partial do NOT leak back, and the wrappers below read
+         $floatingConfig. Keep in sync with the package partial
+         partials/license-view-data.blade.php. --}}
+    @php
+        $floatingMasterOn = (($snipeSettings->floating_licenses_enabled ?? '0') == '1');
+        $explicitFloatingConfig = $floatingMasterOn
+            ? \SnipeIt\FloatingLicenses\Models\FloatingLicenseConfig::where('license_id', $license->id)->first()
+            : null;
+        $floatingConfig = $floatingMasterOn
+            ? \SnipeIt\FloatingLicenses\Support\FloatingLicenseSync::configForLicense($license)
+            : null;
+        $floatingService = app(\SnipeIt\FloatingLicenses\Services\FloatingLicenseService::class);
+        $floatingAllocations = $floatingConfig
+            ? $floatingConfig->activeAllocations()->with(['user.company', 'user.location', 'asset'])->orderBy('allocated_at', 'desc')->get()
+            : collect();
+        $floatingStats = $floatingConfig ? $floatingService->availability($floatingConfig) : null;
+        $floatingCostPerUser = $floatingConfig ? $floatingService->costPerUser($floatingConfig) : 0.0;
+    @endphp
     {{-- [floating-licenses addon] END --}}
     <x-container columns="2">
         <x-page-column class="col-md-9 main-panel">

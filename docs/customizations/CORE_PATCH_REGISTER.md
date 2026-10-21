@@ -30,7 +30,7 @@ marking them is Phase 3 work.
 | KCP-031 | `app/Console/Kernel.php` | schedule `floating-licenses:expire` every 5 min when addon enabled | +5 | Yes (`[floating-licenses addon]`) | LOW | Keep fenced |
 | KCP-016 | `app/Livewire/LdapSettings.php` + `resources/views/livewire/ldap-settings.blade.php` | deactivate-missing setting UI | +15 | No | LOW-MED | Keep |
 | KCP-017 | `app/Importer/Importer.php`, `LicenseImporter.php`, `app/Livewire/Importer.php` | perpetual CSV mapping (clearing moved to `License::saving`) | +7 | Yes | LOW | Keep |
-| KCP-018 | `resources/views/licenses/view.blade.php` | 5 fenced `@include('floating-licenses::partials/license-view-*')` + 4 tight `@if(!$floatingConfig)` wrappers around upstream blocks | ~20 | Yes | MED-LOW | Done (extracted to package partials); wrappers must stay |
+| KCP-018 | `resources/views/licenses/view.blade.php` | Inline fenced `@php` data-prep + 4 fenced `@include('floating-licenses::partials/license-view-*')` + 4 tight `@if(!$floatingConfig)` wrappers around upstream blocks | ~20 | Yes | MED-LOW | Data-prep must stay inline — `@include` scope does not leak back (regression fix 2026-10-21); wrappers must stay |
 | KCP-019 | `resources/views/licenses/edit.blade.php` | Perpetual row/JS (marked) + fenced `@include('floating-licenses::partials/license-form-floating')` | ~8 | Yes | LOW | Done (floating section extracted to package partial) |
 | KCP-020 | `resources/views/licenses/checkout.blade.php` | Pool availability header | +21 | Yes | MED-LOW | Keep |
 | KCP-021 | `resources/views/users/view.blade.php` | Floating tab/rows | +18 | Yes | MEDIUM | Keep |
