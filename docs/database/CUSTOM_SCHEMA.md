@@ -11,6 +11,7 @@ Multi-DB (MySQL/PostgreSQL/SQLite) compatibility verified by CI.
 | 2026_09_02_000000_add_perpetual_to_licenses_table | `licenses.perpetual` | tinyInteger NOT NULL default 0, after expiration_date | Yes | Drops column | `->after()` is MySQL-only hint, harmless elsewhere |
 | 2026_10_21_100000_killa_add_currency_to_licenses_table | `licenses.currency` | char(3) nullable, after purchase_cost | Yes | Drops column | Per-license currency (KCP-040–043); rates in settings |
 | 2026_10_21_100001_killa_add_exchange_rates_to_settings_table | `settings.currency_exchange_rates` | text nullable (JSON `{USD: 3.67, …}`), after default_currency | Yes | Drops column | `App\Services\Killa\CurrencyConverter`; Renewal Tracker AED equivalents |
+| 2026_10_21_100002_killa_add_location_to_licenses_table | `licenses.location_id` | unsignedBigInteger nullable, after company_id | Yes | Drops column | License location (KLD-CPT / KLD-Headoffice); Renewal Tracker Location column |
 
 ## Package migrations (packages/floating-licenses/database/migrations/)
 

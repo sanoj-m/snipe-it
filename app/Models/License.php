@@ -82,6 +82,7 @@ class License extends Depreciable
         'requestable' => 'nullable|boolean',
         'perpetual' => 'nullable|boolean', // [perpetual-licenses addon]
         'currency' => 'nullable|string|size:3', // [killa currency]
+        'location_id' => 'nullable|integer|exists:locations,id', // [killa license-location]
     ];
 
     /**
@@ -96,6 +97,7 @@ class License extends Depreciable
         'expiration_date',
         'license_email',
         'license_name', // actually licensed_to
+        'location_id', // [killa license-location]
         'maintained',
         'manufacturer_id',
         'category_id',
@@ -515,6 +517,12 @@ class License extends Depreciable
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id')->withTrashed();
+    }
+
+    // [killa license-location]
+    public function location()
+    {
+        return $this->belongsTo(Location::class, 'location_id')->withTrashed();
     }
 
     /**

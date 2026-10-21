@@ -26,9 +26,11 @@ class RenewalTrackerTest extends TestCase
     public function test_license_viewer_sees_grouped_renewals(): void
     {
         $category = Category::factory()->create(['name' => 'Autodesk', 'category_type' => 'license']);
+        $location = \App\Models\Location::factory()->create(['name' => 'KLD-CPT']);
         License::factory()->create([
             'name' => 'AutoCAD',
             'category_id' => $category->id,
+            'location_id' => $location->id,
             'expiration_date' => Carbon::today()->addDays(58),
             'purchase_date' => Carbon::today()->subYear(),
             'purchase_cost' => 1200,
@@ -41,6 +43,7 @@ class RenewalTrackerTest extends TestCase
             ->assertSee(trans('killa.renewals.title'))
             ->assertSee('Autodesk')
             ->assertSee('AutoCAD')
+            ->assertSee('KLD-CPT')
             ->assertSee('58');
     }
 

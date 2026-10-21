@@ -136,6 +136,13 @@
                 </x-form.row>
                 {{-- [killa currency] END --}}
 
+                {{-- [killa license-location] --}}
+                <x-input.location-select
+                    :label="trans('general.location')"
+                    name="location_id"
+                    :selected="old('location_id', $item->location_id)"
+                />
+
                 <x-form.row
                     :label="trans('general.purchase_date')"
                     name="purchase_date"

@@ -24,7 +24,7 @@ class RenewalTrackerController extends Controller
         }
 
         $licenses = Company::scopeCompanyables(License::query())
-            ->with('category')
+            ->with('category', 'location')
             ->orderBy('name')
             ->get();
 
@@ -46,10 +46,12 @@ class RenewalTrackerController extends Controller
     }
 
     /**
-     * @return array{name: string, url: string, category: string, type: string,
+     * @return array{name: string, url: string, location: string|null, category: string, type: string,
      *               floating: bool, term: string|null, seats: int,
      *               expiry: string|null, days: int|null, status: string,
-     *               cost_monthly: float|null, cost_yearly: float|null, notes: string|null}
+     *               cost_monthly: float|null, cost_yearly: float|null,
+     *               currency: string|null, cost_monthly_aed: float|null,
+     *               cost_yearly_aed: float|null, notes: string|null}
      */
     private function row(License $license, bool $floating, Carbon $today): array
     {
@@ -74,6 +76,7 @@ class RenewalTrackerController extends Controller
         return [
             'name' => $license->name,
             'url' => route('licenses.show', $license),
+            'location' => $license->location?->name,
             'category' => $license->category?->name ?? trans('killa.renewals.uncategorized'),
             'type' => $license->perpetual ? trans('killa.renewals.perpetual') : trans('killa.renewals.subscription'),
             'floating' => $floating,

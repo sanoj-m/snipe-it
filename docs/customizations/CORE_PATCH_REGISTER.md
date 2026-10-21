@@ -57,6 +57,7 @@ marking them is Phase 3 work.
 | KCP-041 | `resources/views/settings/index.blade.php` | Currency settings tile | +17 | Yes (`[killa currency]`) | LOW | Keep |
 | KCP-042 | `resources/views/licenses/edit.blade.php`, `app/Http/Controllers/Licenses/LicensesController.php` | Currency select after purchase-cost + `$license->currency` assignment in store/update | +17/+2 | Yes (`[killa currency]`) | LOW | Keep |
 | KCP-043 | `app/Models/License.php`, `app/Models/Setting.php` | `currency` rule/fillable; `currency_exchange_rates` fillable | +3 | Yes (`[killa currency]`) | LOW | Keep |
+| KCP-044 | `resources/views/licenses/edit.blade.php`, `app/Http/Controllers/Licenses/LicensesController.php`, `app/Models/License.php` | Location select + `location_id` assignment in store/update + fillable/rule/`location()` relation | +7/+2/+3 | Yes (`[killa license-location]`) | LOW | Keep |
 
 **Totals: 38 registered patches across 59 modified files (was 72 — 16 notification
 files reverted to upstream in Phase 3; gitlink removed). HIGH risk: 1 (KCP-007).

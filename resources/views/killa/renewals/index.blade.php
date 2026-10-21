@@ -36,13 +36,6 @@
 </style>
 
 <x-container>
-    <header class="k-insights-header">
-        <div>
-            <h1>{{ trans('killa.renewals.title') }}</h1>
-            <p>{{ trans('killa.renewals.description') }}</p>
-        </div>
-    </header>
-
     <div class="box box-default">
         <div class="box-body table-responsive">
             @if ($groups->isEmpty())
@@ -53,6 +46,7 @@
                         <tr>
                             <th class="k-renewals-num" scope="col">#</th>
                             <th scope="col">{{ trans('killa.renewals.software') }}</th>
+                            <th scope="col">{{ trans('general.location') }}</th>
                             <th scope="col">{{ trans('killa.renewals.license_type') }}</th>
                             <th scope="col">{{ trans('killa.renewals.floating') }}</th>
                             <th scope="col">{{ trans('killa.renewals.term') }}</th>
@@ -68,7 +62,7 @@
                         @php($i = 0)
                         @foreach ($groups as $category => $rows)
                             <tr class="k-renewals-group">
-                                <td colspan="11">{{ $category }}</td>
+                                <td colspan="12">{{ $category }}</td>
                             </tr>
                             @foreach ($rows as $row)
                                 <tr>
@@ -76,6 +70,7 @@
                                     <td @class(['k-renewals-expired' => $row['status'] === 'danger' && $row['days'] !== null && $row['days'] < 0])>
                                         <a href="{{ $row['url'] }}">{{ $row['name'] }}</a>
                                     </td>
+                                    <td class="k-renewals-muted">{{ $row['location'] ?? '—' }}</td>
                                     <td>{{ $row['type'] }}</td>
                                     <td>{{ $row['floating'] ? trans('killa.renewals.floating_yes') : trans('killa.renewals.floating_no') }}</td>
                                     <td>{{ $row['term'] ?? '—' }}</td>
