@@ -72,8 +72,9 @@ class CurrencySettingsController extends Controller
         $fetched = [];
         foreach ($keep as $code) {
             $rate = $response->json("rates.$code");
-            if (is_numeric($rate) && $code !== $base) {
-                $fetched[$code] = round((float) $rate, 6);
+            // API returns "1 base = X currency"; we store "1 currency = X base"
+            if (is_numeric($rate) && $rate > 0 && $code !== $base) {
+                $fetched[$code] = round(1 / (float) $rate, 6);
             }
         }
 
