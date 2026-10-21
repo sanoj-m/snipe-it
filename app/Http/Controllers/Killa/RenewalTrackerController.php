@@ -58,7 +58,7 @@ class RenewalTrackerController extends Controller
 
         $term = null;
         if ($license->purchase_date && $expiry) {
-            $years = max(1, (int) round($license->purchase_date->floatDiffInYears($expiry)));
+            $years = max(1, (int) round($license->purchase_date->diffInYears($expiry)));
             $term = $years === 1 ? trans('killa.renewals.term_yearly') : trans('killa.renewals.term_years', ['years' => $years]);
         }
 
