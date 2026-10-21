@@ -16,7 +16,7 @@ return [
     'no_asset_movement' => 'No asset checkouts or check-ins in the last 30 days.',
     'no_asset_status' => 'No asset status data is available.',
     'renewals' => [
-        'title' => 'Software Renewal Tracker',
+        'title' => 'Renewal Tracker',
         'description' => 'License renewals grouped by category, most urgent first.',
         'software' => 'Software',
         'license_type' => 'License Type',
