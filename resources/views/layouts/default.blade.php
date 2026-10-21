@@ -578,11 +578,28 @@
 
 
                         @can('view', \App\Models\License::class)
-                            <li{!! (request()->is('licenses*') ? ' class="active" aria-current="page"' : '') !!}>
-                                <a href="{{ route('licenses.index') }}">
+                            {{-- [killa-v2] renewal tracker submenu: Licenses becomes a
+                                 treeview with "List All" + "Renewal Tracker". --}}
+                            <li class="treeview{{ request()->is('licenses*') ? ' active' : '' }}">
+                                <a href="#">
                                     <x-icon type="licenses" class="fa-fw"/>
                                     <span>{{ trans('general.licenses') }}</span>
+                                    <x-icon type="angle-left" class="pull-right fa-fw"/>
                                 </a>
+                                <ul class="treeview-menu">
+                                    <li{!! (request()->is('licenses') ? ' class="active" aria-current="page"' : '') !!}>
+                                        <a href="{{ route('licenses.index') }}">
+                                            <x-icon type="circle" class="text-grey fa-fw"/>
+                                            {{ trans('general.list_all') }}
+                                        </a>
+                                    </li>
+                                    <li{!! (request()->is('licenses/renewals*') ? ' class="active" aria-current="page"' : '') !!}>
+                                        <a href="{{ route('licenses.renewals') }}">
+                                            <x-icon type="circle" class="text-grey fa-fw"/>
+                                            {{ trans('killa.renewals.title') }}
+                                        </a>
+                                    </li>
+                                </ul>
                             </li>
                         @endcan
                         @can('index', \App\Models\Accessory::class)

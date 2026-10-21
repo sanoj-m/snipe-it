@@ -51,6 +51,8 @@ marking them is Phase 3 work.
 | KCP-035 | `composer.json`, `phpunit.xml`, `package.json` | Package/test/tooling wiring | +16 | N/A | LOW | Keep |
 | KCP-036 | `routes/web.php` | Fenced `dashboard.insights` auth route and breadcrumb | +11 | Yes (`[killa-v2 insights dashboard]`) | LOW-MED | Remove route with the isolated Insights dashboard |
 | KCP-037 | `resources/views/dashboard.blade.php` | Fenced Classic/Insights view-switch include | +6 | Yes (`[killa-v2 insights dashboard]`) | LOW-MED | Remove include; classic dashboard otherwise unchanged |
+| KCP-038 | `routes/web/licenses.php` | Fenced `licenses.renewals` route + breadcrumb (Renewal Tracker) | +8 | Yes (`[killa-v2 renewal tracker]`) | LOW | Keep |
+| KCP-039 | `resources/views/layouts/default.blade.php` | Licenses sidebar entry converted to treeview with "List All" + "Renewal Tracker" | +17/−7 | Yes (`[killa-v2] renewal tracker submenu`) | MEDIUM | Keep |
 
 **Totals: 38 registered patches across 59 modified files (was 72 — 16 notification
 files reverted to upstream in Phase 3; gitlink removed). HIGH risk: 1 (KCP-007).

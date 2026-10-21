@@ -68,6 +68,7 @@ Types: KILLA-CORE-PATCH (modifies upstream file) · KILLA-EXTENSION (new isolate
 | UI-05 | `dashboard.blade.php` | 1 | Chart.js font colors | No | LOW | — |
 | UI-06 | `skills/killa-design/SKILL.md` | new | Design-system authority | N/A | — | — |
 | UI-07 | `app/Http/Controllers/Killa/DashboardController.php`, `resources/views/killa/dashboard.blade.php`, `blade/dashboard/view-switch.blade.php`, `lang/en-US/killa.php`, `killa-v2-widgets.css`; fenced hooks in `routes/web.php` + `dashboard.blade.php` | new (+17 core lines) | Alternate Insights dashboard: permission-aware metrics, 30-day asset movement, status chart, prioritized widgets, Classic/Insights switch | Isolated except route + classic switch (KCP-036/037) | MEDIUM | `KillaDashboardTest` |
+| UI-08 | `app/Http/Controllers/Killa/RenewalTrackerController.php`, `resources/views/killa/renewals/index.blade.php`, `lang/en-US/killa.php`; fenced hooks in `routes/web/licenses.php` + `layouts/default.blade.php` sidebar | new (+25 core lines) | Software Renewal Tracker: read-only page at `licenses/renewals`, licenses grouped by category, days-to-expire status dots, costs in configured currency; Licenses sidebar becomes treeview | Isolated except route + sidebar (KCP-038/039) | LOW | `RenewalTrackerTest` |
 
 ## 6. Tooling — KILLA-CONFIG
 

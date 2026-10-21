@@ -82,6 +82,15 @@ Route::group(['prefix' => 'licenses', 'middleware' => ['auth']], function () {
     )->name('licenses.export');
 
     Route::post('bulk/delete', [Licenses\BulkLicensesController::class, 'destroy'])->name('licenses.bulk.delete');
+
+    // [killa-v2 renewal tracker] BEGIN
+    Route::get('renewals', [\App\Http\Controllers\Killa\RenewalTrackerController::class, 'index'])
+        ->name('licenses.renewals')
+        ->breadcrumbs(fn (Trail $trail) => $trail
+            ->parent('licenses.index')
+            ->push(trans('killa.renewals.title'), route('licenses.renewals'))
+        );
+    // [killa-v2 renewal tracker] END
 });
 
 Route::resource('licenses', Licenses\LicensesController::class, [
