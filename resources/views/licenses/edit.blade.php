@@ -121,7 +121,7 @@
                 <x-form.row
                     :label="trans('killa.currency.label')"
                     name="currency"
-                    input_div_class="col-md-3"
+                    input_div_class="col-md-4 col-sm-12"
                     :help_text="trans('killa.currency.label_help', ['base' => \App\Services\Killa\CurrencyConverter::base()])"
                 >
                     <x-slot:input>
