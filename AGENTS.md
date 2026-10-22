@@ -2,6 +2,26 @@
 
 **Read this first.** Then read `PROJECT_HANDOFF.md` before any non-trivial work.
 
+## Deploy rule (STANDING, mandatory)
+
+> **Every change — code or data — must be deployed to the live production
+> server and verified there in the same session it is made. The user sees
+> changes on live, always; never leave work "local only".**
+>
+> - Live server: `root@40.30.20.6` (app at `/opt/snipe-it`,
+>   `https://asset.killadesign.co`). On this Windows machine use PuTTY's
+>   `plink`/`pscp` for access.
+> - Code changes: commit → `git archive` tarball →
+>   `/usr/local/sbin/snipeit-apply-update.sh` on the server (backup, rsync,
+>   composer, migrate, caches). Hot single-file patches (scp + cache clear)
+>   are acceptable for urgent fixes, but a full deploy must follow soon after.
+> - Data changes: take a `mysqldump` of the affected tables first, then apply
+>   directly on the live DB.
+> - Verify on live afterward (HTTP check with a temporary admin user — delete
+>   it when done) and report what was deployed.
+> - `scripts/update-snipeit.sh` documents the workflow; server script is kept
+>   in sync with `scripts/deploy-server.sh`.
+
 ## What this is
 
 Killa Asset is a fork of **Snipe-IT v8.8.0** (upstream: `grokability/snipe-it`,
