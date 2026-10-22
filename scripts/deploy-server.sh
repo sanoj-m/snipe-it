@@ -34,8 +34,8 @@ tar xzf "$TARBALL" -C $STAGE
 
 echo "==> Rsync into $APP (keeping .env, storage, uploads, vendor)"
 rsync -a --delete \
-    --exclude='vendor/' --exclude='.env' --exclude='storage/' \
-    --exclude='public/uploads/' --exclude='.git' --exclude='backups/' \
+    --exclude='/vendor/' --exclude='.env' --exclude='/storage/' \
+    --exclude='public/uploads/' --exclude='/.git' --exclude='/backups/' \
     --exclude='*.bak-*' \
     $STAGE/ $APP/
 
