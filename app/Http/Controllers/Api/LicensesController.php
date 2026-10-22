@@ -145,6 +145,18 @@ class LicensesController extends Controller
 
         $order = $request->input('order') === 'asc' ? 'asc' : 'desc';
 
+        // [killa license-grouping] BEGIN — the licenses list groups rows by
+        // category client-side; group-by-v2 only inserts headers where the
+        // group value changes in row order, so the row stream must always be
+        // contiguous by category. Order by category first (the user's sort
+        // becomes the within-group secondary sort). Alias avoids clashing with
+        // the 'categories' join in the 'category' case below.
+        if ($request->input('sort') !== 'category') {
+            $licenses = $licenses->leftJoin('categories as killa_group_sort', 'licenses.category_id', '=', 'killa_group_sort.id')
+                ->orderBy('killa_group_sort.name', 'asc');
+        }
+        // [killa license-grouping] END
+
         switch ($request->input('sort')) {
             case 'manufacturer':
                 $licenses = $licenses->leftJoin('manufacturers', 'licenses.manufacturer_id', '=', 'manufacturers.id')->orderBy('manufacturers.name', $order);
