@@ -79,6 +79,7 @@
         data-group-by="true"
         data-group-by-field="{{ $group_by }}"
         data-group-by-formatter="snipeGroupByFormatter"
+        data-custom-sort="snipeGroupBySorter"
     @endif
     @if ($page_size)
         data-page-size="{{ $page_size }}"

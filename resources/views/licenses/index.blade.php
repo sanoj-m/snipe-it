@@ -43,5 +43,23 @@
     window.snipeGroupByFormatter = function (value) {
         return (value && value !== '') ? value : '{{ trans('killa.renewals.uncategorized') }}';
     };
+    // [killa license-grouping] bootstrap-table's core initSort re-sorts
+    // this.data client-side even with server pagination, which would break
+    // group contiguity. Custom sort: category always dominant (groups
+    // alphabetical), the user's column sort applies within each group.
+    window.snipeGroupBySorter = function (sortName, sortOrder, data) {
+        var dir = sortOrder === 'desc' ? -1 : 1;
+        var val = function (row, field) {
+            var v = row[field];
+            if (v && typeof v === 'object') { v = v.datetime || v.date || v.name || ''; }
+            return v === null || v === undefined ? '' : v;
+        };
+        data.sort(function (a, b) {
+            var ca = val(a, 'category_name'), cb = val(b, 'category_name');
+            if (ca !== cb) { return String(ca).localeCompare(String(cb)); }
+            var va = val(a, sortName), vb = val(b, sortName);
+            return dir * String(va).localeCompare(String(vb), undefined, { numeric: true });
+        });
+    };
 </script>
 @stop
