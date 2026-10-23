@@ -91,6 +91,9 @@ Route::group(['prefix' => 'licenses', 'middleware' => ['auth']], function () {
     // tracker merge.
     Route::post('reorder', [\App\Http\Controllers\Killa\LicenseOrderController::class, 'reorder'])
         ->name('licenses.reorder');
+    // [killa-ux] per-session old/new design toggle for the licenses section.
+    Route::get('ux-toggle', [\App\Http\Controllers\Killa\LicenseOrderController::class, 'toggleUx'])
+        ->name('licenses.ux-toggle');
     // [killa-v2 renewal tracker] / [killa-ux] END
 });
 

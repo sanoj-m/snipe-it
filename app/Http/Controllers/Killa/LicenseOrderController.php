@@ -16,6 +16,17 @@ use Illuminate\Support\Facades\Gate;
  */
 class LicenseOrderController extends Controller
 {
+    /**
+     * [killa-ux] Flips the per-session new-design flag for the licenses
+     * section (default off = classic bootstrap-table views) and redirects back.
+     */
+    public function toggleUx(Request $request): \Illuminate\Http\RedirectResponse
+    {
+        session(['killa_licenses_ux' => ! session('killa_licenses_ux', false)]);
+
+        return redirect()->back();
+    }
+
     public function reorder(Request $request): JsonResponse
     {
         if (! Gate::allows('update', License::class)) {

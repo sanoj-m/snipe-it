@@ -75,6 +75,8 @@ return [
         'section_seats_term' => 'Seats & term',
         'section_location_notes' => 'Location & notes',
         'cost_per_year_short' => 'per year',
+        'try_new_design' => 'Try the new design',
+        'back_to_classic' => 'Back to classic',
     ],
     'renewals' => [
         'title' => 'Renewal Tracker',

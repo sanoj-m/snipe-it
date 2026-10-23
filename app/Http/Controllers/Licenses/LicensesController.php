@@ -42,13 +42,16 @@ class LicensesController extends Controller
         $this->authorize('view', License::class);
 
         // [killa-ux] BEGIN — redesigned server-rendered licenses list (KCP-003
-        // amendment). Replaces the bootstrap-table view on this route only;
-        // upstream renders again if this fence is removed (restore the line
-        // below and delete this block):
-        //     return view('licenses/index');
-        // Data pipeline lives in App\Support\Killa\LicenseListData.
-        return view('killa/licenses/index', \App\Support\Killa\LicenseListData::forIndex($request));
+        // amendment), rendered only when the per-session toggle
+        // (licenses.ux-toggle, flag `killa_licenses_ux`) is ON; the upstream
+        // bootstrap-table view below is the default. Data pipeline lives in
+        // App\Support\Killa\LicenseListData.
+        if (session('killa_licenses_ux', false)) {
+            return view('killa/licenses/index', \App\Support\Killa\LicenseListData::forIndex($request));
+        }
         // [killa-ux] END
+
+        return view('licenses/index');
     }
 
     /**
@@ -72,10 +75,9 @@ class LicensesController extends Controller
             '0' => 'No',
         ];
 
-        // [killa-ux] BEGIN — render the redesigned Killa form view (KCP-019
-        // amendment). Upstream renders again if this fence is removed:
-        //     $view = 'licenses/edit';
-        $view = 'killa/licenses/edit';
+        // [killa-ux] BEGIN — Killa form view (KCP-019 amendment), only when the
+        // session toggle flag `killa_licenses_ux` is ON; upstream is default.
+        $view = session('killa_licenses_ux', false) ? 'killa/licenses/edit' : 'licenses/edit';
         // [killa-ux] END
 
         return view($view)
@@ -178,9 +180,9 @@ class LicensesController extends Controller
             '0' => 'No',
         ];
 
-        // [killa-ux] BEGIN — redesigned Killa form view (KCP-019 amendment).
-        // Upstream: $view = 'licenses/edit';
-        $view = 'killa/licenses/edit';
+        // [killa-ux] BEGIN — Killa form view (KCP-019 amendment), only when the
+        // session toggle flag `killa_licenses_ux` is ON; upstream is default.
+        $view = session('killa_licenses_ux', false) ? 'killa/licenses/edit' : 'licenses/edit';
         // [killa-ux] END
 
         return view($view)
@@ -326,9 +328,9 @@ class LicensesController extends Controller
 
         $this->authorize('view', $license);
 
-        // [killa-ux] BEGIN — redesigned Killa detail view (KCP-018 amendment).
-        // Upstream: $view = 'licenses.view';
-        $view = 'killa/licenses/view';
+        // [killa-ux] BEGIN — Killa detail view (KCP-018 amendment), only when
+        // the session toggle flag `killa_licenses_ux` is ON; upstream default.
+        $view = session('killa_licenses_ux', false) ? 'killa/licenses/view' : 'licenses.view';
         // [killa-ux] END
 
         return view($view, compact('license'))
@@ -368,9 +370,9 @@ class LicensesController extends Controller
         $license->serial = null;
 
         // Show the page
-        // [killa-ux] BEGIN — redesigned Killa form view (KCP-019 amendment).
-        // Upstream: $view = 'licenses/edit';
-        $view = 'killa/licenses/edit';
+        // [killa-ux] BEGIN — Killa form view (KCP-019 amendment), only when the
+        // session toggle flag `killa_licenses_ux` is ON; upstream is default.
+        $view = session('killa_licenses_ux', false) ? 'killa/licenses/edit' : 'licenses/edit';
         // [killa-ux] END
 
         return view($view)

@@ -514,6 +514,11 @@
                         @yield('content')
                     </div>
 
+                    {{-- [killa-ux] old/new design switch pill on licenses pages (KCP-052) --}}
+                    @if (request()->is('licenses*') && auth()->check() && auth()->user()->can('view', \App\Models\License::class))
+                        @include('killa/licenses/_ux-toggle')
+                    @endif
+
                 </section>
 
             </div><!-- /.content-wrapper -->
