@@ -90,6 +90,8 @@ Route::group(['prefix' => 'licenses', 'middleware' => ['auth']], function () {
             ->parent('licenses.index')
             ->push(trans('killa.renewals.title'), route('licenses.renewals'))
         );
+    Route::post('renewals/reorder', [\App\Http\Controllers\Killa\RenewalTrackerController::class, 'reorder'])
+        ->name('licenses.renewals.reorder');
     // [killa-v2 renewal tracker] END
 });
 

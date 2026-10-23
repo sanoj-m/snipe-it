@@ -51,7 +51,7 @@ marking them is Phase 3 work.
 | KCP-035 | `composer.json`, `phpunit.xml`, `package.json` | Package/test/tooling wiring | +16 | N/A | LOW | Keep |
 | KCP-036 | `routes/web.php` | Fenced `dashboard.insights` auth route and breadcrumb | +11 | Yes (`[killa-v2 insights dashboard]`) | LOW-MED | Remove route with the isolated Insights dashboard |
 | KCP-037 | `resources/views/dashboard.blade.php` | Fenced Classic/Insights view-switch include | +6 | Yes (`[killa-v2 insights dashboard]`) | LOW-MED | Remove include; classic dashboard otherwise unchanged |
-| KCP-038 | `routes/web/licenses.php` | Fenced `licenses.renewals` route + breadcrumb (Renewal Tracker) | +8 | Yes (`[killa-v2 renewal tracker]`) | LOW | Keep |
+| KCP-038 | `routes/web/licenses.php` | Fenced `licenses.renewals` (+ `licenses.renewals.reorder` POST) routes + breadcrumb (Renewal Tracker, drag-to-reorder) | +11 | Yes (`[killa-v2 renewal tracker]`) | LOW | Keep |
 | KCP-039 | `resources/views/layouts/default.blade.php` | Licenses sidebar entry converted to treeview with "List All" + "Renewal Tracker" | +17/−7 | Yes (`[killa-v2] renewal tracker submenu`) | MEDIUM | Keep |
 | KCP-040 | `routes/web.php` | Fenced `settings.currency.*` routes (index/save/fetch) in admin group | +12 | Yes (`[killa currency]`) | LOW | Keep |
 | KCP-041 | `resources/views/settings/index.blade.php` | Currency settings tile | +17 | Yes (`[killa currency]`) | LOW | Keep |
