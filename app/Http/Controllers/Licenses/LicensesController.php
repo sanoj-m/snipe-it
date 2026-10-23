@@ -72,7 +72,13 @@ class LicensesController extends Controller
             '0' => 'No',
         ];
 
-        return view('licenses/edit')
+        // [killa-ux] BEGIN — render the redesigned Killa form view (KCP-019
+        // amendment). Upstream renders again if this fence is removed:
+        //     $view = 'licenses/edit';
+        $view = 'killa/licenses/edit';
+        // [killa-ux] END
+
+        return view($view)
             ->with('depreciation_list', Helper::depreciationList())
             ->with('maintained_list', $maintained_list)
             ->with('item', new License);
@@ -172,7 +178,12 @@ class LicensesController extends Controller
             '0' => 'No',
         ];
 
-        return view('licenses/edit')
+        // [killa-ux] BEGIN — redesigned Killa form view (KCP-019 amendment).
+        // Upstream: $view = 'licenses/edit';
+        $view = 'killa/licenses/edit';
+        // [killa-ux] END
+
+        return view($view)
             ->with('item', $license)
             ->with('depreciation_list', Helper::depreciationList())
             ->with('maintained_list', $maintained_list);
@@ -315,7 +326,12 @@ class LicensesController extends Controller
 
         $this->authorize('view', $license);
 
-        return view('licenses.view', compact('license'))
+        // [killa-ux] BEGIN — redesigned Killa detail view (KCP-018 amendment).
+        // Upstream: $view = 'licenses.view';
+        $view = 'killa/licenses/view';
+        // [killa-ux] END
+
+        return view($view, compact('license'))
             ->with('users_count', $users_count)
             ->with('total_seats_count', $total_seats_count)
             ->with('available_seats_count', $available_seats_count)
@@ -352,7 +368,12 @@ class LicensesController extends Controller
         $license->serial = null;
 
         // Show the page
-        return view('licenses/edit')
+        // [killa-ux] BEGIN — redesigned Killa form view (KCP-019 amendment).
+        // Upstream: $view = 'licenses/edit';
+        $view = 'killa/licenses/edit';
+        // [killa-ux] END
+
+        return view($view)
             ->with('depreciation_list', Helper::depreciationList())
             ->with('item', $license)
             ->with('maintained_list', $maintained_list);

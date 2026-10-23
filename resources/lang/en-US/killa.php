@@ -70,6 +70,11 @@ return [
         'empty_filtered' => 'No licenses match “:search”.',
         'showing' => 'Showing :from–:to of :total',
         'group_count' => ':count licenses',
+        'section_identity' => 'Identity',
+        'section_purchase' => 'Purchase & cost',
+        'section_seats_term' => 'Seats & term',
+        'section_location_notes' => 'Location & notes',
+        'cost_per_year_short' => 'per year',
     ],
     'renewals' => [
         'title' => 'Renewal Tracker',

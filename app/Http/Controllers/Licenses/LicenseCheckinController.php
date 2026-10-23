@@ -40,7 +40,12 @@ class LicenseCheckinController extends Controller
 
         $checkoutLog = $licenseSeat->checkouts()->first();
 
-        return view('licenses/checkin', compact('licenseSeat'))
+        // [killa-ux] BEGIN — redesigned Killa checkin view. Upstream:
+        //     $view = 'licenses/checkin';
+        $view = 'killa/licenses/checkin';
+        // [killa-ux] END
+
+        return view($view, compact('licenseSeat'))
             ->with('backto', $backTo)
             ->with('checkoutLog', $checkoutLog);
     }

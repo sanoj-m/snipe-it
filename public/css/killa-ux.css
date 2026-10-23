@@ -696,3 +696,170 @@ html[data-theme='dark'] .kx {
     .kx-row { break-inside: avoid; }
     .kx a { color: inherit; text-decoration: none; }
 }
+
+/* ---------- Wave 2: hero header (detail page) ---------- */
+.kx-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--kx-space-4) var(--kx-space-5);
+    background-color: var(--kx-surface);
+    border: 1px solid var(--kx-border);
+    border-radius: var(--kx-radius);
+    box-shadow: var(--kx-shadow-1);
+    padding: var(--kx-space-5);
+    margin-bottom: var(--kx-space-5);
+}
+
+.kx-hero-main { flex: 1 1 260px; min-width: 0; }
+
+.kx-hero-title {
+    display: flex;
+    align-items: center;
+    gap: var(--kx-space-2);
+    flex-wrap: wrap;
+}
+
+.kx-hero-title h2 {
+    margin: 0;
+    font-size: var(--kx-text-xl);
+    font-weight: 700;
+    font-style: normal;
+    color: var(--kx-text);
+}
+
+.kx-hero-sub { margin-top: var(--kx-space-1); font-size: var(--kx-text-sm); }
+
+.kx-hero-stats {
+    display: flex;
+    gap: var(--kx-space-5);
+    flex-wrap: wrap;
+}
+
+.kx-stat { display: flex; flex-direction: column; min-width: 90px; }
+
+.kx-stat-label {
+    font-size: var(--kx-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--kx-text-muted);
+}
+
+.kx-stat-value {
+    font-size: var(--kx-text-lg);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+    line-height: 1.3;
+}
+
+.kx-stat-sub { font-size: var(--kx-text-xs); color: var(--kx-text-muted); }
+
+.kx-hero-actions {
+    display: flex;
+    gap: var(--kx-space-2);
+    align-items: center;
+    flex-wrap: wrap;
+    margin-left: auto;
+}
+
+/* ---------- Flush variant: .kx wrapper as pure scope, no own padding/bg ---------- */
+.kx-flush {
+    background: none;
+    padding: 0;
+    border-radius: 0;
+}
+
+/* ---------- Reskin Bootstrap tabs inside .kx (x-tabs component markup) ---------- */
+.kx .nav-tabs {
+    border-bottom: 1px solid var(--kx-border);
+    margin-bottom: var(--kx-space-4);
+}
+
+.kx .nav-tabs > li > a {
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: none;
+    color: var(--kx-text-muted);
+    font-weight: 500;
+    padding: var(--kx-space-2) var(--kx-space-3);
+    margin-right: 0;
+    cursor: pointer;
+}
+
+.kx .nav-tabs > li > a:hover,
+.kx .nav-tabs > li > a:focus-visible {
+    background: none;
+    border-bottom-color: var(--kx-border-strong);
+    color: var(--kx-text);
+}
+
+.kx .nav-tabs > li.active > a,
+.kx .nav-tabs > li.active > a:hover,
+.kx .nav-tabs > li.active > a:focus {
+    border: 0;
+    border-bottom: 2px solid var(--kx-accent);
+    background: none;
+    color: var(--kx-accent);
+}
+
+.kx .nav-tabs .badge {
+    background-color: var(--kx-surface-sunken);
+    border: 1px solid var(--kx-border);
+    color: var(--kx-text-muted);
+    font-weight: 600;
+}
+
+/* ---------- Form sections (create/edit/clone) ---------- */
+.kx-form-section {
+    padding: var(--kx-space-4) 0;
+    border-top: 1px solid var(--kx-border);
+}
+
+.kx-form-section:first-of-type {
+    border-top: 0;
+    padding-top: 0;
+}
+
+/* Tame the Bootstrap horizontal-form rows inside .kx sections */
+.kx .form-group { margin-bottom: var(--kx-space-3); }
+
+.kx .control-label {
+    color: var(--kx-text-muted);
+    font-size: var(--kx-text-xs);
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    padding-top: 8px;
+}
+
+.kx .box {
+    border: 1px solid var(--kx-border);
+    border-radius: var(--kx-radius);
+    box-shadow: var(--kx-shadow-1);
+}
+
+.kx .box-header {
+    border-bottom: 1px solid var(--kx-border);
+    font-weight: 650;
+}
+
+/* ---------- Callouts ---------- */
+.kx .callout {
+    border-radius: var(--kx-radius-sm);
+    border: 1px solid var(--kx-border);
+    border-left: 3px solid var(--kx-warning);
+    background-color: var(--kx-warning-tint);
+    color: var(--kx-text);
+}
+
+@media print {
+    .kx-hero { box-shadow: none; border-color: #cccccc; }
+    .kx-hero-actions { display: none !important; }
+}
+
+@media (max-width: 991px) {
+    .kx-hero { flex-direction: column; }
+    .kx-hero-actions { margin-left: 0; }
+}

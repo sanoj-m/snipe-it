@@ -1,0 +1,116 @@
+@extends('layouts/default')
+
+{{-- [killa-ux] Redesigned license checkout (KCP-020 amendment). Focused card
+     layout; every upstream element preserved verbatim (floating pool @php
+     block, pool-exhausted callout, checkout-selector, user/asset selects,
+     notes, notification callout, redirect footer, Livewire target panel,
+     checkout-request context). --}}
+
+@section('title')
+    {{ trans('admin/licenses/general.checkout') }}
+    @parent
+@stop
+
+@section('header_right')
+    <a href="{{ URL::previous() }}" class="btn btn-primary pull-right">
+        {{ trans('general.back') }}
+    </a>
+@stop
+
+@section('content')
+
+    {{-- [floating-licenses addon] Floating pool availability replaces the
+         seat-based count when the addon is on and the license has a pool. --}}
+    @php
+        $floatingConfig = \SnipeIt\FloatingLicenses\Support\FloatingLicenseSync::isEnabled()
+            ? \SnipeIt\FloatingLicenses\Support\FloatingLicenseSync::configForLicense($license)
+            : null;
+        $floatingStats = $floatingConfig
+            ? app(\SnipeIt\FloatingLicenses\Services\FloatingLicenseService::class)->availability($floatingConfig)
+            : null;
+        $floatingAvailableCount = $floatingStats ? $floatingStats['pool_size'] - $floatingStats['active'] : null;
+    @endphp
+
+    <x-container columns="2">
+        <x-page-column class="col-md-7">
+
+            <div class="kx kx-flush">
+            <x-form id="checkout_form" route="{{ url()->current() }}">
+
+                <x-box header="{{ $license->name }} ({{ trans('admin/licenses/message.seats_available', ['seat_count' => $floatingAvailableCount ?? $license->availCount()->count()]) }})">
+
+                    {{-- [floating-licenses addon] Pool exhausted and over-allocation off --}}
+                    @if ($floatingStats && $floatingAvailableCount <= 0 && ! $floatingStats['over_allocation_allowed'])
+                        <div class="callout callout-warning" style="margin: 10px;">
+                            <p>{{ trans('floating-licenses::floating.error.pool_exhausted') }}</p>
+                        </div>
+                    @endif
+
+                    <x-form.static :label="trans('admin/hardware/form.name')">{{ $license->name }}</x-form.static>
+
+                    @if ($license->company)
+                        <x-form.static :label="trans('general.company')">{!! $license->company->present()->formattedNameLink !!}</x-form.static>
+                    @endif
+
+                    @if ($license->category)
+                        <x-form.static :label="trans('general.category')">{!! $license->category->present()->formattedNameLink !!}</x-form.static>
+                    @endif
+
+                    @if ($license->serial)
+                        @can('viewKeys', $license)
+                            <x-form.static :label="trans('admin/licenses/form.license_key')">
+                                <x-copy-to-clipboard copy_what="license_key">
+                                    <code>{!! nl2br(e($license->serial)) !!}</code>
+                                </x-copy-to-clipboard>
+                            </x-form.static>
+                        @endcan
+                    @endif
+
+                    @include ('partials.forms.checkout-selector', ['user_select' => 'true', 'asset_select' => 'true', 'location_select' => 'false'])
+                    <x-input.user-select
+                        :label="trans('general.user')"
+                        name="assigned_user"
+                        :selected="old('assigned_user', $checkoutRequest?->user_id)"
+                        :companyId="$license->company_id"
+                        :style="(session('checkout_to_type') ?: 'user') == 'user' ? null : 'display: none;'"
+                    />
+                    @include ('partials.forms.edit.asset-select', ['translated_name' => trans('general.select_asset'), 'fieldname' => 'assigned_asset', 'company_id' => $license->company_id, 'style' => session('checkout_to_type') == 'asset' ? '' : 'display: none;'])
+
+                    <x-form.row
+                        :label="trans('general.checkout_note')"
+                        name="notes"
+                    >
+                        <x-slot:input>
+                            <textarea class="form-control" id="notes" name="notes" rows="5">{{ old('note') }}</textarea>
+                        </x-slot:input>
+                    </x-form.row>
+
+                    <x-checkout.checkout-notification-callout :item="$license" :category="$license->category" />
+
+                    <x-slot:customfooter>
+                        <x-redirect_submit_options
+                            index_route="licenses.index"
+                            :button_label="trans('general.checkout')"
+                            :options="[
+                                'index' => trans('admin/hardware/form.redirect_to_all', ['type' => trans('general.licenses')]),
+                                'item' => trans('admin/hardware/form.redirect_to_type', ['type' => trans('general.license')]),
+                                'target' => trans('admin/hardware/form.redirect_to_checked_out_to'),
+                            ]"
+                        />
+                    </x-slot:customfooter>
+
+                </x-box>
+
+            </x-form>
+            </div>
+
+        </x-page-column>
+
+        <x-page-column class="col-md-5">
+            <x-checkout-request-context :request="$checkoutRequest ?? null" :requestable="$license" />
+
+            <livewire:checkout-target-panel type="licenses" />
+        </x-page-column>
+
+    </x-container>
+@stop

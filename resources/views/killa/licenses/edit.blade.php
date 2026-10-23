@@ -1,0 +1,297 @@
+@extends('layouts/default')
+
+{{-- [killa-ux] Redesigned license create/edit/clone form (KCP-019 amendment).
+     Single-column sectioned layout; EVERY field component call is verbatim
+     from upstream licenses/edit.blade.php (same names, selects, validators);
+     sections are grouping wrappers only. --}}
+
+@section('title')
+    @if ($item->id)
+        {{ trans('admin/licenses/form.update') }}
+    @else
+        {{ trans('admin/licenses/form.create') }}
+    @endif
+    @parent
+@stop
+
+@section('content')
+
+    <x-container class="col-lg-8 col-lg-offset-2 col-md-10 col-md-offset-1 col-sm-12 col-sm-offset-0">
+
+        <div class="kx kx-flush">
+        <x-form :$item route="{{ ($item->id) ? route('licenses.update', ['license' => $item->id]) : route('licenses.store') }}">
+
+            <x-box top_submit>
+                @if ($item->id)
+                    <x-slot:header></x-slot:header>
+                @endif
+
+                <div class="kx-form-section">
+                    <div class="kx-section-head">
+                        <h3>{{ trans('killa.licenses_ux.section_identity') }}</h3>
+                    </div>
+
+                    <x-input.company-select
+                        :label="trans('general.company')"
+                        name="company_id"
+                        :selected="old('company_id', $item->company_id)"
+                    />
+
+                    <x-form.row
+                        :label="trans('general.name')"
+                        :$item
+                        name="name"
+                    />
+
+                    <x-input.category-select
+                        :label="trans('general.category')"
+                        name="category_id"
+                        :selected="old('category_id', $item->category_id)"
+                        required
+                        categoryType="license"
+                    />
+
+                    <x-input.manufacturer-select
+                        :label="trans('general.manufacturer')"
+                        name="manufacturer_id"
+                        :selected="old('manufacturer_id', $item->manufacturer_id)"
+                    />
+
+                    @can('viewKeys', $item)
+                        <x-form.row
+                            :label="trans('admin/licenses/form.license_key')"
+                            :$item
+                            name="serial"
+                            type="textarea"
+                            :rows="5"
+                            input_div_class="col-md-7"
+                        />
+                    @endcan
+
+                    <x-form.row
+                        :label="trans('admin/licenses/form.to_name')"
+                        :$item
+                        name="license_name"
+                        input_div_class="col-md-7"
+                    />
+
+                    <x-form.row
+                        :label="trans('admin/licenses/form.to_email')"
+                        :$item
+                        name="license_email"
+                        type="email"
+                        input_div_class="col-md-7"
+                    />
+                </div>
+
+                <div class="kx-form-section">
+                    <div class="kx-section-head">
+                        <h3>{{ trans('killa.licenses_ux.section_purchase') }}</h3>
+                    </div>
+
+                    <x-input.supplier-select
+                        :label="trans('general.supplier')"
+                        name="supplier_id"
+                        :selected="old('supplier_id', $item->supplier_id)"
+                    />
+
+                    <x-form.row
+                        :label="trans('general.order_number')"
+                        :$item
+                        name="order_number"
+                        input_div_class="col-md-7 col-sm-12"
+                    />
+
+                    <x-input.purchase-cost :item="$item"/>
+
+                    {{-- [killa currency] BEGIN: per-license currency (rates in Admin > Settings > Currency) --}}
+                    <x-form.row
+                        :label="trans('killa.currency.label')"
+                        name="currency"
+                        input_div_class="col-md-4 col-sm-12"
+                        :help_text="trans('killa.currency.label_help', ['base' => \App\Services\Killa\CurrencyConverter::base()])"
+                    >
+                        <x-slot:input>
+                            <x-input.select
+                                name="currency"
+                                id="currency"
+                                style="width: 100%"
+                                :options="\App\Services\Killa\CurrencyConverter::options()"
+                                :selected="old('currency', $item->currency ?? \App\Services\Killa\CurrencyConverter::base())"
+                                aria-label="currency"
+                            />
+                        </x-slot:input>
+                    </x-form.row>
+                    {{-- [killa currency] END --}}
+
+                    <x-form.row
+                        :label="trans('admin/licenses/form.purchase_order')"
+                        :$item
+                        name="purchase_order"
+                        input_div_class="col-md-3"
+                    />
+
+                    <x-form.row
+                        :label="trans('general.depreciation')"
+                        name="depreciation_id"
+                        input_div_class="col-md-7"
+                    >
+                        <x-slot:input>
+                            <x-input.select
+                                name="depreciation_id"
+                                id="depreciation_id"
+                                :options="$depreciation_list"
+                                :selected="old('depreciation_id', $item->depreciation_id)"
+                                style="width:350px;"
+                                aria-label="depreciation_id"
+                            />
+                        </x-slot:input>
+                    </x-form.row>
+                </div>
+
+                <div class="kx-form-section">
+                    <div class="kx-section-head">
+                        <h3>{{ trans('killa.licenses_ux.section_seats_term') }}</h3>
+                    </div>
+
+                    <x-form.row
+                        :label="trans('admin/licenses/form.seats')"
+                        :$item
+                        name="seats"
+                        type="number"
+                        :min="0"
+                        input_div_class="col-md-2"
+                    />
+
+                    <x-input.minimum-quantity :item="$item"/>
+
+                    {{-- Reassignable defaults to CHECKED for new licenses (see the
+                         old() fallback) since it's the most common use-case.
+                         <x-form.checkbox-row>'s single-mode falls
+                         back to `$item->{$name} ?? false`, which would default new
+                         records to unchecked. Hand-authored here to preserve the
+                          old behavior. --}}
+                    <div class="form-group {{ $errors->has('reassignable') ? ' has-error' : '' }}">
+                        <div class="col-md-3 control-label">
+                            <strong>{{ trans('admin/licenses/form.reassignable') }}</strong>
+                        </div>
+                        <div class="col-md-7">
+                            <label class="form-control">
+                                <input type="checkbox" name="reassignable" value="1" aria-label="reassignable" @checked(old('reassignable', $item->id ? $item->reassignable : '1'))>
+                                {{ trans('general.yes') }}
+                            </label>
+                        </div>
+                    </div>
+
+                    <x-form.row
+                        :label="trans('general.purchase_date')"
+                        name="purchase_date"
+                        type="datepicker"
+                        :item="$item"
+                        input_div_class="col-md-4"
+                    />
+
+                    <x-form.row
+                        :label="trans('admin/licenses/form.expiration')"
+                        name="expiration_date"
+                        type="datepicker"
+                        :item="$item"
+                        input_div_class="col-md-4"
+                    />
+
+                    {{-- [perpetual-licenses addon] --}}
+                    <x-form.checkbox-row
+                        name="perpetual"
+                        :label="trans('admin/licenses/form.perpetual')"
+                        :item="$item"
+                        :help_text="trans('admin/licenses/form.perpetual_help')"
+                    />
+
+                    <x-form.row
+                        :label="trans('admin/licenses/form.termination_date')"
+                        name="termination_date"
+                        type="datepicker"
+                        :item="$item"
+                        input_div_class="col-md-4"
+                    />
+
+                    <x-form.checkbox-row
+                        name="maintained"
+                        :label="trans('admin/licenses/form.maintained')"
+                        :item="$item"
+                    />
+
+                    <x-form.checkbox-row
+                        name="requestable"
+                        :label="trans('admin/hardware/general.requestable')"
+                        :item="$item"
+                    />
+                </div>
+
+                <div class="kx-form-section">
+                    <div class="kx-section-head">
+                        <h3>{{ trans('killa.licenses_ux.section_location_notes') }}</h3>
+                    </div>
+
+                    {{-- [killa license-location] --}}
+                    <x-input.location-select
+                        :label="trans('general.location')"
+                        name="location_id"
+                        :selected="old('location_id', $item->location_id)"
+                    />
+
+                    <x-form.row
+                        :label="trans('general.notes')"
+                        :$item
+                        name="notes"
+                        type="textarea"
+                        input_div_class="col-md-7 col-sm-12"
+                    />
+
+                    {{-- [floating-licenses addon] BEGIN: floating/concurrent section
+                         (master switch in Admin > Settings > General) --}}
+                    @include('floating-licenses::partials.license-form-floating')
+                    {{-- [floating-licenses addon] END --}}
+                </div>
+
+                <x-slot:customfooter>
+                    <x-redirect_submit_options
+                        index_route="licenses.index"
+                        :button_label="trans('general.save')"
+                        :options="[
+                            'back' => trans('admin/hardware/form.redirect_to_type', ['type' => trans('general.previous_page')]),
+                            'index' => trans('admin/hardware/form.redirect_to_all', ['type' => 'licenses']),
+                            'item' => trans('admin/hardware/form.redirect_to_type', ['type' => trans('general.license')]),
+                        ]"
+                    />
+                </x-slot:customfooter>
+
+            </x-box>
+
+        </x-form>
+        </div>
+
+    </x-container>
+
+@stop
+
+@section('moar_scripts')
+    {{-- [perpetual-licenses addon] disable + clear expiration_date while perpetual is checked --}}
+    <script nonce="{{ csrf_token() }}">
+        $(function () {
+            var $perpetual = $('input[name="perpetual"][type="checkbox"]');
+            var $expiration = $('input[name="expiration_date"]');
+
+            function toggleExpirationForPerpetual() {
+                var isPerpetual = $perpetual.is(':checked');
+                $expiration.prop('disabled', isPerpetual);
+                if (isPerpetual) {
+                    $expiration.val('');
+                }
+            }
+
+            $perpetual.on('change', toggleExpirationForPerpetual);
+            toggleExpirationForPerpetual();
+        });
+    </script>
+@stop

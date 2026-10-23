@@ -72,7 +72,12 @@ class LicenseCheckoutController extends Controller
                 $license->id,
             );
 
-            return view('licenses/checkout', compact('license'))
+            // [killa-ux] BEGIN — redesigned Killa checkout view (KCP-020
+            // amendment). Upstream: $view = 'licenses/checkout';
+            $view = 'killa/licenses/checkout';
+            // [killa-ux] END
+
+            return view($view, compact('license'))
                 ->with('checkoutRequest', $context['checkoutRequest'])
                 ->with('otherPendingRequests', $context['otherPendingRequests']);
         }
