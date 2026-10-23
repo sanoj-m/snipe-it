@@ -24,9 +24,11 @@
    ========================================================================== */
 
 :root {
-    --k-sidebar-w: 16rem;
-    --k-sidebar-w-icon: 4.25rem;
-    --k-sidebar-w-mobile: 18rem;
+    /* px, not rem: Bootstrap 3 pins `html { font-size: 10px }`, so rems
+       render at 10px each (16rem would be 160px, not 256px) */
+    --k-sidebar-w: 256px;
+    --k-sidebar-w-icon: 68px;
+    --k-sidebar-w-mobile: 288px;
     --k-sidebar-dur: 280ms;
     --k-sidebar-stagger: 45ms;
     --k-ease-drawer: cubic-bezier(.32, .72, 0, 1);
@@ -49,15 +51,20 @@
         margin-left: var(--k-sidebar-w);
     }
 
-    body.sidebar-collapse .main-header,
+    /* !important: AdminLTE's sidebar-mini collapsed rule carries its own
+       !important (margin-left:50px) — the blanket justified case */
     body.sidebar-collapse .content-wrapper,
     body.sidebar-collapse .main-footer,
-    body.ks-collapsed .main-header,
     body.ks-collapsed .content-wrapper,
     body.ks-collapsed .main-footer,
-    html.ks-collapsed-pre body .main-header,
     html.ks-collapsed-pre body .content-wrapper,
     html.ks-collapsed-pre body .main-footer {
+        margin-left: var(--k-sidebar-w-icon) !important;
+    }
+
+    body.sidebar-collapse .main-header,
+    body.ks-collapsed .main-header,
+    html.ks-collapsed-pre body .main-header {
         margin-left: var(--k-sidebar-w-icon);
     }
 
@@ -90,7 +97,7 @@
 
 .ks-brand {
     flex: 0 0 auto;
-    padding: var(--k-space-3) var(--k-space-3) var(--k-space-2);
+    padding: var(--k-space-2) var(--k-space-3);
     border-bottom: 1px solid var(--k-sidebar-border);
     overflow: hidden;
 }
@@ -98,24 +105,58 @@
 .ks-brand-link {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--k-space-3);
+    min-height: 44px;
+    padding: var(--k-space-1) var(--k-space-2);
+    border-radius: var(--k-radius);
     color: var(--k-sidebar-text-active);
     font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
     cursor: pointer;
-}
-
-.ks-brand-link > i,
-.ks-brand-link > svg {
-    width: var(--k-sidebar-icon-size);
-    font-size: var(--k-sidebar-icon-size);
-    text-align: center;
-    color: var(--k-accent);
+    transition: background-color var(--k-motion);
 }
 
 .ks-brand-link:hover {
-    color: var(--k-accent);
+    background-color: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+    text-decoration: none;
+}
+
+/* rounded-square mark: tenant logo image when set, else a dark square with
+   the site's initial (colors track the theme via existing tokens) */
+.ks-brand-mark {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--k-radius-sm);
+    background: var(--k-sidebar-text-active);
+    color: var(--k-sidebar-bg);
+    font-size: 13px;
+    font-weight: 700;
+    overflow: hidden;
+}
+
+.ks-brand-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ks-brand-name {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ks-brand-chevron {
+    flex: none;
+    font-size: 10px;
+    color: var(--k-sidebar-muted);
 }
 
 .ks-content {
@@ -140,7 +181,7 @@
    Groups
    -------------------------------------------------------------------------- */
 .ks-group {
-    padding: var(--k-space-2) var(--k-space-2) 0;
+    padding: var(--k-space-3) var(--k-space-2) 0;
 }
 
 .ks-group-label {
@@ -206,9 +247,9 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 36px;
-    padding: 6px var(--k-space-3);
+    gap: var(--k-space-3);
+    min-height: 40px;
+    padding: 9px var(--k-space-3);
     border-radius: var(--k-radius);
     background: transparent;
     color: var(--k-sidebar-text);
@@ -296,7 +337,7 @@
 .ks-sub {
     list-style: none;
     margin: 2px var(--k-space-2) 4px;
-    margin-inline-start: calc(var(--k-space-3) + 7px); /* ~icon center */
+    margin-inline-start: calc(var(--k-space-3) + 8px); /* ~icon center */
     padding: 2px 0 2px var(--k-space-3);
     border-left: 1px solid var(--k-sidebar-guide);
     background: transparent;
@@ -310,7 +351,7 @@
 }
 
 .ks-item--parent.open > .ks-sub {
-    max-height: 80rem;
+    max-height: 1200px;
     opacity: 1;
     clip-path: inset(0 0 0 0);
 }
@@ -473,11 +514,26 @@ body.ks-lock {
 
     body.ks-collapsed .ks-label,
     body.ks-collapsed .ks-brand-name,
+    body.ks-collapsed .ks-brand-chevron,
     html.ks-collapsed-pre body .ks-label,
-    html.ks-collapsed-pre body .ks-brand-name {
+    html.ks-collapsed-pre body .ks-brand-name,
+    html.ks-collapsed-pre body .ks-brand-chevron {
         opacity: 0;
         position: absolute;
         pointer-events: none;
+    }
+
+    /* collapsed brand: centered mark only */
+    body.ks-collapsed .ks-brand,
+    html.ks-collapsed-pre body .ks-brand {
+        padding: var(--k-space-2) 0;
+    }
+
+    body.ks-collapsed .ks-brand-link,
+    html.ks-collapsed-pre body .ks-brand-link {
+        justify-content: center;
+        gap: 0;
+        padding: var(--k-space-1) 0;
     }
 
     body.ks-collapsed .ks-chevron,
@@ -510,7 +566,7 @@ body.ks-lock {
         position: absolute;
         left: calc(100% + 6px);
         top: -6px;
-        min-width: 13rem;
+        min-width: 200px;
         margin: 0;
         padding: var(--k-space-2);
         background: var(--k-sidebar-flyout-bg);
