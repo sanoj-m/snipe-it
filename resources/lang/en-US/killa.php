@@ -37,6 +37,7 @@ return [
         'expired' => 'Expired',
         'days' => ':days Days',
         'uncategorized' => 'Uncategorized',
+        'group_toggle' => 'Group by category',
         'empty' => 'No licenses to track yet.',
         'note_perpetual' => 'Perpetual — no expiry',
         'note_term' => ':years Year term',

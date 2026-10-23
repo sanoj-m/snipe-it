@@ -699,3 +699,10 @@ body .bootstrap-table .fixed-table-body tr.group-by:hover td {
 .k-dot-success { background-color: var(--k-success); }
 .k-dot-warning { background-color: var(--k-warning); }
 .k-dot-danger { background-color: var(--k-danger); }
+
+/* [killa license-grouping] group-by toolbar toggle */
+#k-group-toggle.k-toggle-on {
+    background-color: var(--k-accent-soft, var(--k-hover-tint));
+    border-color: var(--k-accent);
+    color: var(--k-accent);
+}

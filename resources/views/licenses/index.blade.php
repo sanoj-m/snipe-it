@@ -51,6 +51,45 @@
         var cls = raw <= 30 ? 'danger' : (raw <= 60 ? 'warning' : 'success');
         return '<span class="k-dot k-dot-' + cls + '" aria-hidden="true"></span>' + value;
     };
+
+    // [killa license-grouping] toolbar toggle: grouping on = sort within
+    // category groups; off = plain full-list sorting. Persisted per browser.
+    $(function () {
+        var $table = $('#licensesListingTable');
+        var KEY = 'killaLicensesGroupBy';
+
+        function applyGrouping(on) {
+            var opts = $table.bootstrapTable('getOptions');
+            var url = (opts.url || '').replace(/([?&])grouped=0&?/, '$1').replace(/[?&]$/, '');
+            if (!on) {
+                url += (url.indexOf('?') === -1 ? '?' : '&') + 'grouped=0';
+            }
+            $table.bootstrapTable('refreshOptions', {
+                groupBy: on,
+                customSort: on ? 'snipeGroupBySorter' : null,
+                url: url
+            });
+            $('#k-group-toggle')
+                .toggleClass('k-toggle-on', on)
+                .attr('aria-pressed', on ? 'true' : 'false');
+            localStorage.setItem(KEY, on ? '1' : '0');
+        }
+
+        // Runs after the shared partial's ready handler (stack renders first),
+        // so the table is already initialized here.
+        var $toolbar = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns');
+        $('<button type="button" id="k-group-toggle" class="btn btn-default btn-sm" aria-pressed="true" ' +
+            'data-tooltip="true" title="{{ trans('killa.renewals.group_toggle') }}">' +
+            '<i class="fa-solid fa-layer-group" aria-hidden="true"></i>' +
+            ' <span class="hidden-xs">{{ trans('killa.renewals.group_toggle') }}</span></button>')
+            .on('click', function () { applyGrouping(!$(this).hasClass('k-toggle-on')); })
+            .prependTo($toolbar);
+        $('#k-group-toggle').addClass('k-toggle-on');
+
+        if (localStorage.getItem(KEY) === '0') {
+            applyGrouping(false);
+        }
+    });
     // [killa license-grouping] bootstrap-table's core initSort re-sorts
     // this.data client-side even with server pagination, which would break
     // group contiguity. Custom sort: category always dominant (groups
