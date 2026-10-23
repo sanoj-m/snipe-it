@@ -17,7 +17,6 @@ return [
     'no_asset_status' => 'No asset status data is available.',
     'renewals' => [
         'title' => 'Renewal Tracker',
-        'description' => 'License renewals grouped by category, most urgent first.',
         'software' => 'Software',
         'license_type' => 'License Type',
         'floating' => 'Floating',
@@ -41,13 +40,6 @@ return [
         'empty' => 'No licenses to track yet.',
         'note_perpetual' => 'Perpetual — no expiry',
         'note_term' => ':years Year term',
-        'note_cost_currency' => 'Cost in :currency',
-        'note_floating' => 'Floating license',
-        'note_standard' => 'Standard subscription',
-        'reorganize' => 'Reorganize',
-        'done_reordering' => 'Done',
-        'reorder_saved' => 'Order saved.',
-        'reorder_failed' => 'Could not save the new order — please try again.',
     ],
     'currency' => [
         'title' => 'Currency',

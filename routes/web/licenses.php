@@ -83,15 +83,9 @@ Route::group(['prefix' => 'licenses', 'middleware' => ['auth']], function () {
 
     Route::post('bulk/delete', [Licenses\BulkLicensesController::class, 'destroy'])->name('licenses.bulk.delete');
 
-    // [killa-v2 renewal tracker] BEGIN
-    Route::get('renewals', [\App\Http\Controllers\Killa\RenewalTrackerController::class, 'index'])
-        ->name('licenses.renewals')
-        ->breadcrumbs(fn (Trail $trail) => $trail
-            ->parent('licenses.index')
-            ->push(trans('killa.renewals.title'), route('licenses.renewals'))
-        );
-    Route::post('renewals/reorder', [\App\Http\Controllers\Killa\RenewalTrackerController::class, 'reorder'])
-        ->name('licenses.renewals.reorder');
+    // [killa-v2 renewal tracker] BEGIN — tracker merged into the licenses list
+    // (KCP-046); keep the old URL as a redirect for bookmarks.
+    Route::redirect('renewals', 'licenses')->name('licenses.renewals');
     // [killa-v2 renewal tracker] END
 });
 

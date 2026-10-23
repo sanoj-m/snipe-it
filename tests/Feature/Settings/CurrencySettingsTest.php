@@ -65,10 +65,10 @@ class CurrencySettingsTest extends TestCase
         $this->assertNull(CurrencyConverter::toBase(100.0, 'ZZZ'));
     }
 
-    public function test_license_accepts_currency_and_tracker_shows_conversion(): void
+    public function test_license_accepts_currency_and_transformer_shows_conversion(): void
     {
         Setting::getSettings()->update(['currency_exchange_rates' => json_encode(['USD' => 4.0])]);
-        License::factory()->create([
+        $license = License::factory()->create([
             'name' => 'USDSoft',
             'currency' => 'USD',
             'purchase_cost' => 100,
@@ -76,11 +76,10 @@ class CurrencySettingsTest extends TestCase
             'expiration_date' => Carbon::today()->addYear(),
         ]);
 
-        $this->actingAs(User::factory()->viewLicenses()->create())
-            ->get(route('licenses.renewals'))
-            ->assertOk()
-            ->assertSee('USDSoft')
-            ->assertSee('USD')
-            ->assertSee('800.00'); // 100 * 2 seats * 4.0
+        $row = (new \App\Http\Transformers\LicensesTransformer)->transformLicense($license);
+
+        $this->assertSame('USD', $license->fresh()->currency);
+        $this->assertStringContainsString('USD 200.00', $row['cost_yearly']);
+        $this->assertStringContainsString('800.00', $row['cost_yearly']); // 100 * 2 seats * 4.0
     }
 }

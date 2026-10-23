@@ -132,6 +132,28 @@ class LicensesTransformer
             ] : null,
             // [killa license-grouping] scalar key for bootstrap-table group-by
             'category_name' => $license->category ? e($license->category->name) : '',
+            // [killa renewal-columns] BEGIN — renewal-tracker fields merged into the licenses list
+            'days_to_expire' => (function () use ($license) {
+                $expiry = $license->perpetual ? null : $license->expiration_date;
+                if (! $expiry) {
+                    return trans('killa.renewals.no_expiry');
+                }
+                $days = (int) \Carbon\Carbon::today()->diffInDays($expiry, false);
+
+                return $days < 0 ? trans('killa.renewals.expired') : trans('killa.renewals.days', ['days' => number_format($days)]);
+            })(),
+            'term' => (function () use ($license) {
+                $expiry = $license->perpetual ? null : $license->expiration_date;
+                if (! $license->purchase_date || ! $expiry) {
+                    return null;
+                }
+                $years = max(1, (int) round($license->purchase_date->diffInYears($expiry)));
+
+                return $years === 1 ? trans('killa.renewals.term_yearly') : trans('killa.renewals.term_years', ['years' => $years]);
+            })(),
+            'cost_yearly' => static::renewalCost($license, 1),
+            'cost_monthly' => static::renewalCost($license, 12),
+            // [killa renewal-columns] END
             'created_by' => ($license->adminuser) ? [
                 'id' => (int) $license->adminuser->id,
                 'name' => e($license->adminuser->display_name),
@@ -177,5 +199,28 @@ class LicensesTransformer
     public function transformAssetsDatatable($licenses)
     {
         return (new DatatablesTransformer)->transformDatatables($licenses);
+    }
+
+    // [killa renewal-columns] total cost (per-seat × seats) with currency and
+    // optional default-currency equivalent; $divisor 1 = yearly, 12 = monthly
+    private static function renewalCost(License $license, int $divisor): ?string
+    {
+        if ($license->purchase_cost === null) {
+            return null;
+        }
+
+        $total = (float) $license->purchase_cost * max(1, (int) $license->seats) / $divisor;
+        $currency = $license->currency ? strtoupper($license->currency) : \App\Models\Setting::getSettings()->default_currency;
+        $out = $currency.' '.number_format($total, 2);
+
+        $aed = \App\Services\Killa\CurrencyConverter::toBase($total, $currency);
+        if ($aed !== null) {
+            $out .= ' ('.trans('killa.currency.aed_equivalent', [
+                'base' => \App\Models\Setting::getSettings()->default_currency,
+                'amount' => number_format($aed, 2),
+            ]).')';
+        }
+
+        return $out;
     }
 }

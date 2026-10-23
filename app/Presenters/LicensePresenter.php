@@ -71,7 +71,36 @@ class LicensePresenter extends Presenter
                 'sortable' => true,
                 'title' => trans('admin/licenses/form.expiration'),
                 'formatter' => 'dateDisplayFormatter',
+            ],
+            // [killa renewal-columns] BEGIN — computed client-side values, not DB-sortable
+            [
+                'field' => 'days_to_expire',
+                'scope' => 'col',
+                'searchable' => false,
+                'sortable' => false,
+                'title' => trans('killa.renewals.days_to_expire'),
             ], [
+                'field' => 'term',
+                'scope' => 'col',
+                'searchable' => false,
+                'sortable' => false,
+                'visible' => false,
+                'title' => trans('killa.renewals.term'),
+            ], [
+                'field' => 'cost_monthly',
+                'scope' => 'col',
+                'searchable' => false,
+                'sortable' => false,
+                'title' => trans('killa.renewals.cost_monthly'),
+            ], [
+                'field' => 'cost_yearly',
+                'scope' => 'col',
+                'searchable' => false,
+                'sortable' => false,
+                'title' => trans('killa.renewals.cost_yearly'),
+            ],
+            // [killa renewal-columns] END
+            [
                 'field' => 'termination_date',
                 'scope' => 'col',
                 'searchable' => true,
@@ -256,7 +285,6 @@ class LicensePresenter extends Presenter
                 'scope' => 'col',
                 'searchable' => true,
                 'sortable' => true,
-                'visible' => false,
                 'title' => trans('general.notes'),
                 'formatter' => 'notesFormatter',
             ],
