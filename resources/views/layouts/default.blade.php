@@ -40,7 +40,7 @@
     <link rel="stylesheet" href="{{ url('css/killa-v2-fonts.css') }}?v={{ config('version.app_version') }}">
     {{-- [killa-v2] theme layer: plain committed stylesheets, no build step. Load after all.css so they win the cascade; tenant branding vars below still override brand colors. Cache-busted on app version (changes each release), not per-request md5_file(). --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}?v={{ config('version.app_version') }}">
-    {{-- [killa-v2 sidebar] animated sidebar rail overlay (KCP-040) --}}
+    {{-- [killa-v2 sidebar] animated sidebar rail overlay (KCP-049) --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2-sidebar.css') }}?v={{ config('version.app_version') }}">
     <link rel="stylesheet" href="{{ url('css/killa-v2-forms.css') }}?v={{ config('version.app_version') }}">
     <link rel="stylesheet" href="{{ url('css/killa-v2-tables.css') }}?v={{ config('version.app_version') }}">
@@ -81,7 +81,7 @@
 
     {{-- [killa-v2 sidebar] pre-paint collapse restore: marks <html> before
          first paint so the rail never flashes expanded; killa-sidebar.js
-         moves the state onto <body> (KCP-040) --}}
+         moves the state onto <body> (KCP-049) --}}
     <script nonce="{{ csrf_token() }}">
         try {
             if (localStorage.getItem('ks.sidebar') === 'collapsed') {
@@ -404,7 +404,7 @@
 
                 <!-- Sidebar toggle button-->
             </header>
-            {{-- [killa-v2 sidebar] upstream <aside class="main-sidebar"> block replaced by a Killa-owned partial (KCP-040) --}}
+            {{-- [killa-v2 sidebar] upstream <aside class="main-sidebar"> block replaced by a Killa-owned partial (KCP-049) --}}
             @include('layouts.partials.killa-sidebar')
             {{-- [/killa-v2 sidebar] --}}
                 <!-- /.sidebar -->
@@ -621,7 +621,7 @@
         <script src="{{ url(mix('js/dist/all.js')) }}" nonce="{{ csrf_token() }}"></script>
         <script src="{{ url('js/select2/i18n/'.Helper::mapBackToLegacyLocale(app()->getLocale()).'.js') }}"></script>
 
-        {{-- [killa-v2 sidebar] vanilla sidebar controller (KCP-040) --}}
+        {{-- [killa-v2 sidebar] vanilla sidebar controller (KCP-049) --}}
         <script src="{{ url(asset('js/killa-sidebar.js')) }}?v={{ config('version.app_version') }}" defer nonce="{{ csrf_token() }}"></script>
 
         {{-- Page level javascript --}}

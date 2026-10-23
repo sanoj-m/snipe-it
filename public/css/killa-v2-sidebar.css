@@ -1,0 +1,484 @@
+/* ==========================================================================
+   [killa-v2 sidebar] — KCP-049 animated navigation rail (zero-build overlay)
+
+   Replaces the old `.main-sidebar`/`.sidebar-menu` chrome (superseded rules
+   in killa-v2.css simply stop matching — the old classes are no longer
+   rendered). Uses shared tokens from killa-v2.css; only sidebar-private
+   tokens are defined here (single-source rule: each token defined once,
+   dark overrides only under html[data-theme='dark']).
+
+   Collapse state: `body.ks-collapsed` (mirrored from AdminLTE's
+   `body.sidebar-collapse` by killa-sidebar.js). `html.ks-collapsed-pre`
+   is stamped by the pre-paint head script so the rail never flashes
+   expanded on load.
+   ========================================================================== */
+
+:root {
+    --k-sidebar-w: 16rem;
+    --k-sidebar-w-icon: 4.25rem;
+    --k-sidebar-w-mobile: 18rem;
+    --k-sidebar-dur: 280ms;
+    --k-sidebar-stagger: 45ms;
+    --k-ease-drawer: cubic-bezier(.32, .72, 0, 1);
+    --k-ease-spring: cubic-bezier(.2, .9, .25, 1.1);
+    --k-sidebar-top: 50px; /* AdminLTE fixed navbar height */
+}
+
+/* --------------------------------------------------------------------------
+   Page layout: keep header/content margins in sync with the rail width.
+   These rules intentionally shadow the 250px block in killa-v2.css
+   (source order after killa-v2.css wins at equal specificity).
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    html:not(.ks-collapsed-pre) body:not(.sidebar-collapse):not(.ks-collapsed) .main-header,
+    html:not(.ks-collapsed-pre) body:not(.sidebar-collapse):not(.ks-collapsed) .content-wrapper,
+    html:not(.ks-collapsed-pre) body:not(.sidebar-collapse):not(.ks-collapsed) .main-footer {
+        margin-left: var(--k-sidebar-w);
+    }
+
+    body.sidebar-collapse .main-header,
+    body.sidebar-collapse .content-wrapper,
+    body.sidebar-collapse .main-footer,
+    body.ks-collapsed .main-header,
+    body.ks-collapsed .content-wrapper,
+    body.ks-collapsed .main-footer,
+    html.ks-collapsed-pre body .main-header,
+    html.ks-collapsed-pre body .content-wrapper,
+    html.ks-collapsed-pre body .main-footer {
+        margin-left: var(--k-sidebar-w-icon);
+    }
+
+    .main-header,
+    .content-wrapper,
+    .main-footer {
+        transition: margin-left var(--k-sidebar-dur) var(--k-ease-drawer);
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Rail shell
+   -------------------------------------------------------------------------- */
+.ks-sidebar {
+    position: fixed;
+    top: var(--k-sidebar-top);
+    left: 0;
+    bottom: 0;
+    width: var(--k-sidebar-w);
+    z-index: 810;
+    display: flex;
+    flex-direction: column;
+    background-color: var(--k-sidebar-bg);
+    border-inline-end: 1px solid var(--k-sidebar-border);
+    color: var(--k-sidebar-text);
+    font-family: var(--k-font);
+    transition: width var(--k-sidebar-dur) var(--k-ease-drawer),
+                transform var(--k-sidebar-dur) var(--k-ease-drawer);
+}
+
+.ks-brand {
+    flex: 0 0 auto;
+    padding: var(--k-space-3) var(--k-space-3) var(--k-space-2);
+    border-bottom: 1px solid var(--k-sidebar-border);
+    overflow: hidden;
+}
+
+.ks-brand-link {
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-2);
+    color: var(--k-sidebar-text-active);
+    font-weight: 600;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+.ks-brand-link:hover {
+    color: var(--k-accent);
+}
+
+.ks-content {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: var(--k-space-2) 0 var(--k-space-6);
+    scrollbar-width: thin;
+    scrollbar-color: var(--k-sidebar-scrollbar) transparent;
+}
+
+.ks-content::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ks-content::-webkit-scrollbar-thumb {
+    background: var(--k-sidebar-scrollbar);
+    border-radius: var(--k-radius-pill);
+}
+
+/* --------------------------------------------------------------------------
+   Groups
+   -------------------------------------------------------------------------- */
+.ks-group {
+    padding: var(--k-space-2) var(--k-space-2) 0;
+}
+
+.ks-group-label {
+    margin: var(--k-space-2) var(--k-space-2) var(--k-space-1);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--k-sidebar-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    max-height: 2em;
+    opacity: 1;
+    transition: opacity var(--k-motion), max-height var(--k-sidebar-dur) var(--k-ease-drawer),
+                margin var(--k-sidebar-dur) var(--k-ease-drawer);
+}
+
+/* hide empty groups (all items gated away) */
+.ks-group:not(:has(.ks-item)) {
+    display: none;
+}
+
+.ks-menu {
+    position: relative;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* sliding active pill — JS sets --pill-y/--pill-h on the owning .ks-menu */
+.ks-pill {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    height: var(--pill-h, 0);
+    transform: translateY(var(--pill-y, 0));
+    border-radius: var(--k-radius-sm);
+    background: var(--k-sidebar-hover-bg);
+    opacity: 0;
+    pointer-events: none;
+    transition: transform var(--k-sidebar-dur) var(--k-ease-spring),
+                height var(--k-sidebar-dur) var(--k-ease-spring),
+                opacity 120ms ease;
+}
+
+.ks-menu.ks-pill-on .ks-pill {
+    opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+   Items
+   -------------------------------------------------------------------------- */
+.ks-item {
+    position: relative;
+    z-index: 1;
+}
+
+.ks-link {
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-3);
+    padding: 9px var(--k-space-3);
+    border-radius: var(--k-radius-sm);
+    color: var(--k-sidebar-text);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+.ks-link:hover,
+.ks-link:focus {
+    background-color: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+    text-decoration: none;
+}
+
+.ks-item.active > .ks-link {
+    color: var(--k-sidebar-text-active);
+    font-weight: 600;
+}
+
+.ks-label {
+    flex: 1 1 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 1;
+    transition: opacity 160ms ease;
+}
+
+.ks-chevron {
+    flex: 0 0 auto;
+    color: var(--k-sidebar-muted);
+    transition: transform var(--k-sidebar-dur) var(--k-ease-drawer), opacity 160ms ease;
+}
+
+.ks-item--parent.open > .ks-link .ks-chevron {
+    transform: rotate(-90deg);
+}
+
+/* --------------------------------------------------------------------------
+   Submenus: clip-path reveal + per-item stagger (reverse-quick on close)
+   -------------------------------------------------------------------------- */
+.ks-sub {
+    list-style: none;
+    margin: 2px 0 4px;
+    padding: 4px;
+    border-radius: var(--k-radius-sm);
+    background: var(--k-sidebar-panel);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    clip-path: inset(0 0 100% 0 round 8px);
+    transition: max-height 300ms var(--k-ease-drawer),
+                clip-path 260ms var(--k-ease-drawer),
+                opacity 160ms ease;
+}
+
+.ks-item--parent.open > .ks-sub {
+    max-height: 80rem;
+    opacity: 1;
+    clip-path: inset(0 0 0 0 round 8px);
+}
+
+.ks-sub > li {
+    opacity: 0;
+    transform: translateY(-4px);
+    transition: opacity 140ms ease, transform 180ms var(--k-ease-drawer);
+}
+
+.ks-item--parent.open > .ks-sub > li {
+    opacity: 1;
+    transform: none;
+    transition-delay: calc(var(--i, 0) * var(--k-sidebar-stagger));
+}
+
+.ks-sub > li > a {
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-2);
+    padding: 7px var(--k-space-2);
+    border-radius: var(--k-radius-sm);
+    color: var(--k-sidebar-text);
+    cursor: pointer;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+.ks-sub > li > a:hover,
+.ks-sub > li > a:focus {
+    background-color: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+    text-decoration: none;
+}
+
+.ks-sub > li.active > a {
+    background-color: var(--k-sidebar-child-active-bg);
+    color: var(--k-sidebar-child-active-text);
+}
+
+.ks-sub > li.divider {
+    margin: 4px var(--k-space-2);
+    border-top: 1px solid var(--k-sidebar-border);
+    font-size: 0;
+    line-height: 0;
+}
+
+.ks-sub .badge {
+    margin-left: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Rail toggle button (bottom edge)
+   -------------------------------------------------------------------------- */
+.ks-rail-toggle {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--k-space-2);
+    margin: var(--k-space-2);
+    padding: 9px;
+    border: 1px solid var(--k-sidebar-border);
+    border-radius: var(--k-radius-sm);
+    background: transparent;
+    color: var(--k-sidebar-muted);
+    cursor: pointer;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+.ks-rail-toggle:hover {
+    background-color: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+}
+
+.ks-rail-toggle svg,
+.ks-rail-toggle i {
+    transition: transform var(--k-sidebar-dur) var(--k-ease-drawer);
+}
+
+body.ks-collapsed .ks-rail-toggle svg,
+body.ks-collapsed .ks-rail-toggle i {
+    transform: rotate(180deg);
+}
+
+/* --------------------------------------------------------------------------
+   Scrim (mobile drawer)
+   -------------------------------------------------------------------------- */
+.ks-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 800;
+    background: rgba(0, 0, 0, .4);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 200ms ease;
+}
+
+body.ks-lock {
+    overflow: hidden;
+}
+
+/* --------------------------------------------------------------------------
+   Collapsed icon rail (desktop only)
+   -------------------------------------------------------------------------- */
+@media (min-width: 768px) {
+    body.ks-collapsed .ks-sidebar,
+    html.ks-collapsed-pre body .ks-sidebar {
+        width: var(--k-sidebar-w-icon);
+    }
+
+    body.ks-collapsed .ks-label,
+    body.ks-collapsed .ks-brand-name,
+    html.ks-collapsed-pre body .ks-label,
+    html.ks-collapsed-pre body .ks-brand-name {
+        opacity: 0;
+        position: absolute;
+        pointer-events: none;
+    }
+
+    body.ks-collapsed .ks-chevron,
+    html.ks-collapsed-pre body .ks-chevron {
+        opacity: 0;
+        width: 0;
+    }
+
+    body.ks-collapsed .ks-link,
+    html.ks-collapsed-pre body .ks-link {
+        justify-content: center;
+        gap: 0;
+    }
+
+    body.ks-collapsed .ks-group-label,
+    html.ks-collapsed-pre body .ks-group-label {
+        max-height: 0;
+        opacity: 0;
+        margin-top: 0;
+        margin-bottom: 0;
+    }
+
+    /* in-rail submenus never render inline when collapsed */
+    body.ks-collapsed .ks-item--parent > .ks-sub,
+    html.ks-collapsed-pre body .ks-item--parent > .ks-sub {
+        position: absolute;
+        left: calc(100% + 6px);
+        top: -6px;
+        min-width: 13rem;
+        margin: 0;
+        padding: var(--k-space-2);
+        background: var(--k-sidebar-flyout-bg);
+        border: 1px solid var(--k-border);
+        border-radius: var(--k-radius-sm);
+        box-shadow: var(--k-shadow-lg);
+        z-index: 900;
+        display: block;
+        max-height: none;
+        opacity: 0;
+        clip-path: none;
+        visibility: hidden;
+        transform: translateX(-4px);
+        transition: opacity 160ms ease, transform 180ms var(--k-ease-drawer), visibility 0s 180ms;
+    }
+
+    body.ks-collapsed .ks-item--parent:hover > .ks-sub,
+    body.ks-collapsed .ks-item--parent:focus-within > .ks-sub,
+    body.ks-collapsed .ks-item--parent.ks-flyout-hold > .ks-sub {
+        opacity: 1;
+        visibility: visible;
+        transform: none;
+        transition-delay: 0s;
+    }
+
+    body.ks-collapsed .ks-item--parent:hover > .ks-sub > li,
+    body.ks-collapsed .ks-item--parent:focus-within > .ks-sub > li,
+    body.ks-collapsed .ks-item--parent.ks-flyout-hold > .ks-sub > li {
+        opacity: 1;
+        transform: none;
+        transition-delay: 0s;
+    }
+
+    /* hover bridge so the pointer can cross the 6px gap without losing hover */
+    body.ks-collapsed .ks-item--parent::after {
+        content: '';
+        position: absolute;
+        left: 100%;
+        top: 0;
+        width: 8px;
+        height: 100%;
+        display: none;
+    }
+
+    body.ks-collapsed .ks-item--parent:hover::after,
+    body.ks-collapsed .ks-item--parent.ks-flyout-hold::after {
+        display: block;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Mobile drawer (≤767px): rail slides in over a scrim; collapse state is
+   ignored — the drawer is always full width.
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+    .ks-sidebar {
+        width: var(--k-sidebar-w-mobile);
+        transform: translateX(-105%);
+        box-shadow: none;
+    }
+
+    body.ks-drawer-open .ks-sidebar {
+        transform: translateX(0);
+        box-shadow: var(--k-shadow-lg);
+    }
+
+    body.ks-drawer-open .ks-scrim {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .ks-rail-toggle {
+        display: none;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   Focus-visible rings + reduced motion
+   -------------------------------------------------------------------------- */
+.ks-sidebar a:focus-visible,
+.ks-rail-toggle:focus-visible {
+    outline: 2px solid var(--k-accent);
+    outline-offset: 2px;
+    border-radius: var(--k-radius-sm);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html .ks-sidebar,
+    html .ks-sidebar *,
+    html .ks-scrim,
+    html .main-header,
+    html .content-wrapper,
+    html .main-footer {
+        transition-duration: 160ms;
+        transition-property: opacity;
+    }
+}
