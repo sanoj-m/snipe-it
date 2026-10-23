@@ -157,16 +157,21 @@
             if (group) {
                 group.querySelectorAll('.ks-item--parent.open').forEach(function (other) {
                     if (other !== item) {
-                        setOpen(other, false);
+                        setOpen(other, false, true);
                     }
                 });
             }
         }
-        setOpen(item, open);
+        setOpen(item, open, true);
         schedulePill();
     }
 
-    function setOpen(item, open) {
+    /* animate=true marks the item .ks-stagger so the per-item stagger plays;
+       animate=false (initial auto-open of the active parent, before first
+       paint) leaves children instantly visible — the open state must never
+       depend on a transition having run. */
+    function setOpen(item, open, animate) {
+        item.classList.toggle('ks-stagger', !!animate);
         item.classList.toggle('open', open);
         var link = item.querySelector('.ks-link');
         if (link) {
@@ -174,10 +179,10 @@
         }
     }
 
-    /* Auto-open the parent that contains the active child. */
+    /* Auto-open the parent that contains the active child (no stagger). */
     sidebar.querySelectorAll('.ks-item--parent').forEach(function (item) {
         if (item.classList.contains('active') || item.querySelector('.ks-sub .active')) {
-            setOpen(item, true);
+            setOpen(item, true, false);
         }
     });
 

@@ -117,11 +117,11 @@
    Groups
    -------------------------------------------------------------------------- */
 .ks-group {
-    padding: var(--k-space-3) var(--k-space-2) 0;
+    padding: var(--k-space-2) var(--k-space-2) 0;
 }
 
 .ks-group-label {
-    margin: var(--k-space-2) var(--k-space-3) var(--k-space-1);
+    margin: var(--k-space-1) var(--k-space-3) 2px;
     padding: 0;
     font-size: 10px;
     font-weight: 600;
@@ -131,7 +131,7 @@
     color: var(--k-sidebar-muted);
     white-space: nowrap;
     overflow: hidden;
-    max-height: 2em;
+    max-height: 22px;
     opacity: 1;
     transition: opacity var(--k-motion), max-height var(--k-sidebar-dur) var(--k-ease-drawer),
                 margin var(--k-sidebar-dur) var(--k-ease-drawer);
@@ -183,9 +183,9 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: var(--k-space-3);
-    min-height: 40px;
-    padding: 9px var(--k-space-3);
+    gap: 10px;
+    min-height: 34px;
+    padding: 6px var(--k-space-3);
     border-radius: var(--k-radius);
     background: transparent;
     color: var(--k-sidebar-text);
@@ -267,12 +267,18 @@
 }
 
 /* --------------------------------------------------------------------------
-   Submenus: indented, subordinate, with a 1px vertical guide. Clip-path
-   reveal + per-item stagger (quick collective fade on close).
+   Submenus: indented, subordinate, with a 1px vertical guide.
+
+   Visibility invariant: the OPEN state never depends on a transition having
+   run. Children are ALWAYS visible; the closed state is expressed entirely
+   on the <ul> itself (max-height:0 + clip-path + opacity). A submenu that
+   renders active server-side (JS auto-opens it) is fully visible on first
+   paint. The per-item stagger is an opt-in enhancement: killa-sidebar.js
+   adds .ks-stagger only for user-initiated toggles.
    -------------------------------------------------------------------------- */
 .ks-sub {
     list-style: none;
-    margin: 2px var(--k-space-2) 4px;
+    margin: 0 var(--k-space-2) 2px;
     margin-inline-start: calc(var(--k-space-3) + 8px); /* ~icon center */
     padding: 2px 0 2px var(--k-space-3);
     border-left: 1px solid var(--k-sidebar-guide);
@@ -292,24 +298,29 @@
     clip-path: inset(0 0 0 0);
 }
 
-.ks-sub > li {
+/* stagger enhancement (user-initiated toggles only): children start hidden
+   and fade/slide in with a capped per-item delay; on close they snap back
+   with no delay, and re-opening quickly can never strand them hidden
+   because removing .ks-stagger restores the always-visible default */
+.ks-item--parent.ks-stagger:not(.open) > .ks-sub > li {
     opacity: 0;
     transform: translateY(-4px);
-    transition: opacity 140ms ease, transform 180ms var(--k-ease-drawer);
+    transition: opacity 100ms ease;
 }
 
-.ks-item--parent.open > .ks-sub > li {
+.ks-item--parent.ks-stagger.open > .ks-sub > li {
     opacity: 1;
     transform: none;
-    transition-delay: calc(var(--i, 0) * var(--k-sidebar-stagger));
+    transition: opacity 140ms ease, transform 180ms var(--k-ease-drawer);
+    transition-delay: min(calc(var(--i, 0) * 30ms), 300ms);
 }
 
 .ks-sub > li > a {
     display: flex;
     align-items: center;
     gap: var(--k-space-2);
-    min-height: 32px;
-    padding: 4px var(--k-space-2);
+    min-height: 28px;
+    padding: 3px var(--k-space-2);
     border-radius: var(--k-radius-sm);
     background: transparent;
     color: var(--k-sidebar-muted);
