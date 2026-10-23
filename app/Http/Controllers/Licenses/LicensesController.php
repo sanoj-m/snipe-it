@@ -37,11 +37,18 @@ class LicensesController extends Controller
      *
      * @throws AuthorizationException
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize('view', License::class);
 
-        return view('licenses/index');
+        // [killa-ux] BEGIN — redesigned server-rendered licenses list (KCP-003
+        // amendment). Replaces the bootstrap-table view on this route only;
+        // upstream renders again if this fence is removed (restore the line
+        // below and delete this block):
+        //     return view('licenses/index');
+        // Data pipeline lives in App\Support\Killa\LicenseListData.
+        return view('killa/licenses/index', \App\Support\Killa\LicenseListData::forIndex($request));
+        // [killa-ux] END
     }
 
     /**
