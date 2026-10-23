@@ -319,6 +319,12 @@ body .select2-container--default .select2-selection--multiple {
     transition: border-color var(--k-motion), box-shadow var(--k-motion);
 }
 
+/* select2 core pins single height:28px; match our 36px or content/arrow clip */
+body .select2-container--default .select2-selection--single,
+body .select2-container .select2-selection--single {
+    height: 36px;
+}
+
 body .select2-container--default .select2-selection--single:hover,
 body .select2-container--default .select2-selection--multiple:hover {
     border-color: var(--k-text-muted);
