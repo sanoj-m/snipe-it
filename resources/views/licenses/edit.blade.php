@@ -128,6 +128,7 @@
                         <x-input.select
                             name="currency"
                             id="currency"
+                            style="width: 100%"
                             :options="\App\Services\Killa\CurrencyConverter::options()"
                             :selected="old('currency', $item->currency ?? \App\Services\Killa\CurrencyConverter::base())"
                             aria-label="currency"

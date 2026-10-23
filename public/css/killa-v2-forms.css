@@ -319,10 +319,12 @@ body .select2-container--default .select2-selection--multiple {
     transition: border-color var(--k-motion), box-shadow var(--k-motion);
 }
 
-/* select2 core pins single height:28px; match our 36px or content/arrow clip */
+/* select2 core pins single height:28px and Snipe-IT's all.css adds
+   padding:6px 12px — zero the padding or the 34px content clips the box */
 body .select2-container--default .select2-selection--single,
 body .select2-container .select2-selection--single {
     height: 36px;
+    padding: 0;
 }
 
 body .select2-container--default .select2-selection--single:hover,
@@ -339,9 +341,11 @@ body .select2-container--default.select2-container--open .select2-selection--mul
 }
 
 /* single: rendered value + arrow */
-body .select2-container--default .select2-selection--single .select2-selection__rendered {
+body .select2-container--default .select2-selection--single .select2-selection__rendered,
+body .select2-container .select2-selection--single .select2-selection__rendered {
     color: var(--k-text);
     line-height: 34px;
+    margin-top: 0;
     padding-left: var(--k-space-3);
     padding-right: var(--k-space-6);
 }
