@@ -674,9 +674,12 @@ body .bootstrap-table .fixed-table-body tr.group-by td {
     text-transform: uppercase;
     letter-spacing: 0.07em;
     border-top: 1px solid var(--k-border);
-    border-left: 3px solid var(--k-accent);
     padding-top: 8px;
     padding-bottom: 8px;
+}
+
+body .bootstrap-table .fixed-table-body tr.group-by td:first-child {
+    border-left: 3px solid var(--k-accent);
 }
 
 body .bootstrap-table .fixed-table-body tr.group-by:hover td {
