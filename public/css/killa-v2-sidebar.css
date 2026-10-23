@@ -7,6 +7,16 @@
    tokens are defined here (single-source rule: each token defined once,
    dark overrides only under html[data-theme='dark']).
 
+   Design pass 2 (beui animated-sidebar reference):
+   - Plain inline 16px icons, no boxed icon wells anywhere.
+   - Rows 36px, 13px/500, muted foreground; hover = faint wash + brighter text.
+   - Active top-level = NEUTRAL muted pill (the sliding .ks-pill) + a 3px
+     accent leading bar + accent-tinted icon as the single brand touch.
+   - Slim chevron-right on parents, muted, rotates 90° when open.
+   - Submenus are visually subordinate: indented with a 1px vertical guide,
+     32px/12px child rows, icons reduced to dots (8px status dots keep their
+     statuslabel colors; plain children get a 4px default dot).
+
    Collapse state: `body.ks-collapsed` (mirrored from AdminLTE's
    `body.sidebar-collapse` by killa-sidebar.js). `html.ks-collapsed-pre`
    is stamped by the pre-paint head script so the rail never flashes
@@ -22,6 +32,9 @@
     --k-ease-drawer: cubic-bezier(.32, .72, 0, 1);
     --k-ease-spring: cubic-bezier(.2, .9, .25, 1.1);
     --k-sidebar-top: 50px; /* AdminLTE fixed navbar height */
+    --k-sidebar-icon-size: 16px;
+    --k-sidebar-guide: var(--k-sidebar-border);
+    --k-sidebar-pill-bg: var(--k-sidebar-hover-bg);
 }
 
 /* --------------------------------------------------------------------------
@@ -85,11 +98,20 @@
 .ks-brand-link {
     display: flex;
     align-items: center;
-    gap: var(--k-space-2);
+    gap: 10px;
     color: var(--k-sidebar-text-active);
+    font-size: 13px;
     font-weight: 600;
     white-space: nowrap;
     cursor: pointer;
+}
+
+.ks-brand-link > i,
+.ks-brand-link > svg {
+    width: var(--k-sidebar-icon-size);
+    font-size: var(--k-sidebar-icon-size);
+    text-align: center;
+    color: var(--k-accent);
 }
 
 .ks-brand-link:hover {
@@ -122,11 +144,13 @@
 }
 
 .ks-group-label {
-    margin: var(--k-space-2) var(--k-space-2) var(--k-space-1);
-    font-size: 11px;
+    margin: var(--k-space-2) var(--k-space-3) var(--k-space-1);
+    padding: 0;
+    font-size: 10px;
     font-weight: 600;
-    letter-spacing: .06em;
+    letter-spacing: .14em;
     text-transform: uppercase;
+    line-height: 1.6;
     color: var(--k-sidebar-muted);
     white-space: nowrap;
     overflow: hidden;
@@ -148,7 +172,8 @@
     padding: 0;
 }
 
-/* sliding active pill — JS sets --pill-y/--pill-h on the owning .ks-menu */
+/* sliding active pill — JS sets --pill-y/--pill-h on the owning .ks-menu.
+   Neutral muted fill; the accent touch is the 3px bar on the active link. */
 .ks-pill {
     position: absolute;
     left: 0;
@@ -156,8 +181,8 @@
     top: 0;
     height: var(--pill-h, 0);
     transform: translateY(var(--pill-y, 0));
-    border-radius: var(--k-radius-sm);
-    background: var(--k-sidebar-hover-bg);
+    border-radius: var(--k-radius);
+    background: var(--k-sidebar-pill-bg);
     opacity: 0;
     pointer-events: none;
     transition: transform var(--k-sidebar-dur) var(--k-ease-spring),
@@ -170,7 +195,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Items
+   Top-level items: plain 16px inline icons, no wells/chips
    -------------------------------------------------------------------------- */
 .ks-item {
     position: relative;
@@ -178,15 +203,31 @@
 }
 
 .ks-link {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: var(--k-space-3);
-    padding: 9px var(--k-space-3);
-    border-radius: var(--k-radius-sm);
+    gap: 10px;
+    min-height: 36px;
+    padding: 6px var(--k-space-3);
+    border-radius: var(--k-radius);
+    background: transparent;
     color: var(--k-sidebar-text);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.4;
     white-space: nowrap;
     cursor: pointer;
     transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+.ks-link > i,
+.ks-link > svg {
+    flex: none;
+    width: var(--k-sidebar-icon-size);
+    font-size: var(--k-sidebar-icon-size);
+    line-height: 1;
+    text-align: center;
+    background: transparent;
 }
 
 .ks-link:hover,
@@ -196,42 +237,73 @@
     text-decoration: none;
 }
 
+/* active: neutral pill (behind, via .ks-pill) + 3px accent leading bar +
+   accent icon tint — the ONE brand touch */
 .ks-item.active > .ks-link {
     color: var(--k-sidebar-text-active);
     font-weight: 600;
 }
 
+.ks-item.active > .ks-link::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 18px;
+    border-radius: var(--k-radius-pill);
+    background: var(--k-accent);
+}
+
+.ks-item.active > .ks-link > i,
+.ks-item.active > .ks-link > svg {
+    color: var(--k-accent);
+}
+
+/* open-but-not-current parent: brighten text only, no fill */
+.ks-item--parent.open:not(.active) > .ks-link {
+    color: var(--k-sidebar-text-active);
+}
+
 .ks-label {
     flex: 1 1 auto;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     opacity: 1;
     transition: opacity 160ms ease;
 }
 
+/* slim chevron-right, muted, rotates 90° when open */
 .ks-chevron {
-    flex: 0 0 auto;
+    flex: none;
+    width: auto;
+    font-size: 12px;
+    line-height: 1;
     color: var(--k-sidebar-muted);
     transition: transform var(--k-sidebar-dur) var(--k-ease-drawer), opacity 160ms ease;
 }
 
 .ks-item--parent.open > .ks-link .ks-chevron {
-    transform: rotate(-90deg);
+    transform: rotate(90deg);
 }
 
 /* --------------------------------------------------------------------------
-   Submenus: clip-path reveal + per-item stagger (reverse-quick on close)
+   Submenus: indented, subordinate, with a 1px vertical guide. Clip-path
+   reveal + per-item stagger (quick collective fade on close).
    -------------------------------------------------------------------------- */
 .ks-sub {
     list-style: none;
-    margin: 2px 0 4px;
-    padding: 4px;
-    border-radius: var(--k-radius-sm);
-    background: var(--k-sidebar-panel);
+    margin: 2px var(--k-space-2) 4px;
+    margin-inline-start: calc(var(--k-space-3) + 7px); /* ~icon center */
+    padding: 2px 0 2px var(--k-space-3);
+    border-left: 1px solid var(--k-sidebar-guide);
+    background: transparent;
     max-height: 0;
     overflow: hidden;
     opacity: 0;
-    clip-path: inset(0 0 100% 0 round 8px);
+    clip-path: inset(0 0 100% 0);
     transition: max-height 300ms var(--k-ease-drawer),
                 clip-path 260ms var(--k-ease-drawer),
                 opacity 160ms ease;
@@ -240,7 +312,7 @@
 .ks-item--parent.open > .ks-sub {
     max-height: 80rem;
     opacity: 1;
-    clip-path: inset(0 0 0 0 round 8px);
+    clip-path: inset(0 0 0 0);
 }
 
 .ks-sub > li {
@@ -259,11 +331,41 @@
     display: flex;
     align-items: center;
     gap: var(--k-space-2);
-    padding: 7px var(--k-space-2);
+    min-height: 32px;
+    padding: 4px var(--k-space-2);
     border-radius: var(--k-radius-sm);
-    color: var(--k-sidebar-text);
+    background: transparent;
+    color: var(--k-sidebar-muted);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
     cursor: pointer;
     transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+/* existing FA child icons become 8px dots; inline styles / text-* classes
+   (statuslabel colors) flow through currentColor, so status dots keep their
+   colors */
+.ks-sub > li > a > i,
+.ks-sub > li > a > svg {
+    flex: none;
+    width: 8px;
+    height: 8px;
+    font-size: 0;
+    line-height: 1;
+    border-radius: 50%;
+    background: currentColor;
+}
+
+/* children without any icon get a small 4px default dot */
+.ks-sub > li > a:not(:has(> i)):not(:has(> svg))::before {
+    content: '';
+    flex: none;
+    width: 4px;
+    height: 4px;
+    margin: 0 2px;
+    border-radius: 50%;
+    background: var(--k-sidebar-muted);
 }
 
 .ks-sub > li > a:hover,
@@ -273,9 +375,12 @@
     text-decoration: none;
 }
 
-.ks-sub > li.active > a {
-    background-color: var(--k-sidebar-child-active-bg);
-    color: var(--k-sidebar-child-active-text);
+/* child active: neutral pill + brighter text (no accent fill) */
+.ks-sub > li.active > a,
+.ks-sub > li.active > a:hover {
+    background-color: var(--k-sidebar-pill-bg);
+    color: var(--k-sidebar-text-active);
+    font-weight: 600;
 }
 
 .ks-sub > li.divider {
@@ -285,8 +390,22 @@
     line-height: 0;
 }
 
-.ks-sub .badge {
+/* right-aligned count badges, smaller and muted */
+.ks-sub .badge,
+.ks-sub > li > a > .badge {
     margin-left: auto;
+    background-color: var(--k-sidebar-badge-bg);
+    color: var(--k-sidebar-badge-text);
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1.4;
+    border-radius: var(--k-radius-pill);
+    padding: 0 6px;
+}
+
+.ks-sub > li.active .badge {
+    background-color: var(--k-sidebar-badge-active-bg);
+    color: var(--k-accent);
 }
 
 /* --------------------------------------------------------------------------
@@ -298,10 +417,11 @@
     align-items: center;
     justify-content: center;
     gap: var(--k-space-2);
+    min-height: 36px;
     margin: var(--k-space-2);
-    padding: 9px;
-    border: 1px solid var(--k-sidebar-border);
-    border-radius: var(--k-radius-sm);
+    padding: 6px;
+    border: none;
+    border-radius: var(--k-radius);
     background: transparent;
     color: var(--k-sidebar-muted);
     cursor: pointer;
@@ -315,6 +435,7 @@
 
 .ks-rail-toggle svg,
 .ks-rail-toggle i {
+    font-size: 14px;
     transition: transform var(--k-sidebar-dur) var(--k-ease-drawer);
 }
 
@@ -341,7 +462,8 @@ body.ks-lock {
 }
 
 /* --------------------------------------------------------------------------
-   Collapsed icon rail (desktop only)
+   Collapsed icon rail (desktop only): plain centered 16px icons, tooltips
+   via title attributes (set by killa-sidebar.js from the label text).
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) {
     body.ks-collapsed .ks-sidebar,
@@ -370,6 +492,10 @@ body.ks-lock {
         gap: 0;
     }
 
+    body.ks-collapsed .ks-item.active > .ks-link::before {
+        left: 2px;
+    }
+
     body.ks-collapsed .ks-group-label,
     html.ks-collapsed-pre body .ks-group-label {
         max-height: 0;
@@ -378,7 +504,7 @@ body.ks-lock {
         margin-bottom: 0;
     }
 
-    /* in-rail submenus never render inline when collapsed */
+    /* in-rail submenus never render inline when collapsed: floating panel */
     body.ks-collapsed .ks-item--parent > .ks-sub,
     html.ks-collapsed-pre body .ks-item--parent > .ks-sub {
         position: absolute;
@@ -389,7 +515,7 @@ body.ks-lock {
         padding: var(--k-space-2);
         background: var(--k-sidebar-flyout-bg);
         border: 1px solid var(--k-border);
-        border-radius: var(--k-radius-sm);
+        border-radius: var(--k-radius);
         box-shadow: var(--k-shadow-lg);
         z-index: 900;
         display: block;
@@ -416,6 +542,11 @@ body.ks-lock {
         opacity: 1;
         transform: none;
         transition-delay: 0s;
+    }
+
+    /* flyout rows breathe a little more than in-rail child rows */
+    body.ks-collapsed .ks-sub > li > a {
+        padding: 6px var(--k-space-3);
     }
 
     /* hover bridge so the pointer can cross the 6px gap without losing hover */

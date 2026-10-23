@@ -117,6 +117,15 @@
         });
     }
 
+    /* Native tooltip labels for the collapsed icon rail: stamp each top-level
+       link's title from its hidden label text. */
+    sidebar.querySelectorAll('.ks-menu > .ks-item > .ks-link').forEach(function (link) {
+        var label = link.querySelector('.ks-label');
+        if (label && !link.getAttribute('title')) {
+            link.setAttribute('title', label.textContent.trim());
+        }
+    });
+
     /* Ctrl/Cmd+B toggles the rail. */
     document.addEventListener('keydown', function (e) {
         if ((e.ctrlKey || e.metaKey) && !e.shiftKey && !e.altKey && (e.key === 'b' || e.key === 'B')) {

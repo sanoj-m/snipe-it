@@ -39,7 +39,7 @@
                         <a class="ks-link" href="#" role="button" aria-expanded="false">
                             <x-icon type="assets" class="fa-fw" />
                             <span class="ks-label">{{ trans('general.assets') }}</span>
-                            <x-icon type="angle-left" class="ks-chevron fa-fw"/>
+                            <i class="fas fa-chevron-right ks-chevron" aria-hidden="true"></i>
                         </a>
                         <ul class="ks-sub">
                             <li style="--i:0;"{!! (!request()->query('status_type') && (request()->is('hardware')) ? ' class="active" aria-current="page"' : '') !!}>
@@ -182,7 +182,7 @@
                             <a class="ks-link" href="#" role="button" aria-expanded="false">
                                 <x-icon type="maintenances" class="fa-fw"/>
                                 <span class="ks-label">{{ trans('general.maintenances') }}</span>
-                                <x-icon type="angle-left" class="ks-chevron fa-fw"/>
+                                <i class="fas fa-chevron-right ks-chevron" aria-hidden="true"></i>
                             </a>
                             <ul class="ks-sub">
                                 @can('view', \App\Models\Asset::class)
@@ -258,7 +258,7 @@
                             <a class="ks-link" href="#" role="button" aria-expanded="false" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=6" : ''}}>
                                 <x-icon type="users" class="fa-fw" />
                                 <span class="ks-label">{{ trans('general.people') }}</span>
-                                <x-icon type="angle-left" class="ks-chevron fa-fw"/>
+                                <i class="fas fa-chevron-right ks-chevron" aria-hidden="true"></i>
                             </a>
 
                             <ul class="ks-sub">
@@ -329,7 +329,7 @@
                         <a class="ks-link" href="#" role="button" aria-expanded="false" id="settings">
                             <x-icon type="settings" class="fa-fw" />
                             <span class="ks-label">{{ trans('general.settings') }}</span>
-                            <x-icon type="angle-left" class="ks-chevron fa-fw"/>
+                            <i class="fas fa-chevron-right ks-chevron" aria-hidden="true"></i>
                         </a>
 
                         <ul class="ks-sub">
@@ -422,7 +422,7 @@
                         <a class="ks-link" href="#" role="button" aria-expanded="false">
                             <x-icon type="reports" class="fa-fw" />
                             <span class="ks-label">{{ trans('general.reports') }}</span>
-                            <x-icon type="angle-left" class="ks-chevron"/>
+                            <i class="fas fa-chevron-right ks-chevron" aria-hidden="true"></i>
                         </a>
 
                         <ul class="ks-sub">
