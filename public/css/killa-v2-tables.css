@@ -685,3 +685,17 @@ body .bootstrap-table .fixed-table-body tr.group-by td:first-child {
 body .bootstrap-table .fixed-table-body tr.group-by:hover td {
     background-color: var(--k-border-soft) !important;
 }
+
+/* [killa renewal-columns] expiry status dot in the licenses list */
+.k-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+    vertical-align: baseline;
+}
+
+.k-dot-success { background-color: var(--k-success); }
+.k-dot-warning { background-color: var(--k-warning); }
+.k-dot-danger { background-color: var(--k-danger); }

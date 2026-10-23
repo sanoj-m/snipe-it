@@ -43,6 +43,14 @@
     window.snipeGroupByFormatter = function (value) {
         return (value && value !== '') ? value : '{{ trans('killa.renewals.uncategorized') }}';
     };
+    // [killa renewal-columns] status dot for the Days to expire column:
+    // red ≤30d or expired, amber ≤60d, green beyond
+    window.licenseDaysFormatter = function (value, row) {
+        var raw = row.days_to_expire_raw;
+        if (raw === null || raw === undefined) { return value; }
+        var cls = raw <= 30 ? 'danger' : (raw <= 60 ? 'warning' : 'success');
+        return '<span class="k-dot k-dot-' + cls + '" aria-hidden="true"></span>' + value;
+    };
     // [killa license-grouping] bootstrap-table's core initSort re-sorts
     // this.data client-side even with server pagination, which would break
     // group contiguity. Custom sort: category always dominant (groups

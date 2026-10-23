@@ -154,6 +154,10 @@ class LicensesTransformer
             'cost_yearly' => static::renewalCost($license, 1),
             'cost_monthly' => static::renewalCost($license, 12),
             // [killa renewal-columns] END
+            // [killa license-grouping] raw days for the dot formatter
+            'days_to_expire_raw' => ($license->perpetual || ! $license->expiration_date)
+                ? null
+                : (int) \Carbon\Carbon::today()->diffInDays($license->expiration_date, false),
             'created_by' => ($license->adminuser) ? [
                 'id' => (int) $license->adminuser->id,
                 'name' => e($license->adminuser->display_name),

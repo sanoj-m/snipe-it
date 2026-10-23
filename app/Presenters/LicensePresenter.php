@@ -79,6 +79,7 @@ class LicensePresenter extends Presenter
                 'searchable' => false,
                 'sortable' => false,
                 'title' => trans('killa.renewals.days_to_expire'),
+                'formatter' => 'licenseDaysFormatter',
             ], [
                 'field' => 'term',
                 'scope' => 'col',
