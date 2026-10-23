@@ -58,35 +58,49 @@
         var $table = $('#licensesListingTable');
         var KEY = 'killaLicensesGroupBy';
 
+        function groupingOn() {
+            return localStorage.getItem(KEY) !== '0';
+        }
+
+        // refreshOptions rebuilds the toolbar, so the button must be
+        // re-injected whenever the table re-renders.
+        function ensureToggleButton() {
+            if ($('#k-group-toggle').length) {
+                return;
+            }
+            var $toolbar = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns');
+            $('<button type="button" id="k-group-toggle" class="btn btn-default btn-sm" ' +
+                'data-tooltip="true" title="{{ trans('killa.renewals.group_toggle') }}">' +
+                '<i class="fa-solid fa-layer-group" aria-hidden="true"></i>' +
+                ' <span class="hidden-xs">{{ trans('killa.renewals.group_toggle') }}</span></button>')
+                .on('click', function () { applyGrouping(!groupingOn()); })
+                .prependTo($toolbar);
+            $('#k-group-toggle')
+                .toggleClass('k-toggle-on', groupingOn())
+                .attr('aria-pressed', groupingOn() ? 'true' : 'false');
+        }
+
         function applyGrouping(on) {
             var opts = $table.bootstrapTable('getOptions');
             var url = (opts.url || '').replace(/([?&])grouped=0&?/, '$1').replace(/[?&]$/, '');
             if (!on) {
                 url += (url.indexOf('?') === -1 ? '?' : '&') + 'grouped=0';
             }
+            localStorage.setItem(KEY, on ? '1' : '0');
             $table.bootstrapTable('refreshOptions', {
                 groupBy: on,
                 customSort: on ? 'snipeGroupBySorter' : null,
                 url: url
             });
-            $('#k-group-toggle')
-                .toggleClass('k-toggle-on', on)
-                .attr('aria-pressed', on ? 'true' : 'false');
-            localStorage.setItem(KEY, on ? '1' : '0');
+            ensureToggleButton();
         }
 
         // Runs after the shared partial's ready handler (stack renders first),
         // so the table is already initialized here.
-        var $toolbar = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns');
-        $('<button type="button" id="k-group-toggle" class="btn btn-default btn-sm" aria-pressed="true" ' +
-            'data-tooltip="true" title="{{ trans('killa.renewals.group_toggle') }}">' +
-            '<i class="fa-solid fa-layer-group" aria-hidden="true"></i>' +
-            ' <span class="hidden-xs">{{ trans('killa.renewals.group_toggle') }}</span></button>')
-            .on('click', function () { applyGrouping(!$(this).hasClass('k-toggle-on')); })
-            .prependTo($toolbar);
-        $('#k-group-toggle').addClass('k-toggle-on');
+        ensureToggleButton();
+        $table.on('refresh-options.bs.table post-body.bs.table', ensureToggleButton);
 
-        if (localStorage.getItem(KEY) === '0') {
+        if (!groupingOn()) {
             applyGrouping(false);
         }
     });
