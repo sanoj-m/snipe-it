@@ -1,10 +1,11 @@
 @extends('layouts/default')
 
 {{-- [killa-ux] Redesigned license checkout (KCP-020 amendment). Focused card
-     layout; every upstream element preserved verbatim (floating pool @php
+     layout; every upstream element preserved verbatim (floating pool data-prep
      block, pool-exhausted callout, checkout-selector, user/asset selects,
      notes, notification callout, redirect footer, Livewire target panel,
-     checkout-request context). --}}
+     checkout-request context). NB: do NOT write directive names like @-php in
+     Blade comments here — the Livewire pre-compiler chokes on them. --}}
 
 @section('title')
     {{ trans('admin/licenses/general.checkout') }}
