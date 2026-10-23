@@ -28,6 +28,10 @@ tar czf /root/snipeit-backups/snipe-it_files_$TS.tar.gz \
     -C /opt snipe-it || true
 echo "    backup: /root/snipeit-backups/*_$TS.*"
 
+echo "==> Rotate old backups (keep newest 2 file tarballs + newest 10 DB dumps)"
+ls -t /root/snipeit-backups/snipe-it_files_*.tar.gz 2>/dev/null | tail -n +3 | xargs -r rm -f
+ls -t /root/snipeit-backups/snipeit_db_*.sql.gz 2>/dev/null | tail -n +11 | xargs -r rm -f
+
 echo "==> Stage new code"
 rm -rf $STAGE && mkdir -p $STAGE
 tar xzf "$TARBALL" -C $STAGE
