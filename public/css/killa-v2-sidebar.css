@@ -450,8 +450,11 @@ body.ks-lock {
 }
 
 /* --------------------------------------------------------------------------
-   Collapsed icon rail (desktop only): plain centered 16px icons, tooltips
-   via title attributes (set by killa-sidebar.js from the label text).
+   Collapsed icon rail (desktop only): each top-level item becomes a centered
+   40×40 tile (16px icon, --k-radius), pitch 44px. Hover = muted wash; active
+   = static neutral pill tile + accent icon (the sliding .ks-pill is hidden
+   in this mode). Groups collapse to their tiles with a hairline separator.
+   Tooltips via title attributes (set by killa-sidebar.js from label text).
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) {
     body.ks-collapsed .ks-sidebar,
@@ -472,22 +475,60 @@ body.ks-lock {
         width: 0;
     }
 
+    /* the tile */
     body.ks-collapsed .ks-link,
     html.ks-collapsed-pre body .ks-link {
         justify-content: center;
         gap: 0;
+        width: 40px;
+        min-height: 40px;
+        height: 40px;
+        padding: 0;
+        margin: 2px auto;
+    }
+
+    /* active: static tile fill + accent icon; no leading bar on the rail */
+    body.ks-collapsed .ks-item.active > .ks-link {
+        background-color: var(--k-sidebar-pill-bg);
     }
 
     body.ks-collapsed .ks-item.active > .ks-link::before {
-        left: 2px;
+        content: none;
+    }
+
+    /* sliding pill measures full-width rows — meaningless on tiles */
+    body.ks-collapsed .ks-pill,
+    html.ks-collapsed-pre body .ks-pill {
+        display: none;
+    }
+
+    /* groups: no label gap, tiles only, hairline between groups */
+    body.ks-collapsed .ks-group,
+    html.ks-collapsed-pre body .ks-group {
+        padding: var(--k-space-1) 0 0;
+    }
+
+    body.ks-collapsed .ks-group + .ks-group,
+    html.ks-collapsed-pre body .ks-group + .ks-group {
+        border-top: 1px solid var(--k-sidebar-border);
+        margin-top: var(--k-space-1);
+        padding-top: var(--k-space-2);
     }
 
     body.ks-collapsed .ks-group-label,
     html.ks-collapsed-pre body .ks-group-label {
         max-height: 0;
         opacity: 0;
-        margin-top: 0;
-        margin-bottom: 0;
+        margin: 0;
+    }
+
+    /* rail toggle matches the tile geometry */
+    body.ks-collapsed .ks-rail-toggle,
+    html.ks-collapsed-pre body .ks-rail-toggle {
+        width: 40px;
+        min-height: 40px;
+        margin: var(--k-space-1) auto var(--k-space-2);
+        padding: 0;
     }
 
     /* in-rail submenus never render inline when collapsed: floating panel */
@@ -528,11 +569,6 @@ body.ks-lock {
         opacity: 1;
         transform: none;
         transition-delay: 0s;
-    }
-
-    /* flyout rows breathe a little more than in-rail child rows */
-    body.ks-collapsed .ks-sub > li > a {
-        padding: 6px var(--k-space-3);
     }
 
     /* hover bridge so the pointer can cross the 6px gap without losing hover */
