@@ -219,10 +219,10 @@ class LicensesTransformer
 
         $aed = \App\Services\Killa\CurrencyConverter::toBase($total, $currency);
         if ($aed !== null) {
-            $out .= ' ('.trans('killa.currency.aed_equivalent', [
+            $out .= ' <span class="k-cost-conv">('.trans('killa.currency.aed_equivalent', [
                 'base' => \App\Models\Setting::getSettings()->default_currency,
                 'amount' => number_format($aed, 2),
-            ]).')';
+            ]).')</span>';
         }
 
         return $out;

@@ -706,3 +706,9 @@ body .bootstrap-table .fixed-table-body tr.group-by:hover td {
     border-color: var(--k-accent);
     color: var(--k-accent);
 }
+
+/* [killa renewal-columns] muted AED-equivalent in cost columns */
+.k-cost-conv {
+    color: var(--k-text-muted);
+    font-size: 12px;
+}
