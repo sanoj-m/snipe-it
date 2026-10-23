@@ -6,20 +6,6 @@
      block — only the wrapping markup/classes changed (ks-*).
      Registered in docs/customizations/CORE_PATCH_REGISTER.md. --}}
 <aside class="ks-sidebar" id="ks-sidebar" aria-label="{{ trans('killa.navigation') }}">
-    <div class="ks-brand">
-        <a class="ks-brand-link" href="{{ route('home') }}">
-            <span class="ks-brand-mark">
-                @if ($snipeSettings->logo != '')
-                    <img class="ks-brand-img" src="{{ Storage::disk('public')->url($snipeSettings->logo) }}" alt="">
-                @else
-                    {{ strtoupper(substr($snipeSettings->site_name, 0, 1)) }}
-                @endif
-            </span>
-            <span class="ks-brand-name">{{ $snipeSettings->site_name }}</span>
-            <i class="fas fa-chevron-down ks-brand-chevron" aria-hidden="true"></i>
-        </a>
-    </div>
-
     <nav class="ks-content" aria-label="{{ trans('killa.navigation') }}">
 
         <div class="ks-group">

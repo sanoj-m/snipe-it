@@ -95,75 +95,11 @@
                 transform var(--k-sidebar-dur) var(--k-ease-drawer);
 }
 
-.ks-brand {
-    flex: 0 0 auto;
-    padding: var(--k-space-2) var(--k-space-3);
-    border-bottom: 1px solid var(--k-sidebar-border);
-    overflow: hidden;
-}
-
-.ks-brand-link {
-    display: flex;
-    align-items: center;
-    gap: var(--k-space-3);
-    min-height: 44px;
-    padding: var(--k-space-1) var(--k-space-2);
-    border-radius: var(--k-radius);
-    color: var(--k-sidebar-text-active);
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
-    cursor: pointer;
-    transition: background-color var(--k-motion);
-}
-
-.ks-brand-link:hover {
-    background-color: var(--k-sidebar-hover-bg);
-    color: var(--k-sidebar-text-active);
-    text-decoration: none;
-}
-
-/* rounded-square mark: tenant logo image when set, else a dark square with
-   the site's initial (colors track the theme via existing tokens) */
-.ks-brand-mark {
-    flex: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    border-radius: var(--k-radius-sm);
-    background: var(--k-sidebar-text-active);
-    color: var(--k-sidebar-bg);
-    font-size: 13px;
-    font-weight: 700;
-    overflow: hidden;
-}
-
-.ks-brand-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.ks-brand-name {
-    flex: 1 1 auto;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.ks-brand-chevron {
-    flex: none;
-    font-size: 10px;
-    color: var(--k-sidebar-muted);
-}
-
 .ks-content {
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: var(--k-space-2) 0 var(--k-space-6);
+    padding: var(--k-space-3) 0 var(--k-space-6);
     scrollbar-width: thin;
     scrollbar-color: var(--k-sidebar-scrollbar) transparent;
 }
@@ -513,27 +449,10 @@ body.ks-lock {
     }
 
     body.ks-collapsed .ks-label,
-    body.ks-collapsed .ks-brand-name,
-    body.ks-collapsed .ks-brand-chevron,
-    html.ks-collapsed-pre body .ks-label,
-    html.ks-collapsed-pre body .ks-brand-name,
-    html.ks-collapsed-pre body .ks-brand-chevron {
+    html.ks-collapsed-pre body .ks-label {
         opacity: 0;
         position: absolute;
         pointer-events: none;
-    }
-
-    /* collapsed brand: centered mark only */
-    body.ks-collapsed .ks-brand,
-    html.ks-collapsed-pre body .ks-brand {
-        padding: var(--k-space-2) 0;
-    }
-
-    body.ks-collapsed .ks-brand-link,
-    html.ks-collapsed-pre body .ks-brand-link {
-        justify-content: center;
-        gap: 0;
-        padding: var(--k-space-1) 0;
     }
 
     body.ks-collapsed .ks-chevron,
