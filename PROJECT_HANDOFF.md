@@ -20,6 +20,13 @@
   4. **Killa branding + "killa-v2" theme** — name swaps, 6 zero-build CSS
      overlays in `public/css/killa-v2*.css`, dashboard/sidebar work.
   - `skills/killa-design` — design-system skill that governs all UI/UX work.
+  - Sidebar rebuilt from scratch (KCP-049): markup lives in
+    `resources/views/layouts/partials/killa-sidebar.blade.php` with zero-build
+    `public/css/killa-v2-sidebar.css` + `public/js/killa-sidebar.js`; old
+    inline sidebar block in `layouts/default.blade.php` replaced by an include.
+  - Multi-host access (KCP-050): `APP_ALT_HOSTS` whitelists direct-IP serving
+    (http://40.30.20.6) alongside the canonical domain; nginx HTTPS forcing is
+    host-mapped in `/etc/nginx/conf.d/snipeit-alt-host.conf` on the server.
   - Alternate Insights dashboard at `/dashboard/insights`: Classic/Insights switch,
     permission-aware metrics, 30-day asset movement, and existing operational
     widgets. Isolated in `app/Http/Controllers/Killa/` + `resources/views/killa/`;
