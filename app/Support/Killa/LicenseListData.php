@@ -2,6 +2,7 @@
 
 namespace App\Support\Killa;
 
+use App\Helpers\Helper;
 use App\Models\Company;
 use App\Models\License;
 use App\Models\LicenseSeat;
@@ -32,7 +33,7 @@ class LicenseListData
         $grouped = $request->input('grouped', '1') !== '0';
 
         $query = Company::scopeCompanyables(License::query())
-            ->with(['category', 'location', 'manufacturer'])
+            ->with(['category', 'location', 'manufacturer', 'company', 'supplier', 'depreciation', 'adminuser'])
             ->withCount(['freeSeats as free_seats_count']);
 
         if ($search !== '') {
@@ -47,12 +48,33 @@ class LicenseListData
 
         $paginator = $query->orderBy('name')->paginate(self::PER_PAGE)->withQueryString();
 
+        $pageIds = $paginator->getCollection()->pluck('id');
         $floatingIds = FloatingLicenseConfig::query()->pluck('license_id')->flip();
-        $checkinSeats = self::firstAssignedSeatIds($paginator->getCollection()->pluck('id'));
+        // [floating-licenses parity] pool configs + active allocation counts for
+        // the page, so seat math matches LicensesTransformer (two grouped
+        // queries, no N+1).
+        $floatingConfigs = FloatingLicenseConfig::query()->whereIn('license_id', $pageIds)->get()->keyBy('license_id');
+        $floatingActive = collect();
+        if ($floatingConfigs->isNotEmpty()) {
+            $floatingActive = \SnipeIt\FloatingLicenses\Models\FloatingLicenseAllocation::query()
+                ->whereIn('license_id', $floatingConfigs->keys())
+                ->where('status', \SnipeIt\FloatingLicenses\Models\FloatingLicenseAllocation::STATUS_ACTIVE)
+                ->groupBy('license_id')
+                ->selectRaw('license_id, COUNT(*) as active_count')
+                ->pluck('active_count', 'license_id');
+        }
+        $checkinSeats = self::firstAssignedSeatIds($pageIds);
         $today = Carbon::today();
 
         $rows = $paginator->getCollection()->map(
-            fn (License $license) => self::row($license, $floatingIds->has($license->id), $checkinSeats->get($license->id), $today)
+            fn (License $license) => self::row(
+                $license,
+                $floatingIds->has($license->id),
+                $checkinSeats->get($license->id),
+                $today,
+                $floatingConfigs->get($license->id),
+                (int) ($floatingActive[$license->id] ?? 0),
+            )
         );
 
         $groups = $grouped
@@ -191,15 +213,28 @@ class LicenseListData
 
     /**
      * @return array{license: License, id: int, sort_order: int|null, name: string, serial: string|null,
-     *               manufacturer: string|null, url: string, edit_url: string, clone_url: string,
+     *               product_key: string|null, license_type: string,
+     *               manufacturer: string|null, manufacturer_url: string|null,
+     *               company: string|null, company_url: string|null,
+     *               supplier: string|null, supplier_url: string|null,
+     *               category_url: string|null, depreciation: string|null, depreciation_url: string|null,
+     *               created_by: string|null, created_by_url: string|null,
+     *               url: string, edit_url: string, clone_url: string,
      *               checkout_url: string, checkin_url: string|null,
      *               location: string|null, category: string, perpetual: bool, floating: bool,
      *               term: string|null, seats: int, seats_used: int, seats_available: int,
-     *               expiry: string|null, days: int|null, status: string,
+     *               remaining: int, percent_remaining: int, min_amt: int|null,
+     *               expiry: string|null, expiration_formatted: string|null, days: int|null, status: string,
+     *               termination_formatted: string|null, purchase_date_formatted: string|null,
+     *               created_at_formatted: string|null, updated_at_formatted: string|null,
+     *               license_email: string|null, license_name: string|null,
+     *               maintained: bool, reassignable: bool, requestable: bool,
+     *               order_number: string|null, purchase_order: string|null, notes_html: string|null,
+     *               unit_cost: string|null, total_cost: string|null, per_user_cost: string|null,
      *               cost_monthly: float|null, cost_yearly: float|null, currency: string|null,
      *               cost_monthly_base: float|null, cost_yearly_base: float|null}
      */
-    private static function row(License $license, bool $floating, ?int $checkinSeatId, Carbon $today): array
+    private static function row(License $license, bool $floating, ?int $checkinSeatId, Carbon $today, ?\SnipeIt\FloatingLicenses\Models\FloatingLicenseConfig $floatingConfig = null, int $floatingActiveCount = 0): array
     {
         $expiry = $license->perpetual ? null : $license->expiration_date;
         $days = $expiry ? (int) $today->diffInDays($expiry, false) : null;
@@ -220,7 +255,30 @@ class LicenseListData
         $currency = $license->currency ? strtoupper($license->currency) : null;
 
         $seats = (int) $license->seats;
+        $unreassignable = $license->reassignable ? 0 : (int) License::unReassignableCount($license);
         $available = (int) ($license->free_seats_count ?? 0);
+
+        // [floating-licenses parity] core seat math ignores floating
+        // allocations; with a pool, available = seats - active allocations
+        // (may go negative when over-allocated — matches LicensesTransformer).
+        if ($floatingConfig) {
+            $available = $seats - $floatingActiveCount;
+        }
+
+        $percentRemaining = $seats > 0 ? max(0, min(100, (int) round(($available / $seats) * 100))) : 0;
+
+        $perUserCost = null;
+        if ($floatingConfig) {
+            $perUserCost = ($floatingConfig->total_cost && $floatingActiveCount > 0)
+                ? Helper::formatCurrencyOutput(round(((float) $floatingConfig->total_cost) / $floatingActiveCount, 2))
+                : null;
+        } else {
+            $perUserCost = $license->purchase_cost !== null ? Helper::formatCurrencyOutput($license->purchase_cost) : null;
+        }
+
+        $canViewKeys = \Illuminate\Support\Facades\Gate::allows('viewKeys', $license);
+
+        $fmtDate = fn ($date) => $date ? (Helper::getFormattedDateObject($date, 'date')['formatted'] ?? null) : null;
 
         return [
             'license' => $license,
@@ -228,7 +286,23 @@ class LicenseListData
             'sort_order' => $license->sort_order !== null ? (int) $license->sort_order : null,
             'name' => $license->name,
             'serial' => $license->serial,
+            'product_key' => $license->serial
+                ? ($canViewKeys ? $license->serial : License::PRODUCT_KEY_MASK)
+                : null,
+            'license_type' => $floating
+                ? trans('floating-licenses::floating.type_floating')
+                : trans('floating-licenses::floating.type_fixed'),
             'manufacturer' => $license->manufacturer?->name,
+            'manufacturer_url' => $license->manufacturer ? route('manufacturers.show', $license->manufacturer) : null,
+            'company' => $license->company?->name,
+            'company_url' => $license->company ? route('companies.show', $license->company) : null,
+            'supplier' => $license->supplier?->name,
+            'supplier_url' => $license->supplier ? route('suppliers.show', $license->supplier) : null,
+            'category_url' => $license->category ? route('categories.show', $license->category) : null,
+            'depreciation' => $license->depreciation?->name,
+            'depreciation_url' => $license->depreciation ? route('depreciations.show', $license->depreciation) : null,
+            'created_by' => $license->adminuser?->display_name,
+            'created_by_url' => $license->adminuser ? route('users.show', $license->adminuser) : null,
             'url' => route('licenses.show', $license),
             'edit_url' => route('licenses.edit', $license),
             'clone_url' => route('clone/license', $license),
@@ -242,9 +316,30 @@ class LicenseListData
             'seats' => $seats,
             'seats_used' => max(0, $seats - $available),
             'seats_available' => $available,
+            'remaining' => $available - ($floatingConfig ? 0 : $unreassignable),
+            'percent_remaining' => $percentRemaining,
+            'min_amt' => $license->min_amt ? (int) $license->min_amt : null,
             'expiry' => $expiry?->format('d/m/Y'),
+            'expiration_formatted' => $fmtDate($license->expiration_date),
             'days' => $days,
             'status' => $status,
+            'termination_formatted' => $fmtDate($license->termination_date),
+            'purchase_date_formatted' => $fmtDate($license->purchase_date),
+            'created_at_formatted' => $fmtDate($license->created_at),
+            'updated_at_formatted' => $fmtDate($license->updated_at),
+            'license_email' => $license->license_email,
+            'license_name' => $license->license_name,
+            'maintained' => $license->maintained == 1,
+            'reassignable' => $license->reassignable == 1,
+            'requestable' => (bool) $license->requestable,
+            'order_number' => $license->order_number,
+            'purchase_order' => $license->purchase_order,
+            'notes_html' => Helper::parseEscapedMarkedownInline($license->notes),
+            'unit_cost' => $license->purchase_cost !== null ? Helper::formatCurrencyOutput($license->purchase_cost) : null,
+            'total_cost' => is_numeric($license->purchase_cost)
+                ? Helper::formatCurrencyOutput(round(((float) $license->purchase_cost) * $seats, 2))
+                : null,
+            'per_user_cost' => $perUserCost,
             'cost_monthly' => $cost !== null ? $cost / 12 : null,
             'cost_yearly' => $cost,
             'currency' => $currency,
