@@ -181,6 +181,12 @@ Notable console commands (~60): `LdapSync`, `LdapTroubleshooter`,
   psalm/phpmd configs, pa11y) were pruned in the 2026 repo cleanup — see
   `docs/upgrades/UPGRADE_HISTORY.md`.
 - Served locally by Laravel Herd at `https://snipe-it.test`.
+- Production: `root@40.30.20.6` (`/opt/snipe-it`, https://asset.killadesign.co)
+  behind **Cloudflare** — CF caches the versioned static-asset URLs
+  (`?v={{ config('version.app_version') }}`, ~4h). Hot-copying a CSS/JS file to
+  the server does NOT reach users until `app_version` in `config/version.php`
+  is bumped (the deploy script stamps it on full deploys) or the CF cache is
+  purged. Verify with `curl -sI <url> | grep cf-cache-status`.
 
 ## 10. Constraints & traps for anyone proposing changes
 
@@ -213,4 +219,4 @@ To suggest a modification here you must know:
 
 Work sessions are logged in `docs/sessions/` (index: `docs/sessions/README.md`),
 maintained by the `skills/saver` skill (session log → docs update → commit at
-≥50 changes). Latest: 2026-10-17 Insights dashboard & production deploy.
+≥50 changes). Latest: 2026-10-24 Licenses reorder, ground-up redesign & classic toggle.
