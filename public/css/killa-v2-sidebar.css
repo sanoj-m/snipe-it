@@ -531,6 +531,51 @@ body.ks-lock {
         padding: 0;
     }
 
+    /* AdminLTE forces .main-header .logo to 50px in collapsed mode; the
+       fork's logo is a navbar-brand containing img + full site-name text,
+       which wraps and spills over the rail. Size it to the rail width,
+       show the centered mini logo image only, and strip any box styling.
+       (!important: killa-v2.css paints .logo background with !important —
+       the blanket justified case.) */
+    body.ks-collapsed .main-header .logo.navbar-brand,
+    body.sidebar-collapse .main-header .logo.navbar-brand,
+    html.ks-collapsed-pre body .main-header .logo.navbar-brand {
+        width: var(--k-sidebar-w-icon);
+        max-width: var(--k-sidebar-w-icon);
+        flex: 0 0 var(--k-sidebar-w-icon);
+        justify-content: center;
+        padding: 0;
+        font-size: 0; /* hides the site-name text node, keeps the img */
+        background-color: transparent !important;
+        border: 0;
+        box-shadow: none;
+    }
+
+    body.ks-collapsed .main-header .logo.navbar-brand .navbar-brand-img,
+    body.sidebar-collapse .main-header .logo.navbar-brand .navbar-brand-img,
+    html.ks-collapsed-pre body .main-header .logo.navbar-brand .navbar-brand-img {
+        max-width: 40px;
+        max-height: 28px;
+        margin: 0;
+        object-fit: contain;
+    }
+
+    /* no logo image configured (brand mode 1, text only): drop the empty box */
+    body.ks-collapsed .main-header .logo.navbar-brand:not(:has(img)),
+    body.sidebar-collapse .main-header .logo.navbar-brand:not(:has(img)),
+    html.ks-collapsed-pre body .main-header .logo.navbar-brand:not(:has(img)) {
+        display: none;
+    }
+
+    /* overrides.css shifts the hamburger -48px to overlay the wide expanded
+       logo block; with the 68px collapsed logo that would push it over the
+       rail — reset it */
+    body.ks-collapsed .main-header .sidebar-toggle,
+    body.sidebar-collapse .main-header .sidebar-toggle,
+    html.ks-collapsed-pre body .main-header .sidebar-toggle {
+        margin-left: 0;
+    }
+
     /* in-rail submenus never render inline when collapsed: floating panel */
     body.ks-collapsed .ks-item--parent > .ks-sub,
     html.ks-collapsed-pre body .ks-item--parent > .ks-sub {
