@@ -66,11 +66,19 @@ class AppServiceProvider extends ServiceProvider
          *
          * We'll force the https scheme if the APP_URL starts with https://, or if APP_FORCE_TLS is set to true.
          */
-        if ((str_starts_with(config('app.url'), 'https://')) || config('app.force_tls')) {
+        // [killa multi-host] BEGIN — KCP-050
+        // Requests hitting a whitelisted alt host (APP_ALT_HOSTS, e.g. the
+        // server's raw IP) bypass the https/root forcing so the app works at
+        // http://<ip> without redirecting to the canonical domain. All other
+        // hosts keep the lockdown below.
+        $killa_alt_host = in_array(request()->getHost(), array_filter(array_map('trim', explode(',', (string) config('app.alt_hosts')))), true);
+        // [killa multi-host] END
+
+        if (! $killa_alt_host && ((str_starts_with(config('app.url'), 'https://')) || config('app.force_tls'))) {
             $url->forceScheme('https');
         }
 
-        if (! config('app.allow_insecure_hosts')) {  // unless you set APP_ALLOW_INSECURE_HOSTS, you should PROHIBIT forging domain parts of URL via Host: headers
+        if (! $killa_alt_host && ! config('app.allow_insecure_hosts')) {  // unless you set APP_ALLOW_INSECURE_HOSTS, you should PROHIBIT forging domain parts of URL via Host: headers
             $url_parts = parse_url(config('app.url'));
             if ($url_parts && array_key_exists('scheme', $url_parts) && array_key_exists('host', $url_parts)) { // check for the *required* parts of a bare-minimum URL
                 URL::forceRootUrl(config('app.url'));

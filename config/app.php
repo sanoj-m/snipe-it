@@ -642,6 +642,13 @@ return [
 
     'allow_insecure_hosts' => env('APP_ALLOW_INSECURE_HOSTS', false),
 
+    // [killa multi-host] BEGIN — KCP-050
+    // Comma-separated extra hosts (e.g. a LAN/raw IP) that are allowed to be
+    // served as-is: for these hosts the https-scheme and APP_URL root forcing
+    // in AppServiceProvider is skipped, so URLs generate from the request.
+    'alt_hosts' => env('APP_ALT_HOSTS', ''),
+    // [killa multi-host] END
+
     /*
     |--------------------------------------------------------------------------
     | LDAP Execution Limits
