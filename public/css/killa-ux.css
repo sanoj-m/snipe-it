@@ -7,34 +7,36 @@
 
    Tokens are --kx-* and are defined ONCE here (light on `.kx`, dark in the
    html[data-theme='dark'] .kx block at the bottom of the token section).
-   Language: light warm canvas, self-hosted Inter (loaded by
-   killa-v2-fonts.css), tabular numerals for figures, 4px spacing grid,
-   pill status chips, Killa red #E63B2E used sparingly (primary action,
-   accent edges, focus), hairline borders + ONE shadow level.
+   Palette is aligned 1:1 with the killa-v2 "Atelier" tokens (cool neutral
+   canvas, same semantics) so .kx pages and classic pages read as ONE
+   product; only the component structures differ. Language: self-hosted
+   Inter (loaded by killa-v2-fonts.css), tabular numerals for figures, 4px
+   spacing grid, pill status chips, Killa red #E63B2E used sparingly
+   (primary action, accent edges, focus), hairline borders + ONE shadow.
    ========================================================================== */
 
 /* ---------- Tokens ---------- */
 .kx {
-    /* color */
-    --kx-bg: #f7f4ee;
+    /* color — values track killa-v2.css :root (--k-*) */
+    --kx-bg: #f4f5f7;
     --kx-surface: #ffffff;
-    --kx-surface-sunken: #faf7f1;
-    --kx-border: #e7e1d5;
-    --kx-border-strong: #d8d0c0;
-    --kx-text: #2b2620;
-    --kx-text-muted: #6e6759;
+    --kx-surface-sunken: #f9fafb;
+    --kx-border: #e5e7eb;
+    --kx-border-strong: #d1d5db;
+    --kx-text: #1f2933;
+    --kx-text-muted: #6b7280;
     --kx-accent: #E63B2E;
     --kx-accent-hover: #c93024;
     --kx-accent-tint: #fdeceb;
-    --kx-accent-ring: rgba(230, 59, 46, 0.18);
-    --kx-success: #2e7d5b;
-    --kx-success-tint: #e8f4ee;
-    --kx-warning: #8a5f06;
-    --kx-warning-tint: #fbf2dd;
-    --kx-danger: #b03427;
-    --kx-danger-tint: #fbe9e6;
-    --kx-info: #245f86;
-    --kx-info-tint: #e8f1f7;
+    --kx-accent-ring: rgba(230, 59, 46, 0.12);
+    --kx-success: #2f9e6e;
+    --kx-success-tint: #eaf5f0;
+    --kx-warning: #b97d10;
+    --kx-warning-tint: #f8f2e7;
+    --kx-danger: #c0392b;
+    --kx-danger-tint: #f9ebea;
+    --kx-info: #2470a0;
+    --kx-info-tint: #e9f1f5;
 
     /* type */
     --kx-font: 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
@@ -49,7 +51,7 @@
     --kx-radius: 12px;
     --kx-radius-sm: 6px;
     --kx-radius-pill: 999px;
-    --kx-shadow-1: 0 1px 2px rgba(43, 38, 32, 0.06);
+    --kx-shadow-1: 0 1px 2px rgba(16, 24, 40, 0.06);
 
     /* space — 4px grid */
     --kx-space-1: 4px;
@@ -60,28 +62,28 @@
     --kx-space-6: 32px;
 }
 
-/* Dark variants — same selector scheme as killa-v2-dark.css */
+/* Dark variants — values track the killa-v2.css dark token block */
 html[data-theme='dark'] .kx {
-    --kx-bg: #17181c;
-    --kx-surface: #1e2025;
-    --kx-surface-sunken: #1a1c20;
-    --kx-border: #31353c;
-    --kx-border-strong: #41464e;
-    --kx-text: #e6e4df;
-    --kx-text-muted: #9a958a;
-    --kx-accent: #f06458;
-    --kx-accent-hover: #f47d73;
+    --kx-bg: #121417;
+    --kx-surface: #1a1d23;
+    --kx-surface-sunken: #1f232a;
+    --kx-border: #2a2f37;
+    --kx-border-strong: #4b5563;
+    --kx-text: #e5e9ee;
+    --kx-text-muted: #9aa3ad;
+    --kx-accent: #f0574b;
+    --kx-accent-hover: #f46a5f;
     --kx-accent-tint: #3a2220;
-    --kx-accent-ring: rgba(240, 100, 88, 0.28);
-    --kx-success: #55b389;
-    --kx-success-tint: #1c2a24;
-    --kx-warning: #d9a83f;
-    --kx-warning-tint: #2e2716;
-    --kx-danger: #e0705f;
-    --kx-danger-tint: #33201d;
-    --kx-info: #6aa6cf;
-    --kx-info-tint: #1b2731;
-    --kx-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+    --kx-accent-ring: rgba(240, 87, 75, 0.18);
+    --kx-success: #3fbf88;
+    --kx-success-tint: #213a35;
+    --kx-warning: #e0a63a;
+    --kx-warning-tint: #3e3627;
+    --kx-danger: #e06052;
+    --kx-danger-tint: #3e292c;
+    --kx-info: #4a90c2;
+    --kx-info-tint: #233240;
+    --kx-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* ---------- Base ---------- */

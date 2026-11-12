@@ -42,17 +42,17 @@ body .control-label {
    native input — make the whole row read as one clickable control */
 body label.form-control {
     height: auto;
-    min-height: 36px;
+    min-height: 32px;
     cursor: pointer;
     font-weight: 400;
-    font-size: 13.5px;
+    font-size: 12.5px;
     letter-spacing: normal;
     color: var(--k-text);
     display: flex;
     align-items: center;
     gap: var(--k-space-2);
-    padding-top: 7px;
-    padding-bottom: 7px;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 body label.form-control:hover {
@@ -63,7 +63,7 @@ body label.form-control:hover {
    Text inputs, textareas, native selects
    -------------------------------------------------------------------------- */
 body .form-control {
-    height: 36px;
+    height: 32px; /* single compact scale — also drives select2 below */
     border: 1px solid var(--k-border);
     border-radius: var(--k-radius-sm);
     background-color: var(--k-surface);
@@ -165,32 +165,15 @@ body .input-group-btn:last-child > .btn-group > .btn {
 }
 
 body .input-group-btn > .btn {
-    height: 36px;
+    height: 32px;
     border-color: var(--k-border);
 }
 
 /* --------------------------------------------------------------------------
-   Checkboxes & radios (native, no icheck in this codebase)
+   Checkboxes & radios: the token skin lives in killa-v2.css (appearance:none
+   custom controls). Nothing to add here — this comment exists so nobody
+   re-introduces a competing accent-color/native implementation.
    -------------------------------------------------------------------------- */
-body input[type='checkbox'],
-body input[type='radio'] {
-    accent-color: var(--k-accent);
-    cursor: pointer;
-    margin: 0;
-    flex: none;
-}
-
-body input[type='checkbox']:focus-visible,
-body input[type='radio']:focus-visible {
-    outline: 2px solid var(--k-accent-focus);
-    outline-offset: 2px;
-}
-
-body input[type='checkbox'][disabled],
-body input[type='radio'][disabled] {
-    cursor: not-allowed;
-    opacity: 0.55;
-}
 
 body .checkbox label,
 body .radio label,
@@ -314,16 +297,16 @@ body .select2-container--default .select2-selection--multiple {
     background-color: var(--k-surface);
     border: 1px solid var(--k-border);
     border-radius: var(--k-radius-sm);
-    min-height: 36px;
+    min-height: 32px;
     box-shadow: none;
     transition: border-color var(--k-motion), box-shadow var(--k-motion);
 }
 
 /* select2 core pins single height:28px and Snipe-IT's all.css adds
-   padding:6px 12px — zero the padding or the 34px content clips the box */
+   padding:6px 12px — zero the padding or the 30px content clips the box */
 body .select2-container--default .select2-selection--single,
 body .select2-container .select2-selection--single {
-    height: 36px;
+    height: 32px;
     padding: 0;
 }
 
@@ -344,7 +327,7 @@ body .select2-container--default.select2-container--open .select2-selection--mul
 body .select2-container--default .select2-selection--single .select2-selection__rendered,
 body .select2-container .select2-selection--single .select2-selection__rendered {
     color: var(--k-text);
-    line-height: 34px;
+    line-height: 30px;
     margin-top: 0;
     padding-left: var(--k-space-3);
     padding-right: var(--k-space-6);
@@ -355,7 +338,7 @@ body .select2-container--default .select2-selection--single .select2-selection__
 }
 
 body .select2-container--default .select2-selection--single .select2-selection__arrow {
-    height: 34px;
+    height: 30px;
     right: var(--k-space-2);
 }
 
@@ -537,10 +520,5 @@ body .input-group .select2-container--default .select2-selection--multiple {
 html[data-theme='dark'] body select.form-control {
     /* native arrow glyph inherits system color; force the dark color scheme
        so the UA picker/arrow render legibly on the dark surface */
-    color-scheme: dark;
-}
-
-html[data-theme='dark'] body input[type='checkbox'],
-html[data-theme='dark'] body input[type='radio'] {
     color-scheme: dark;
 }

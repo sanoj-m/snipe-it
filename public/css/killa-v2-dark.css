@@ -498,9 +498,8 @@ html[data-theme='dark'] body .table-bordered > tfoot > tr > td {
     border-color: var(--k-border);
 }
 
-html[data-theme='dark'] body .table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: var(--k-row-hover);
-}
+/* Zebra stripes come from the --k-table-stripe token (killa-v2-tables.css)
+   in BOTH modes — do not re-paint them here. */
 
 /* --------------------------------------------------------------------------
    FullCalendar (v3 markup used by Snipe-IT)

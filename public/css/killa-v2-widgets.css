@@ -11,14 +11,13 @@
    overrides.less — this file only skins.
    ========================================================================== */
 
-/* component-scoped tokens (light) */
+/* component-scoped tokens (light). --k-progress-track moved to killa-v2.css
+   (shared with killa-v2-notifications.css). */
 :root {
-    --k-progress-track: #e9ecef;
     --k-chat-bubble: #f3f4f6;
 }
 
 html[data-theme='dark'] {
-    --k-progress-track: #262c33;
     --k-chat-bubble: #262c33;
 }
 
@@ -590,22 +589,6 @@ body .timeline > .time-label > span {
     text-transform: uppercase;
     letter-spacing: 0.06em;
     padding: 4px var(--k-space-3);
-}
-
-/* --------------------------------------------------------------------------
-   Compact form scale-down: killa-v2-forms.css (loaded before this file)
-   still declares 36px controls; re-pin to the compact 32px scale here so
-   both modes inherit it via tokens
-   -------------------------------------------------------------------------- */
-body .form-control {
-    height: 32px;
-}
-
-body label.form-control {
-    min-height: 32px;
-    font-size: 12.5px;
-    padding-top: 5px;
-    padding-bottom: 5px;
 }
 
 /* --------------------------------------------------------------------------

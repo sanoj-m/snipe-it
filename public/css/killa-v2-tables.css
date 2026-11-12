@@ -7,16 +7,15 @@
    ========================================================================== */
 
 :root {
-    /* table-domain tokens (dark counterparts below; --k-scrollbar-thumb is
-       shared — single source in killa-v2.css :root, dark override in
-       killa-v2-dark.css) */
+    /* table-domain tokens (dark counterparts below; --k-scrollbar-thumb,
+       --k-accent-contrast and other shared tokens are single-sourced in
+       killa-v2.css :root with dark overrides in its own dark block) */
     --k-table-stripe: rgba(31, 41, 51, 0.03);
     /* solid equivalent of --k-table-stripe composited on --k-surface, for
        sticky/pinned cells where the translucent stripe can't composite
        (adapts to dark via --k-text/--k-surface, so no dark override) */
     --k-table-stripe-solid: color-mix(in srgb, var(--k-text) 3%, var(--k-surface));
     --k-table-selected-bg: color-mix(in srgb, var(--k-accent) 8%, var(--k-surface));
-    --k-accent-contrast: #ffffff;
     --k-print-border: #b8bcc2;
 
     /* upstream overrides.less vars that sticky table cells paint with —
@@ -29,7 +28,6 @@
 html[data-theme='dark'] {
     --k-table-stripe: rgba(255, 255, 255, 0.03);
     --k-table-selected-bg: color-mix(in srgb, var(--k-accent) 14%, var(--k-surface));
-    --k-accent-contrast: #14171b;
     --k-print-border: #b8bcc2;
 
     --box-bg: #1a1d23;
@@ -565,10 +563,6 @@ body .table-striped > tbody > tr:nth-of-type(even) > td {
     background-color: transparent !important;
 }
 
-body .table-striped > tbody > tr:nth-of-type(odd) {
-    background-color: var(--k-table-stripe);
-}
-
 /* --------------------------------------------------------------------------
    Multi-select row highlight: bootstrap-table's own CSS paints .selected
    rows near-white with !important, which washes out in dark mode. Force the
@@ -702,7 +696,7 @@ body .bootstrap-table .fixed-table-body tr.group-by:hover td {
 
 /* [killa license-grouping] group-by toolbar toggle */
 #k-group-toggle.k-toggle-on {
-    background-color: var(--k-accent-soft, var(--k-hover-tint));
+    background-color: var(--k-accent-tint);
     border-color: var(--k-accent);
     color: var(--k-accent);
 }

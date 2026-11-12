@@ -551,6 +551,14 @@ body.ks-lock {
         box-shadow: none;
     }
 
+    /* logo block animates with the rail (the old transition lived in
+       killa-v2.css and was removed with the dead sidebar block) */
+    body .main-header .logo.navbar-brand {
+        transition: width var(--k-sidebar-dur) var(--k-ease-drawer),
+                    max-width var(--k-sidebar-dur) var(--k-ease-drawer),
+                    flex-basis var(--k-sidebar-dur) var(--k-ease-drawer);
+    }
+
     body.ks-collapsed .main-header .logo.navbar-brand .navbar-brand-img,
     body.sidebar-collapse .main-header .logo.navbar-brand .navbar-brand-img,
     html.ks-collapsed-pre body .main-header .logo.navbar-brand .navbar-brand-img {
