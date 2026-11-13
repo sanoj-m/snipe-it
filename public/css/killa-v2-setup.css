@@ -1,0 +1,186 @@
+/* ==========================================================================
+   Killa Asset v2 — SETUP WIZARD layer (killa-v2-setup.css)
+   Linked from layouts/setup.blade.php ([killa-v2] fenced block) AFTER the
+   upstream inline <style> block, so these rules win on source order.
+   The setup screens were the last completely unthemed area: stock AdminLTE
+   colors, 280% headings, green/orange preflight text. Everything here is
+   token-driven from killa-v2.css. Light-only surface (the wizard has no
+   theme toggle); dark tokens still apply if a user agent forces them.
+   ========================================================================== */
+
+/* --- base ----------------------------------------------------------------- */
+body {
+    background-color: var(--k-bg);
+    font-family: var(--k-font);
+    font-size: 13px;
+    color: var(--k-text);
+}
+
+/* the upstream inline block pins readable text too large — rein it in */
+body p,
+body li {
+    font-size: 13.5px;
+    line-height: 1.65;
+}
+
+body td,
+body th {
+    font-size: 13px;
+}
+
+/* --- page header ------------------------------------------------------------ */
+body .page-header {
+    font-family: var(--k-font-display);
+    font-size: 26px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    color: var(--k-text);
+    border-bottom: none;
+    margin: var(--k-space-8) 0 var(--k-space-3);
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-3);
+}
+
+body .page-header img {
+    height: 40px;
+}
+
+body h3 {
+    font-family: var(--k-font-display);
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+}
+
+body h4 {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+body .alert {
+    font-size: 13px;
+}
+
+/* --- wizard stepper (bs-wizard) ---------------------------------------------
+   Stock: gray dots on a gray progress line, green when complete.
+   v2: muted track, success fill when complete, accent dot+label when active. */
+.bs-wizard {
+    margin-top: var(--k-space-4);
+    padding-bottom: var(--k-space-4);
+    border-bottom: 1px solid var(--k-border) !important;
+}
+
+.bs-wizard > .bs-wizard-step {
+    padding: 0;
+}
+
+.bs-wizard > .bs-wizard-step .bs-wizard-stepnum {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--k-text-muted);
+    margin-bottom: var(--k-space-2);
+}
+
+.bs-wizard > .bs-wizard-step .progress {
+    height: 3px;
+    background: var(--k-border);
+    border-radius: var(--k-radius-pill);
+    box-shadow: none;
+    margin: var(--k-space-4) 0;
+}
+
+.bs-wizard > .bs-wizard-step .progress > .progress-bar {
+    background: transparent;
+    box-shadow: none;
+}
+
+.bs-wizard > .bs-wizard-step.complete .progress > .progress-bar {
+    background: var(--k-success);
+    width: 100%;
+}
+
+.bs-wizard > .bs-wizard-step.active .progress > .progress-bar {
+    background: var(--k-accent);
+    width: 50%;
+}
+
+.bs-wizard > .bs-wizard-step .bs-wizard-dot {
+    background: var(--k-surface);
+    border: 2px solid var(--k-border);
+    box-shadow: none;
+    width: 18px;
+    height: 18px;
+    margin-top: -9px;
+}
+
+.bs-wizard > .bs-wizard-step.complete .bs-wizard-dot {
+    background: var(--k-success);
+    border-color: var(--k-success);
+}
+
+.bs-wizard > .bs-wizard-step.active .bs-wizard-dot {
+    background: var(--k-accent);
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 4px var(--k-accent-ring);
+}
+
+.bs-wizard > .bs-wizard-step.active .bs-wizard-stepnum {
+    color: var(--k-accent);
+}
+
+.bs-wizard > .bs-wizard-step.complete .bs-wizard-stepnum {
+    color: var(--k-success);
+}
+
+.bs-wizard > .bs-wizard-step .bs-wizard-info,
+.bs-wizard .bs-wizard-info {
+    color: var(--k-text-muted) !important;
+    font-size: 12px;
+    padding-left: 0 !important;
+}
+
+/* --- preflight results: named colors -> semantic tokens ---------------------- */
+.preflight-success { color: var(--k-success); }
+.preflight-error { color: var(--k-danger); }
+.preflight-warning { color: var(--k-warning); }
+
+.preflight-info {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--k-text);
+}
+
+/* --- content card + footer ---------------------------------------------------- */
+main.container {
+    max-width: 980px;
+}
+
+body .box {
+    margin-top: var(--k-space-4);
+}
+
+body .box-footer {
+    padding: var(--k-space-3) var(--k-space-4);
+}
+
+/* version line under the card */
+main.container strong {
+    color: var(--k-text-muted);
+    font-size: 12px;
+}
+
+main.container > .row > .col-lg-10 > strong,
+main.container > .row > .col-lg-10 {
+    color: var(--k-text-muted);
+}
+
+/* code blocks / paths in preflight output */
+body code {
+    background: var(--k-hover-tint);
+    color: var(--k-text);
+    border-radius: var(--k-radius-sm);
+    padding: 1px 5px;
+    font-size: 12px;
+}

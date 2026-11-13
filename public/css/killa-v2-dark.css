@@ -83,19 +83,19 @@ html[data-theme='dark'] body kbd {
 /* --------------------------------------------------------------------------
    Webkit scrollbars
    -------------------------------------------------------------------------- */
+/* v2.1: slimmed to match the global 8px light scrollbars in killa-v2.css */
 html[data-theme='dark'] ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
 }
 
 html[data-theme='dark'] ::-webkit-scrollbar-track {
-    background: var(--k-scrollbar-track);
+    background: transparent;
 }
 
 html[data-theme='dark'] ::-webkit-scrollbar-thumb {
     background: var(--k-scrollbar-thumb);
     border-radius: var(--k-radius-pill);
-    border: 2px solid var(--k-scrollbar-track);
 }
 
 html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
@@ -398,8 +398,10 @@ html[data-theme='dark'] body .nav-pills > li > a:focus {
 html[data-theme='dark'] body .nav-pills > li.active > a,
 html[data-theme='dark'] body .nav-pills > li.active > a:hover,
 html[data-theme='dark'] body .nav-pills > li.active > a:focus {
-    background-color: var(--k-accent);
-    color: var(--k-sidebar-text-active);
+    /* tint-style active, matching the v2.1 light pills + dark list-group */
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
+    color: var(--k-accent);
+    font-weight: 600;
 }
 
 html[data-theme='dark'] body .breadcrumb {

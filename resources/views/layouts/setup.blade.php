@@ -75,6 +75,14 @@
           }
         </style>
 
+        {{-- [killa-v2] Killa v2 theme for the setup wizard (loaded after upstream inline styles so tokens win) --}}
+        <link rel="stylesheet" href="{{ url('css/killa-v2-fonts.css') }}?v={{ config('version.app_version') }}">
+        <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}?v={{ config('version.app_version') }}">
+        <link rel="stylesheet" href="{{ url('css/killa-v2-forms.css') }}?v={{ config('version.app_version') }}">
+        <link rel="stylesheet" href="{{ url('css/killa-v2-overlays.css') }}?v={{ config('version.app_version') }}">
+        <link rel="stylesheet" href="{{ url('css/killa-v2-setup.css') }}?v={{ config('version.app_version') }}">
+        {{-- [/killa-v2] --}}
+
     </head>
     <body>
           <main id="main" class="container">

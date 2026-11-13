@@ -450,7 +450,7 @@ body .box {
     border: 1px solid var(--k-border);
     border-top: 1px solid var(--k-border);
     border-radius: var(--k-radius);
-    box-shadow: none;
+    box-shadow: var(--k-shadow-1);
     margin-bottom: var(--k-space-6);
 }
 
@@ -464,16 +464,17 @@ body .box.box-danger {
 }
 
 body .box-header {
-    padding: 14px 14px 0;
+    padding: var(--k-space-4) var(--k-space-4) 0;
 }
 
 body .box-header.with-border {
-    border-bottom: none;
+    border-bottom: 1px solid var(--k-border-soft);
+    padding-bottom: var(--k-space-3);
 }
 
 body .box-header .box-title {
     font-family: var(--k-font-display);
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     letter-spacing: -0.01em;
     color: var(--k-text);
@@ -485,7 +486,31 @@ body .box-header .box-title a:hover {
 }
 
 body .box-body {
-    padding: 14px;
+    padding: var(--k-space-4);
+}
+
+/* box-solid headers: soft semantic tint + colored title instead of
+   AdminLTE's loud solid color bars (light mode; dark parity lives in
+   killa-v2-dark.css) */
+body .box.box-solid.box-primary > .box-header { background: color-mix(in srgb, var(--k-accent) 8%, var(--k-surface)); color: var(--k-accent); }
+body .box.box-solid.box-info > .box-header { background: color-mix(in srgb, var(--k-info) 8%, var(--k-surface)); color: var(--k-info); }
+body .box.box-solid.box-success > .box-header { background: color-mix(in srgb, var(--k-success) 8%, var(--k-surface)); color: var(--k-success); }
+body .box.box-solid.box-warning > .box-header { background: color-mix(in srgb, var(--k-warning) 10%, var(--k-surface)); color: var(--k-warning); }
+body .box.box-solid.box-danger > .box-header { background: color-mix(in srgb, var(--k-danger) 8%, var(--k-surface)); color: var(--k-danger); }
+
+body .box.box-solid > .box-header .box-title,
+body .box.box-solid > .box-header .box-title a {
+    color: inherit;
+}
+
+body .box.box-solid > .box-header .btn-box-tool {
+    color: inherit;
+    opacity: 0.65;
+}
+
+body .box.box-solid > .box-header .btn-box-tool:hover {
+    opacity: 1;
+    background: transparent;
 }
 
 body .box-footer {
@@ -1133,3 +1158,165 @@ body .main-header .logo.navbar-brand {
    markup in layouts/partials/killa-sidebar.blade.php). The old AdminLTE
    .main-sidebar/.sidebar-menu rules were removed 2026-11-12 — the markup no
    longer exists anywhere in the app. */
+
+/* ==========================================================================
+   [killa-v2] v2.1 polish & coverage pass (2026-11-13) — fills the gaps the
+   theme audit found: color-coded tile edges, light-mode nav-pills/tabs/
+   pagination, global slim scrollbars, normalized content headings, and
+   error-page repairs on the basic layout.
+   ========================================================================== */
+
+/* dashboard tiles: 2px color edge keyed to the existing bg-* signal classes
+   (inset shadow, so no layout shift) */
+body .bg-teal.k-tile { --k-tile-accent: var(--k-tile-teal); box-shadow: inset 0 2px 0 var(--k-tile-teal); }
+body .bg-maroon.k-tile { --k-tile-accent: var(--k-tile-maroon); box-shadow: inset 0 2px 0 var(--k-tile-maroon); }
+body .bg-orange.k-tile { --k-tile-accent: var(--k-tile-orange); box-shadow: inset 0 2px 0 var(--k-tile-orange); }
+body .bg-purple.k-tile { --k-tile-accent: var(--k-tile-purple); box-shadow: inset 0 2px 0 var(--k-tile-purple); }
+body .bg-yellow.k-tile { --k-tile-accent: var(--k-tile-yellow); box-shadow: inset 0 2px 0 var(--k-tile-yellow); }
+body .bg-light-blue.k-tile { --k-tile-accent: var(--k-tile-light-blue); box-shadow: inset 0 2px 0 var(--k-tile-light-blue); }
+
+body .k-tile:hover {
+    box-shadow: inset 0 2px 0 var(--k-tile-accent, transparent), var(--k-shadow-2);
+}
+
+/* nav-pills (settings adapters, etc.) — quiet pills, accent-tint active */
+body .nav-pills > li > a {
+    color: var(--k-text-muted);
+    border-radius: var(--k-radius-sm);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .nav-pills > li > a:hover,
+body .nav-pills > li > a:focus {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+body .nav-pills > li.active > a,
+body .nav-pills > li.active > a:hover,
+body .nav-pills > li.active > a:focus {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha-active), transparent);
+    color: var(--k-accent);
+    font-weight: 600;
+}
+
+/* plain .nav-tabs (modals, legacy pages) — match the nav-tabs-custom look */
+body .nav-tabs {
+    border-bottom-color: var(--k-border);
+}
+
+body .nav-tabs > li > a {
+    color: var(--k-text-muted);
+    border-radius: var(--k-radius-sm) var(--k-radius-sm) 0 0;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .nav-tabs > li > a:hover {
+    border-color: transparent;
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+body .nav-tabs > li.active > a,
+body .nav-tabs > li.active > a:hover,
+body .nav-tabs > li.active > a:focus {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    border-bottom-color: var(--k-surface);
+    color: var(--k-text);
+    font-weight: 600;
+}
+
+/* plain pagination (reports paginator, non-bootstrap-table lists) */
+body .pagination > li > a,
+body .pagination > li > span {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text);
+    transition: background-color var(--k-motion), border-color var(--k-motion), color var(--k-motion);
+}
+
+body .pagination > li > a:hover,
+body .pagination > li > a:focus {
+    background-color: var(--k-hover-tint);
+    color: var(--k-text);
+}
+
+body .pagination > .active > a,
+body .pagination > .active > span,
+body .pagination > .active > a:hover,
+body .pagination > .active > span:hover {
+    background-color: var(--k-accent);
+    border-color: var(--k-accent);
+    color: var(--k-accent-contrast);
+}
+
+body .pagination > .disabled > a,
+body .pagination > .disabled > span {
+    background-color: var(--k-surface);
+    border-color: var(--k-border);
+    color: var(--k-text-muted);
+    opacity: 0.55;
+}
+
+/* global slim scrollbars (light mode; dark sizes live in killa-v2-dark.css) */
+body {
+    scrollbar-width: thin;
+    scrollbar-color: var(--k-scrollbar-thumb) transparent;
+}
+
+body ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+body ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+body ::-webkit-scrollbar-thumb {
+    background-color: var(--k-scrollbar-thumb);
+    border-radius: var(--k-radius-pill);
+}
+
+/* stray content headings: Bootstrap's 30px h2 / 24px h3 were never designed
+   for dense admin pages — normalize to the display scale */
+body .content h2,
+body .modal-body h2 {
+    font-size: 19px;
+    font-weight: 650;
+    letter-spacing: -0.015em;
+}
+
+body .content h3,
+body .modal-body h3 {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+body .content h4,
+body .modal-body h4 {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* error pages (403/404/503 on the basic layout): the inline 200px top pad
+   and stock sizing read broken — center and calm them */
+body.login-page div[style*="padding-top: 200px"],
+body.login-page div[style*="padding-top:200px"] {
+    padding-top: var(--k-space-8) !important;
+    padding-bottom: var(--k-space-8) !important;
+}
+
+body.login-page .error-content h2 {
+    font-family: var(--k-font-display);
+    font-size: 22px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    color: var(--k-text);
+}
+
+body.login-page .error-content p {
+    color: var(--k-text-muted);
+    font-size: 13px;
+}
