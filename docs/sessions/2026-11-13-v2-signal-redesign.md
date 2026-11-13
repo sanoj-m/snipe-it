@@ -47,3 +47,24 @@ All in `public/css/killa-v2.css` (token-driven; dark block updated in-file):
 ## Rollback
 
 `git revert 70fee55364` + redeploy.
+
+## Addendum — owner review (2026-11-13 ~13:25 UTC)
+
+Owner feedback: keep the rail LIGHT in light mode (no dark sidebar), and add
+a topbar toggle to compare old vs new. Shipped as commit `9f537253ad`,
+deployed `v8.8.0+d20261113_125044` → `v8.8.0+d20261113_132514`:
+
+- Rail reverted to light in light mode; charcoal remains in dark mode only.
+- **KCP-054 New/Classic toggle**: segmented pill injected into `.left-navblock`
+  (top-left topbar) by new Killa-owned `public/js/killa-design-toggle.js`;
+  Classic = v2.1 base (white tiles + color edges, stock links, 20px titles),
+  New = Signal. `html[data-design='classic']` CSS gating → instant switch, no
+  reload; persists in localStorage; pre-paint stamp script prevents flash;
+  hidden on phones.
+- Token hygiene fix: datepicker on-accent text now uses `--k-accent-contrast`
+  instead of misusing `--k-sidebar-text-active` (overlays.css).
+- Registered KCP-054; inventory UI-02 updated.
+- Verified live: toggle JS 200, 18 gated CSS rules, light rail token, pages
+  referencing the new version stamp.
+
+Rollback: `git revert 9f537253ad 70fee55364` + redeploy.
