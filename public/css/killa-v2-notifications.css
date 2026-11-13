@@ -8,7 +8,7 @@ body .navbar-nav > .notifications-menu > .dropdown-menu,
 body .navbar-nav > .messages-menu > .dropdown-menu,
 body .navbar-nav > .tasks-menu > .dropdown-menu {
     position: fixed;
-    top: calc(50px + var(--k-space-1));
+    top: calc(var(--k-header-h, 56px) + var(--k-space-1));
     right: var(--k-space-2);
     left: auto;
     z-index: 1100;

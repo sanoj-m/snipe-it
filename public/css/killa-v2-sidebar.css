@@ -33,19 +33,20 @@
     --k-sidebar-stagger: 45ms;
     --k-ease-drawer: cubic-bezier(.32, .72, 0, 1);
     --k-ease-spring: cubic-bezier(.2, .9, .25, 1.1);
-    --k-sidebar-top: 50px; /* AdminLTE fixed navbar height */
+    --k-sidebar-top: var(--k-header-h, 56px); /* rail docks flush under the fixed topbar (v2.2) */
     --k-sidebar-icon-size: 16px;
     --k-sidebar-guide: var(--k-sidebar-border);
     --k-sidebar-pill-bg: var(--k-sidebar-hover-bg);
 }
 
 /* --------------------------------------------------------------------------
-   Page layout: keep header/content margins in sync with the rail width.
+   Page layout: keep content/footer margins in sync with the rail width.
+   The topbar itself is fixed and full-width since v2.2 (killa-v2.css) — it
+   no longer tracks the rail, so .main-header is intentionally absent here.
    These rules intentionally shadow the 250px block in killa-v2.css
    (source order after killa-v2.css wins at equal specificity).
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) {
-    html:not(.ks-collapsed-pre) body:not(.sidebar-collapse):not(.ks-collapsed) .main-header,
     html:not(.ks-collapsed-pre) body:not(.sidebar-collapse):not(.ks-collapsed) .content-wrapper,
     html:not(.ks-collapsed-pre) body:not(.sidebar-collapse):not(.ks-collapsed) .main-footer {
         margin-left: var(--k-sidebar-w);
@@ -62,13 +63,6 @@
         margin-left: var(--k-sidebar-w-icon) !important;
     }
 
-    body.sidebar-collapse .main-header,
-    body.ks-collapsed .main-header,
-    html.ks-collapsed-pre body .main-header {
-        margin-left: var(--k-sidebar-w-icon);
-    }
-
-    .main-header,
     .content-wrapper,
     .main-footer {
         transition: margin-left var(--k-sidebar-dur) var(--k-ease-drawer);
@@ -531,49 +525,9 @@ body.ks-lock {
         padding: 0;
     }
 
-    /* AdminLTE forces .main-header .logo to 50px in collapsed mode; the
-       fork's logo is a navbar-brand containing img + full site-name text,
-       which wraps and spills over the rail. Size it to the rail width,
-       show the centered mini logo image only, and strip any box styling.
-       (!important: killa-v2.css paints .logo background with !important —
-       the blanket justified case.) */
-    body.ks-collapsed .main-header .logo.navbar-brand,
-    body.sidebar-collapse .main-header .logo.navbar-brand,
-    html.ks-collapsed-pre body .main-header .logo.navbar-brand {
-        width: var(--k-sidebar-w-icon);
-        max-width: var(--k-sidebar-w-icon);
-        flex: 0 0 var(--k-sidebar-w-icon);
-        justify-content: center;
-        padding: 0;
-        font-size: 0; /* hides the site-name text node, keeps the img */
-        background-color: transparent !important;
-        border: 0;
-        box-shadow: none;
-    }
-
-    /* logo block animates with the rail (the old transition lived in
-       killa-v2.css and was removed with the dead sidebar block) */
-    body .main-header .logo.navbar-brand {
-        transition: width var(--k-sidebar-dur) var(--k-ease-drawer),
-                    max-width var(--k-sidebar-dur) var(--k-ease-drawer),
-                    flex-basis var(--k-sidebar-dur) var(--k-ease-drawer);
-    }
-
-    body.ks-collapsed .main-header .logo.navbar-brand .navbar-brand-img,
-    body.sidebar-collapse .main-header .logo.navbar-brand .navbar-brand-img,
-    html.ks-collapsed-pre body .main-header .logo.navbar-brand .navbar-brand-img {
-        max-width: 40px;
-        max-height: 28px;
-        margin: 0;
-        object-fit: contain;
-    }
-
-    /* no logo image configured (brand mode 1, text only): drop the empty box */
-    body.ks-collapsed .main-header .logo.navbar-brand:not(:has(img)),
-    body.sidebar-collapse .main-header .logo.navbar-brand:not(:has(img)),
-    html.ks-collapsed-pre body .main-header .logo.navbar-brand:not(:has(img)) {
-        display: none;
-    }
+    /* v2.2: the topbar is fixed and full-width now, so the header logo no
+       longer tracks the rail width — the old collapsed-mode logo-shrink
+       rules were removed (the brand stays put while the rail narrows). */
 
     /* overrides.css shifts the hamburger -48px to overlay the wide expanded
        logo block; with the 68px collapsed logo that would push it over the

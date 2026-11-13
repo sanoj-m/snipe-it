@@ -72,6 +72,25 @@ class AppServiceProvider extends ServiceProvider
         // http://<ip> without redirecting to the canonical domain. All other
         // hosts keep the lockdown below.
         $killa_alt_host = in_array(request()->getHost(), array_filter(array_map('trim', explode(',', (string) config('app.alt_hosts')))), true);
+
+        // Alt-host requests also re-root URL generation at the incoming host:
+        // many views bake absolute links out of config('app.url') (logo href,
+        // bootstrap-table cell formatters) and the public filesystem disk's
+        // URL is compiled from APP_URL at config-cache time. Without this,
+        // a page served via the IP has every link jumping back to the public
+        // domain. Scheme + host (+ non-standard port) come from the request,
+        // so both directions hold: IP stays on IP, domain stays on domain.
+        // In console the host is 'localhost' (never whitelisted), so CLI
+        // work — emails, scheduled jobs — always uses the canonical APP_URL.
+        if ($killa_alt_host) {
+            $killa_alt_root = request()->getSchemeAndHttpHost();
+            config(['app.url' => $killa_alt_root]);
+            URL::forceRootUrl($killa_alt_root);
+            $killa_public_disk_url = config('filesystems.disks.public.url');
+            if (is_string($killa_public_disk_url) && ($killa_public_disk_path = parse_url($killa_public_disk_url, PHP_URL_PATH))) {
+                config(['filesystems.disks.public.url' => $killa_alt_root.$killa_public_disk_path]);
+            }
+        }
         // [killa multi-host] END
 
         if (! $killa_alt_host && ((str_starts_with(config('app.url'), 'https://')) || config('app.force_tls'))) {

@@ -881,7 +881,13 @@
                 // can sit above the sticky thead without overlapping it,
                 // matching the natural unscrolled order where the mirror
                 // reads immediately above the thead (#19484 follow-up).
-                stickyHeaderOffsetY: 18,
+                // [killa-v2 fixed-header] BEGIN — KCP-055
+                // Killa's topbar is position:fixed (v2.2, --k-header-h), so
+                // the sticky clone must also clear the header height on top
+                // of the 18px top-scrollbar mirror offset computed above.
+                // outerHeight() tracks the wrapped two-row mobile bar too.
+                stickyHeaderOffsetY: (18 + ($('.main-header').outerHeight() || 0)),
+                // [killa-v2 fixed-header] END
                 stickyHeaderOffsetLeft: parseInt($('body').css('padding-left'), 10),
                 stickyHeaderOffsetRight: parseInt($('body').css('padding-right'), 10),
                 trimOnSearch: false,
@@ -4433,12 +4439,18 @@
 
         var containerRect = $primaryContainer[0].getBoundingClientRect();
         var scrollbarHeight = $topScroll.outerHeight();
+        // [killa-v2 fixed-header] BEGIN — KCP-055
+        // The pinned mirror parks at the bottom edge of the fixed topbar
+        // (not the viewport top), and pinning engages as soon as the table
+        // container slides under the bar.
+        var killaHeaderH = $('.main-header').outerHeight() || 0;
+        // [killa-v2 fixed-header] END
         // Pin as soon as the top of .fixed-table-container would go
         // above the space we'd reserve for the pinned scrollbar (so
         // the pin engages just before the natural scrollbar would
         // scroll off-screen). Unpin when the container top comes
         // back into view.
-        var shouldPin = containerRect.top < 0;
+        var shouldPin = containerRect.top < killaHeaderH;
         // Also unpin when the entire container has scrolled off the
         // bottom of the viewport - no point pinning a scrollbar for
         // a table that's not on screen.
@@ -4449,7 +4461,7 @@
         if (shouldPin) {
             $topScroll.addClass('is-pinned').css({
                 position: 'fixed',
-                top: 0,
+                top: killaHeaderH, // KCP-055: below the fixed topbar
                 left: Math.round(containerRect.left) + 'px',
                 width: Math.round(containerRect.width) + 'px'
             });

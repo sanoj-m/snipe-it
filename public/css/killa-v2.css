@@ -74,6 +74,10 @@
     --k-check-border: #d1d5db;
     --k-navbar-bg: #ffffff;
     --k-navbar-text: #4b5563;
+    /* fixed topbar height (v2.2): drives the content offset here, the rail
+       top in killa-v2-sidebar.css and the notification-menu offset in
+       killa-v2-notifications.css — one place to change */
+    --k-header-h: 56px;
 
     /* shape & depth */
     --k-radius: 12px;
@@ -246,7 +250,7 @@ body .main-header .logo:hover {
 body .main-header .navbar {
     background-color: var(--k-navbar-bg);
     border-bottom: 1px solid var(--k-border);
-    box-shadow: none;
+    box-shadow: var(--k-shadow-1); /* whisper of lift — the bar is fixed and floats over scrolled content (v2.2) */
     transition: none;
 }
 
@@ -578,12 +582,12 @@ body .box-tools .btn-box-tool:hover {
 /* --------------------------------------------------------------------------
    Tables
    -------------------------------------------------------------------------- */
+/* table headers: sentence case, no letter-spacing — wide-tracked uppercase
+   labels read "spaced out" and shouty in dense admin lists (taste rule) */
 body .table > thead > tr > th {
     background: var(--k-table-head-bg);
-    font-size: 10.5px;
+    font-size: 11.5px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
     color: var(--k-text-muted);
     border-bottom: 1px solid var(--k-border);
     padding: 8px 12px;
@@ -1334,24 +1338,34 @@ body .pagination > .disabled > span {
     opacity: 0.55;
 }
 
-/* global slim scrollbars (light mode; dark sizes live in killa-v2-dark.css) */
-body {
+/* global slim scrollbars — universal (every scrollable element, both engines);
+   Firefox needs *: scrollbar-width is not inherited */
+*,
+html {
     scrollbar-width: thin;
     scrollbar-color: var(--k-scrollbar-thumb) transparent;
 }
 
-body ::-webkit-scrollbar {
+::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 
-body ::-webkit-scrollbar-track {
+::-webkit-scrollbar-track {
     background: transparent;
 }
 
-body ::-webkit-scrollbar-thumb {
+::-webkit-scrollbar-thumb {
     background-color: var(--k-scrollbar-thumb);
     border-radius: var(--k-radius-pill);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--k-scrollbar-thumb-hover, var(--k-scrollbar-thumb));
+}
+
+::-webkit-scrollbar-corner {
+    background: transparent;
 }
 
 /* stray content headings: Bootstrap's 30px h2 / 24px h3 were never designed
@@ -1451,4 +1465,261 @@ body .left-navblock {
     .kdesign-toggle {
         display: none;
     }
+}
+
+
+/* ==========================================================================
+   [killa-v2] v2.2 fixed topbar + header redesign (2026-11-13)
+
+   The header is now position:fixed, full width, and sits ABOVE the rail
+   (z-index 830 vs the rail's 810). The rail docks flush underneath it
+   (--k-sidebar-top: var(--k-header-h) in killa-v2-sidebar.css), which
+   removes the dead strip that used to open up above the sidebar as soon
+   as the page scrolled. Content clears the bar via padding-top:
+   var(--k-header-h) — two rows on mobile, mirroring AdminLTE's own
+   .fixed pattern. Sticky table chrome (the stickyHeader clone and the
+   top-scrollbar mirror) is offset by the same height via KCP-055 in
+   partials/bootstrap-table.blade.php.
+
+   The bar itself becomes a 56px flex row: ghost-box icon buttons, a pill
+   lookup field, and a tinted "Create" action. Fully token-driven, so dark
+   mode follows the same rules.
+   ========================================================================== */
+
+body .main-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 830;
+    max-height: none; /* overrides.css caps it at 150px */
+    margin-left: 0; /* full width — no longer tracks the rail */
+}
+
+body .main-header .navbar {
+    min-height: var(--k-header-h);
+}
+
+/* upstream still offsets the navbar past the classic external logo block
+   (230px expanded / 50px collapsed) — meaningless here: the logo is a
+   navbar-brand INSIDE the bar and the bar is full-width */
+body .main-header .navbar,
+body.sidebar-mini.sidebar-collapse .main-header .navbar,
+body.ks-collapsed .main-header .navbar,
+html.ks-collapsed-pre body .main-header .navbar {
+    margin-left: 0;
+}
+
+/* ...and upstream shrinks the logo to 50px in collapsed mode; the brand
+   stays put while the rail narrows */
+body.sidebar-mini.sidebar-collapse .main-header .logo.navbar-brand,
+body.ks-collapsed .main-header .logo.navbar-brand,
+html.ks-collapsed-pre body .main-header .logo.navbar-brand {
+    width: auto;
+    max-width: 480px;
+}
+
+body .content-wrapper,
+body .right-side {
+    padding-top: var(--k-header-h);
+}
+
+/* mobile: the bar wraps to two rows (same assumption as AdminLTE .fixed) */
+@media (max-width: 767px) {
+    body .content-wrapper,
+    body .right-side {
+        padding-top: calc(var(--k-header-h) * 2);
+    }
+}
+
+@media print {
+    body .main-header {
+        position: absolute; /* print once at the top, not on every page */
+    }
+
+    body .content-wrapper,
+    body .right-side {
+        padding-top: 0;
+    }
+}
+
+/* in-page anchors (skip link target etc.) must not land under the bar */
+html {
+    scroll-padding-top: calc(var(--k-header-h) + var(--k-space-2));
+}
+
+/* ---- bar layout: one flex row (desktop) --------------------------------- */
+@media (min-width: 768px) {
+    body .main-header .navbar {
+        display: flex;
+        align-items: center;
+    }
+
+    /* kill the Bootstrap float choreography inside the bar */
+    body .main-header .navbar > .navbar-left,
+    body .main-header .navbar > .navbar-custom-menu,
+    body .main-header .navbar .navbar-custom-menu > .navbar-nav,
+    body .main-header .navbar .navbar-custom-menu > .navbar-nav > li {
+        float: none;
+    }
+
+    body .main-header .navbar > .navbar-custom-menu {
+        margin-left: auto;
+    }
+
+    body .main-header .navbar .navbar-custom-menu > .navbar-nav {
+        display: flex;
+        align-items: center;
+        margin: 0;
+    }
+}
+
+/* ---- brand block --------------------------------------------------------- */
+body .main-header .logo.navbar-brand {
+    height: var(--k-header-h);
+    padding: 0 var(--k-space-3) 0 var(--k-space-4);
+    font-size: 15px;
+    font-weight: 700;
+}
+
+body .main-header .logo.navbar-brand .navbar-brand-img {
+    max-height: 30px;
+    max-width: 140px;
+    object-fit: contain;
+}
+
+/* ---- hamburger: same 34px ghost box as the icon shortcuts ----------------
+   (margin reset: overrides.css shifts it -48px to overlay the old 250px
+   logo block — meaningless in the flex bar) */
+body .main-header .sidebar-toggle,
+body .main-header .sidebar-toggle-mobile {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    min-width: 34px;
+    height: 34px;
+    margin: 0 var(--k-space-1) 0 var(--k-space-2);
+    padding: 0;
+    border-radius: var(--k-radius-sm);
+}
+
+body .main-header .sidebar-toggle:hover,
+body .main-header .sidebar-toggle-mobile:hover {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-accent) !important;
+}
+
+/* ---- right cluster: 34px ghost boxes --------------------------------------
+   !important on backgrounds: the header-authority block above pins every
+   bar link to transparent with !important (tenant white-on-white defense)
+   — the blanket justified case. */
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li > a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 34px;
+    min-width: 34px;
+    padding: 0 8px;
+    margin: 0 1px;
+    border-radius: var(--k-radius-sm);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+}
+
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li > a:hover,
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li > a:focus,
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.open > a {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+/* current-section shortcut: quiet accent tint instead of a bare color flip */
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.active > a,
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.active > a:hover {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha), transparent) !important;
+    color: var(--k-accent) !important;
+}
+
+/* notification badge re-seated inside the 34px box */
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li > a > .label {
+    top: 2px;
+    right: 0;
+}
+
+/* ---- "Create": the bar's one primary action ------------------------------- */
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user-menu:not(.user) > a {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha), transparent) !important;
+    color: var(--k-accent) !important;
+    font-weight: 600;
+    border-radius: var(--k-radius-pill);
+    padding: 0 14px;
+    margin: 0 var(--k-space-1);
+}
+
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user-menu:not(.user) > a:hover,
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user-menu:not(.user).open > a {
+    background-color: color-mix(in srgb, var(--k-accent) 22%, transparent) !important;
+    color: var(--k-accent) !important;
+}
+
+/* ---- user menu: avatar + name as one ghost box ---------------------------- */
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user.user-menu > a {
+    gap: var(--k-space-2);
+    padding: 0 10px;
+}
+
+body .main-header .navbar .user-menu .user-image {
+    width: 26px;
+    height: 26px;
+    margin: 0;
+    border-radius: 50%;
+}
+
+/* ---- lookup-by-tag: one quiet pill (input + go share a surface) ----------- */
+body .main-header .navbar .navbar-form {
+    margin: 0;
+    padding: 0 var(--k-space-2);
+    border: 0;
+    box-shadow: none;
+}
+
+body .main-header .navbar .navbar-form .input-group {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+body .main-header .navbar #tagSearch {
+    width: 170px;
+    height: 34px;
+    border: 1px solid transparent;
+    border-radius: var(--k-radius-pill) 0 0 var(--k-radius-pill);
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text);
+    box-shadow: none;
+}
+
+body .main-header .navbar #tagSearch:focus {
+    background-color: var(--k-surface) !important;
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 3px var(--k-accent-ring);
+}
+
+/* !important on the go button: it carries .btn-theme (pinned with !important
+   above) plus an inline padding style */
+body .main-header .navbar #topSearchButton {
+    height: 34px;
+    padding: 0 12px !important;
+    border: 1px solid transparent !important;
+    border-left: 0 !important;
+    border-radius: 0 var(--k-radius-pill) var(--k-radius-pill) 0;
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text-muted) !important;
+}
+
+body .main-header .navbar #topSearchButton:hover {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-accent) !important;
 }
