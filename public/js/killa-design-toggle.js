@@ -1,35 +1,50 @@
 /* ==========================================================================
    [killa-v2 design-toggle] KCP-054 — New/Classic design switch
 
-   "New" (default)  = v2 "Signal" look (tinted tiles, brand links, 24px titles)
-   "Classic"        = v2.1 look (white tiles + color edges, stock link color)
+   "New" (default)  = v2 "Signal" look (fixed topbar, tinted tiles, brand
+                      links, animated rail)
+   "Classic"        = genuine stock Snipe-IT chrome: the server skips every
+                      killa-v2 overlay stylesheet and renders the preserved
+                      upstream sidebar markup (killa-classic-sidebar partial).
 
-   Mechanics: Classic is expressed entirely by html[data-design='classic']
-   gating in killa-v2.css, so switching is instant — no reload. The choice
-   persists in localStorage ('killa.design'); the pre-paint head script in
-   layouts/default.blade.php stamps the attribute before first paint so the
-   Classic look never flashes New.
+   Mechanics: the choice persists in the `killa_design` COOKIE, which
+   layouts/default.blade.php reads at render time (localStorage
+   'killa.design' is kept as a legacy mirror). Switching reloads the page so
+   the server can render the other design — a live CSS swap is not possible
+   because Classic loads a different stylesheet set and sidebar markup.
    ========================================================================== */
 (function () {
     'use strict';
 
-    var KEY = 'killa.design';
+    var COOKIE = 'killa_design';
+    var LEGACY_KEY = 'killa.design';
 
-    function current() {
-        try {
-            return localStorage.getItem(KEY) === 'classic' ? 'classic' : 'signal';
-        } catch (e) {
-            return 'signal';
-        }
+    function readCookie() {
+        var m = document.cookie.match(/(?:^|;\s*)killa_design=([^;]*)/);
+        return m ? decodeURIComponent(m[1]) : null;
     }
 
-    function apply(mode) {
-        var root = document.documentElement;
-        if (mode === 'classic') {
-            root.setAttribute('data-design', 'classic');
-        } else {
-            root.removeAttribute('data-design');
+    function current() {
+        return readCookie() === 'classic' ? 'classic' : 'signal';
+    }
+
+    /* The pill's styles live in killa-v2.css, which Classic never loads —
+       inject a neutral fallback that works on any tenant header color. */
+    function ensureFallbackStyles() {
+        if (document.querySelector('link[href*="killa-v2.css"]')) {
+            return;
         }
+        if (document.getElementById('kdesign-toggle-fallback')) {
+            return;
+        }
+        var st = document.createElement('style');
+        st.id = 'kdesign-toggle-fallback';
+        st.textContent =
+            '.kdesign-toggle{display:inline-flex;align-items:center;gap:2px;margin-left:12px;padding:2px;background:#ffffff;border:1px solid rgba(0,0,0,.18);border-radius:999px;box-shadow:0 1px 2px rgba(0,0,0,.12)}' +
+            '.kdesign-toggle button{border:0;background:transparent;cursor:pointer;font-family:inherit;font-size:11px;font-weight:600;line-height:1.4;color:#444;padding:3px 10px;border-radius:999px}' +
+            '.kdesign-toggle button:hover{color:#000}' +
+            '.kdesign-toggle button[aria-pressed="true"]{background:#1f2933;color:#fff}';
+        document.head.appendChild(st);
     }
 
     function syncButtons(wrap, mode) {
@@ -44,11 +59,13 @@
             return;
         }
 
+        ensureFallbackStyles();
+
         var wrap = document.createElement('div');
         wrap.className = 'kdesign-toggle';
         wrap.setAttribute('role', 'group');
         wrap.setAttribute('aria-label', 'Design version');
-        wrap.title = 'Switch between the new (Signal) and classic design';
+        wrap.title = 'Switch between the new (Signal) and classic (stock Snipe-IT) design — reloads the page';
 
         [['signal', 'New'], ['classic', 'Classic']].forEach(function (pair) {
             var b = document.createElement('button');
@@ -57,10 +74,10 @@
             b.textContent = pair[1];
             b.addEventListener('click', function () {
                 try {
-                    localStorage.setItem(KEY, pair[0]);
+                    localStorage.setItem(LEGACY_KEY, pair[0]);
                 } catch (e) {}
-                apply(pair[0]);
-                syncButtons(wrap, pair[0]);
+                document.cookie = COOKIE + '=' + pair[0] + '; path=/; max-age=31536000; samesite=lax';
+                window.location.reload();
             });
             wrap.appendChild(b);
         });
@@ -68,8 +85,6 @@
         host.appendChild(wrap);
         syncButtons(wrap, current());
     }
-
-    apply(current());
 
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', mount);

@@ -36,6 +36,13 @@
 
     {{-- stylesheets --}}
     <link rel="stylesheet" href="{{ url(mix('css/dist/all.css')) }}">
+    {{-- [killa-v2 design-toggle] KCP-054: Classic design = genuine stock
+         Snipe-IT chrome — the whole v2 overlay layer (fonts, theme, sidebar,
+         forms, tables, widgets, overlays, dark) is skipped server-side when
+         the killa_design cookie is 'classic'. killa-ux.css stays loaded in
+         both designs (scoped to .kx wrappers) so the optional licenses
+         redesign keeps its styles. --}}
+    @if (request()->cookie('killa_design') !== 'classic')
     {{-- [killa-v2] fonts: self-hosted Inter (UI) + Inter Tight (display), no Google CDN (UI-A-08) --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2-fonts.css') }}?v={{ config('version.app_version') }}">
     {{-- [killa-v2] theme layer: plain committed stylesheets, no build step. Load after all.css so they win the cascade; tenant branding vars below still override brand colors. Cache-busted on app version (changes each release), not per-request md5_file(). --}}
@@ -46,9 +53,10 @@
     <link rel="stylesheet" href="{{ url('css/killa-v2-tables.css') }}?v={{ config('version.app_version') }}">
     <link rel="stylesheet" href="{{ url('css/killa-v2-widgets.css') }}?v={{ config('version.app_version') }}">
     <link rel="stylesheet" href="{{ url('css/killa-v2-overlays.css') }}?v={{ config('version.app_version') }}">
+    <link rel="stylesheet" href="{{ url('css/killa-v2-dark.css') }}?v={{ config('version.app_version') }}">
+    @endif
     {{-- [killa-ux] Licenses redesign design system (KCP-048): self-contained layer, only active inside .kx wrapper containers. --}}
     <link rel="stylesheet" href="{{ url('css/killa-ux.css') }}?v={{ config('version.app_version') }}">
-    <link rel="stylesheet" href="{{ url('css/killa-v2-dark.css') }}?v={{ config('version.app_version') }}">
 
     {{-- page level css --}}
     @stack('css')
@@ -63,8 +71,10 @@
         </style>
     @endif
 
-    {{-- [killa-v2] Notification navigation: load after tenant custom CSS so inaccessible contrast overrides cannot win. --}}
+    {{-- [killa-v2] Notification navigation: load after tenant custom CSS so inaccessible contrast overrides cannot win. (v2-only design chrome, KCP-054) --}}
+    @if (request()->cookie('killa_design') !== 'classic')
     <link rel="stylesheet" href="{{ url('css/killa-v2-notifications.css') }}?v={{ config('version.app_version') }}">
+    @endif
 
     <script nonce="{{ csrf_token() }}">
         window.snipeit = {
@@ -91,12 +101,27 @@
     </script>
 
     {{-- [killa-v2 design-toggle] pre-paint design restore: stamps
-         data-design="classic" before first paint so the Classic look never
-         flashes New (KCP-054) --}}
+         data-design="classic" before first paint (KCP-054). The
+         killa_design cookie is authoritative — the server gates the v2
+         assets and sidebar markup on it; localStorage('killa.design') is
+         the legacy mirror. One-time migration: an old localStorage-only
+         choice is moved into the cookie and the page reloads so the server
+         can render Classic properly. --}}
     <script nonce="{{ csrf_token() }}">
         try {
-            if (localStorage.getItem('killa.design') === 'classic') {
-                document.documentElement.setAttribute('data-design', 'classic');
+            var killaDesignMatch = document.cookie.match(/(?:^|;\s*)killa_design=([^;]*)/);
+            var killaDesign = killaDesignMatch ? decodeURIComponent(killaDesignMatch[1]) : null;
+            var killaLegacy = localStorage.getItem('killa.design');
+            if (!killaDesign && killaLegacy === 'classic') {
+                document.cookie = 'killa_design=classic; path=/; max-age=31536000; samesite=lax';
+                window.location.reload();
+            } else {
+                if (killaDesign && killaLegacy !== killaDesign) {
+                    localStorage.setItem('killa.design', killaDesign);
+                }
+                if (killaDesign === 'classic') {
+                    document.documentElement.setAttribute('data-design', 'classic');
+                }
             }
         } catch (e) {}
     </script>
@@ -415,11 +440,15 @@
 
                 <!-- Sidebar toggle button-->
             </header>
-            {{-- [killa-v2 sidebar] upstream <aside class="main-sidebar"> block replaced by a Killa-owned partial (KCP-049) --}}
-            @include('layouts.partials.killa-sidebar')
+            {{-- [killa-v2 sidebar] upstream <aside class="main-sidebar"> block replaced by a Killa-owned partial (KCP-049);
+                 Classic design renders the preserved stock markup instead (KCP-054). Also removed the orphaned
+                 </aside> left over from the original replacement. --}}
+            @if (request()->cookie('killa_design') === 'classic')
+                @include('layouts.partials.killa-classic-sidebar')
+            @else
+                @include('layouts.partials.killa-sidebar')
+            @endif
             {{-- [/killa-v2 sidebar] --}}
-                <!-- /.sidebar -->
-            </aside>
 
             <!-- Content Wrapper. Contains page content -->
 
@@ -637,8 +666,11 @@
         <script src="{{ url(mix('js/dist/all.js')) }}" nonce="{{ csrf_token() }}"></script>
         <script src="{{ url('js/select2/i18n/'.Helper::mapBackToLegacyLocale(app()->getLocale()).'.js') }}"></script>
 
-        {{-- [killa-v2 sidebar] vanilla sidebar controller (KCP-049) --}}
+        {{-- [killa-v2 sidebar] vanilla sidebar controller (KCP-049) — v2 rail only;
+             Classic renders stock markup driven by upstream's own push-menu/treeview JS (KCP-054) --}}
+        @if (request()->cookie('killa_design') !== 'classic')
         <script src="{{ url(asset('js/killa-sidebar.js')) }}?v={{ config('version.app_version') }}" defer nonce="{{ csrf_token() }}"></script>
+        @endif
 
         {{-- [killa-v2 design-toggle] New/Classic topbar switch (KCP-054) --}}
         <script src="{{ url(asset('js/killa-design-toggle.js')) }}?v={{ config('version.app_version') }}" defer nonce="{{ csrf_token() }}"></script>

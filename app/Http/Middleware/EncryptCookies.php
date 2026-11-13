@@ -12,7 +12,12 @@ class EncryptCookies extends BaseEncrypter
      * @var array
      */
     protected $except = [
-        //
+        // [killa-v2 design-toggle] BEGIN — KCP-054
+        // Plain JS-set cookie read server-side by layouts/default.blade.php
+        // to gate the v2 overlay assets and sidebar markup. Must stay
+        // unencrypted — Laravel would otherwise decrypt-fail it to null.
+        'killa_design',
+        // [killa-v2 design-toggle] END
     ];
 
     /**

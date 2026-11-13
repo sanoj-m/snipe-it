@@ -133,3 +133,35 @@ facade already imported). CSS brace balance verified 234/234, 71/71,
 Known watch items: mobile (≤767px) assumes the bar wraps to two rows like
 upstream `.fixed` (padding-top 112px) — verify on a phone; table fullscreen
 mode stacking vs the fixed bar unverified.
+
+
+## Addendum 3 — Classic toggle reworked to genuine stock theme (2026-11-13, late)
+
+Owner feedback: the KCP-054 "Classic" toggle only toned Signal down to the
+v2.1 base — it never showed the ORIGINAL Snipe-IT look. Root cause: Classic
+was expressed as CSS gating on top of the still-loaded v2 overlay layer.
+
+Reworked to a server-side switch:
+
+- Choice persists in a **`killa_design` cookie** (JS-set; excepted in
+  `EncryptCookies` — Laravel would decrypt-fail it to null otherwise).
+  localStorage `killa.design` kept as a legacy mirror; the pre-paint script
+  migrates an old localStorage-only choice into the cookie with one reload.
+- `default.blade.php` gates on the cookie: Classic skips ALL killa-v2
+  overlay stylesheets (fonts/theme/sidebar/forms/tables/widgets/overlays/
+  dark/notifications) and `killa-sidebar.js`; `killa-ux.css` stays (scoped
+  to .kx wrappers).
+- New Killa-owned partial `layouts/partials/killa-classic-sidebar.blade.php`
+  = the stock upstream sidebar block preserved verbatim from b58de20859^
+  (pre-KCP-049), rendered in Classic instead of the `.ks-*` rail — stock
+  `.main-sidebar`/`.sidebar-menu` treeview driven by upstream's own JS.
+  Verified menu parity (no Killa-only items missing).
+- Toggle JS (`killa-design-toggle.js`) rewritten: writes cookie + mirror,
+  reloads the page (live swap impossible — different asset set + markup);
+  injects neutral fallback pill styles in Classic (v2 CSS absent there).
+- Also removed the orphaned `</aside>` leftover at the sidebar include site
+  (mismatched closer from the KCP-049 replacement).
+
+Register: KCP-054 amended (new mechanism + files), KCP-049 noted.
+
+Rollback: revert this round's commit + redeploy.
