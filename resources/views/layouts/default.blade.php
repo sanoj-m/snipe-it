@@ -90,6 +90,17 @@
         } catch (e) {}
     </script>
 
+    {{-- [killa-v2 design-toggle] pre-paint design restore: stamps
+         data-design="classic" before first paint so the Classic look never
+         flashes New (KCP-054) --}}
+    <script nonce="{{ csrf_token() }}">
+        try {
+            if (localStorage.getItem('killa.design') === 'classic') {
+                document.documentElement.setAttribute('data-design', 'classic');
+            }
+        } catch (e) {}
+    </script>
+
 </head>
 
     <body class="sidebar-mini{{ (session('menu_state')!='open') ? ' sidebar-mini sidebar-collapse' : ''  }}">
@@ -628,6 +639,9 @@
 
         {{-- [killa-v2 sidebar] vanilla sidebar controller (KCP-049) --}}
         <script src="{{ url(asset('js/killa-sidebar.js')) }}?v={{ config('version.app_version') }}" defer nonce="{{ csrf_token() }}"></script>
+
+        {{-- [killa-v2 design-toggle] New/Classic topbar switch (KCP-054) --}}
+        <script src="{{ url(asset('js/killa-design-toggle.js')) }}?v={{ config('version.app_version') }}" defer nonce="{{ csrf_token() }}"></script>
 
         {{-- Page level javascript --}}
         @stack('js')

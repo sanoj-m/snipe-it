@@ -494,7 +494,7 @@ body .daterangepicker .calendar-table td.active:hover,
 body .daterangepicker td.start-date,
 body .daterangepicker td.end-date {
     background: var(--k-accent);
-    color: var(--k-sidebar-text-active);
+    color: var(--k-accent-contrast);
     text-shadow: none;
     background-image: none;
 }

@@ -57,20 +57,20 @@
     --k-tint-alpha-active: 14%;
     --k-tint-border: 30%;
 
-    /* app shell: nav rail — the charcoal brand rail in BOTH schemes
-       (v2 "Signal"; consumed by killa-v2-sidebar.css, which owns all rail
-       styling). Dark scheme keeps the same rail family, one step deeper. */
-    --k-sidebar-bg: #17191d;
-    --k-sidebar-border: rgba(255, 255, 255, 0.07);
-    --k-sidebar-text: #c9cdd4;
-    --k-sidebar-text-active: #ffffff;
-    --k-sidebar-muted: #8a919c;
-    --k-sidebar-hover-bg: rgba(255, 255, 255, 0.05);
-    --k-sidebar-badge-bg: rgba(255, 255, 255, 0.09);
-    --k-sidebar-badge-text: #c3cad2;
-    --k-sidebar-badge-active-bg: rgba(255, 255, 255, 0.14);
-    --k-sidebar-scrollbar: rgba(255, 255, 255, 0.18);
-    --k-sidebar-flyout-bg: #1f2227;
+    /* app shell: nav rail — light in light mode, charcoal in dark mode
+       (the v2 "Signal" charcoal-in-light experiment was reverted per owner
+       feedback 2026-11-13; consumed by killa-v2-sidebar.css) */
+    --k-sidebar-bg: #ffffff;
+    --k-sidebar-border: #e5e7eb;
+    --k-sidebar-text: #4b5563;
+    --k-sidebar-text-active: #1f2933;
+    --k-sidebar-muted: #6b7280;
+    --k-sidebar-hover-bg: #f4f5f6;
+    --k-sidebar-badge-bg: #eef0f2;
+    --k-sidebar-badge-text: #6b7280;
+    --k-sidebar-badge-active-bg: #ffffff;
+    --k-sidebar-scrollbar: var(--k-scrollbar-thumb);
+    --k-sidebar-flyout-bg: var(--k-surface);
     --k-check-border: #d1d5db;
     --k-navbar-bg: #ffffff;
     --k-navbar-text: #4b5563;
@@ -105,8 +105,8 @@
     --k-motion: 160ms ease;
 }
 
-/* Dark theme: same structure, darker surfaces. Sidebar: charcoal in BOTH
-   schemes (v2 "Signal" brand rail) — the dark block only deepens it one step. */
+/* Dark theme: same structure, darker surfaces. Sidebar: charcoal in dark
+   mode, light in light mode (owner call 2026-11-13). */
 html[data-theme='dark'] {
     --k-bg: #121417;
     --k-surface: #1a1d23;
@@ -137,9 +137,8 @@ html[data-theme='dark'] {
     --k-tile-purple: #6f8fc0;
     --k-tile-yellow: #d19a2b;
     --k-tile-light-blue: #4a90c2;
-    /* nav rail: same charcoal family as light mode, one step deeper so it
-       separates from the #121417 content background */
-    --k-sidebar-bg: #101216;
+    /* nav rail: charcoal in dark mode (light values in :root) */
+    --k-sidebar-bg: #17191d;
     --k-sidebar-border: rgba(255, 255, 255, 0.07);
     --k-sidebar-text: #c9cdd4;
     --k-sidebar-text-active: #ffffff;
@@ -185,16 +184,20 @@ body .right-side {
     background-color: var(--k-bg);
 }
 
-/* v2 "Signal": links carry the brand. Component contexts (sidebar, navbar,
-   breadcrumb pills, buttons, table chrome) keep their own rules — this is
-   the default reading-text link color, replacing upstream Bootstrap blue. */
 body a {
-    color: var(--k-link);
     transition: color var(--k-motion);
 }
 
-body a:hover,
-body a:focus {
+/* v2 "Signal" (default; suppressed by the Classic toggle, KCP-054): links
+   carry the brand. Component contexts (sidebar, navbar, breadcrumb pills,
+   buttons, table chrome) keep their own rules — this replaces upstream
+   Bootstrap blue only for default reading-text links. */
+html:not([data-design='classic']) body a {
+    color: var(--k-link);
+}
+
+html:not([data-design='classic']) body a:hover,
+html:not([data-design='classic']) body a:focus {
     color: var(--k-link-hover);
 }
 
@@ -286,11 +289,16 @@ body .content-header {
 }
 
 body .content-header > h1 {
-    font-size: 24px;
+    font-size: 20px;
     font-weight: 650;
     letter-spacing: -0.02em;
     color: var(--k-text);
     margin: 0;
+}
+
+/* Signal: bigger display hierarchy (Classic stays at 20px) */
+html:not([data-design='classic']) body .content-header > h1 {
+    font-size: 24px;
 }
 
 body .content-header > h1 > small {
@@ -1205,37 +1213,44 @@ body .main-header .logo.navbar-brand {
    error-page repairs on the basic layout.
    ========================================================================== */
 
-/* dashboard tiles: v2 "Signal" tinted signal cards — each tile's surface is
-   a tint of its signal color (12% light / 18% dark via --k-tint-alpha),
-   border at --k-tint-border, label carries the signal color. No layout shift. */
-body .bg-teal.k-tile { --k-tile-accent: var(--k-tile-teal); }
-body .bg-maroon.k-tile { --k-tile-accent: var(--k-tile-maroon); }
-body .bg-orange.k-tile { --k-tile-accent: var(--k-tile-orange); }
-body .bg-purple.k-tile { --k-tile-accent: var(--k-tile-purple); }
-body .bg-yellow.k-tile { --k-tile-accent: var(--k-tile-yellow); }
-body .bg-light-blue.k-tile { --k-tile-accent: var(--k-tile-light-blue); }
+/* dashboard tiles — two design generations switched by the topbar
+   New/Classic toggle (KCP-054; html[data-design='classic'] = Classic).
+   BASE (Classic = v2.1): white card with a 2px signal-colored top edge.
+   SIGNAL (default "New"): tinted signal card — surface is a color-mix tint
+   of the tile color, tinted border, signal-colored label, no top edge. */
+body .bg-teal.k-tile { --k-tile-accent: var(--k-tile-teal); box-shadow: inset 0 2px 0 var(--k-tile-teal); }
+body .bg-maroon.k-tile { --k-tile-accent: var(--k-tile-maroon); box-shadow: inset 0 2px 0 var(--k-tile-maroon); }
+body .bg-orange.k-tile { --k-tile-accent: var(--k-tile-orange); box-shadow: inset 0 2px 0 var(--k-tile-orange); }
+body .bg-purple.k-tile { --k-tile-accent: var(--k-tile-purple); box-shadow: inset 0 2px 0 var(--k-tile-purple); }
+body .bg-yellow.k-tile { --k-tile-accent: var(--k-tile-yellow); box-shadow: inset 0 2px 0 var(--k-tile-yellow); }
+body .bg-light-blue.k-tile { --k-tile-accent: var(--k-tile-light-blue); box-shadow: inset 0 2px 0 var(--k-tile-light-blue); }
 
-body .bg-teal.k-tile,
-body .bg-maroon.k-tile,
-body .bg-orange.k-tile,
-body .bg-purple.k-tile,
-body .bg-yellow.k-tile,
-body .bg-light-blue.k-tile {
+body .k-tile:hover {
+    box-shadow: inset 0 2px 0 var(--k-tile-accent, transparent), var(--k-shadow-2);
+}
+
+/* Signal overrides (default; suppressed in Classic) */
+html:not([data-design='classic']) body .bg-teal.k-tile,
+html:not([data-design='classic']) body .bg-maroon.k-tile,
+html:not([data-design='classic']) body .bg-orange.k-tile,
+html:not([data-design='classic']) body .bg-purple.k-tile,
+html:not([data-design='classic']) body .bg-yellow.k-tile,
+html:not([data-design='classic']) body .bg-light-blue.k-tile {
     background: color-mix(in srgb, var(--k-tile-accent) var(--k-tint-alpha), var(--k-surface)) !important;
     border-color: color-mix(in srgb, var(--k-tile-accent) var(--k-tint-border), var(--k-border));
     box-shadow: var(--k-shadow-1);
 }
 
-body .bg-teal.k-tile .k-tile-label,
-body .bg-maroon.k-tile .k-tile-label,
-body .bg-orange.k-tile .k-tile-label,
-body .bg-purple.k-tile .k-tile-label,
-body .bg-yellow.k-tile .k-tile-label,
-body .bg-light-blue.k-tile .k-tile-label {
+html:not([data-design='classic']) body .bg-teal.k-tile .k-tile-label,
+html:not([data-design='classic']) body .bg-maroon.k-tile .k-tile-label,
+html:not([data-design='classic']) body .bg-orange.k-tile .k-tile-label,
+html:not([data-design='classic']) body .bg-purple.k-tile .k-tile-label,
+html:not([data-design='classic']) body .bg-yellow.k-tile .k-tile-label,
+html:not([data-design='classic']) body .bg-light-blue.k-tile .k-tile-label {
     color: var(--k-tile-accent);
 }
 
-body .k-tile:hover {
+html:not([data-design='classic']) body .k-tile:hover {
     box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--k-tile-accent, transparent) 35%, transparent), var(--k-shadow-2);
 }
 
@@ -1379,4 +1394,61 @@ body.login-page .error-content h2 {
 body.login-page .error-content p {
     color: var(--k-text-muted);
     font-size: 13px;
+}
+
+/* ==========================================================================
+   [killa-v2] KCP-054 design toggle (top-left navbar) — segmented New/Classic
+   control injected by js/killa-design-toggle.js. Styled with shared tokens so
+   it reads correctly in both designs and both color schemes.
+   ========================================================================== */
+body .left-navblock {
+    display: flex;
+    align-items: center;
+}
+
+.kdesign-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    margin-left: var(--k-space-3);
+    padding: 2px;
+    background: var(--k-hover-tint);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-pill);
+}
+
+.kdesign-toggle button {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-family: var(--k-font);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: var(--k-text-muted);
+    padding: 3px 10px;
+    border-radius: var(--k-radius-pill);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+.kdesign-toggle button:hover {
+    color: var(--k-text);
+}
+
+.kdesign-toggle button[aria-pressed="true"] {
+    background: var(--k-surface);
+    color: var(--k-accent);
+    box-shadow: var(--k-shadow-1);
+}
+
+.kdesign-toggle button:focus-visible {
+    outline: 2px solid var(--k-accent-focus);
+    outline-offset: 1px;
+}
+
+/* hidden on phones — the topbar is already crowded there */
+@media (max-width: 767px) {
+    .kdesign-toggle {
+        display: none;
+    }
 }
