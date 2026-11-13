@@ -165,3 +165,40 @@ Reworked to a server-side switch:
 Register: KCP-054 amended (new mechanism + files), KCP-049 noted.
 
 Rollback: revert this round's commit + redeploy.
+
+
+## Addendum 4 — KCP-056 profile-dropdown topbar user area (2026-11-13, late)
+
+Owner supplied the kokonutui `profile-dropdown` React component and asked for
+it as the topbar user avatar area. Stack is fixed (AGENTS.md: Blade + jQuery +
+zero-build CSS, no React/Tailwind/new deps), so the component's **design** was
+ported, not the code:
+
+- **Trigger** (v2 only): pill card with right-aligned name-over-email stack,
+  gradient-ring avatar (accent → orange → teal sweep; ring works for both
+  gravatar images and the no-gravatar icon fallback), and the component's
+  bending-line caret (inline SVG, muted → accent + scale when the Bootstrap
+  dropdown opens — driven by the stock `.open` class, no new JS).
+- **Dropdown** (v2 only): 264px card with an identity header (large ring
+  avatar + name + email), rounded roomy item rows with icon color transitions,
+  the gradient hairline divider, and a red-tinted sign-out row
+  (`k-user-signout` on the existing logout `<li>` — same POST logout form,
+  unchanged).
+- **Menu items unchanged** — all permission gates (`self.profile`,
+  `viewRequestable`, `self.api`, LDAP password suppression) and routes kept
+  verbatim; the React sample's Model/Subscription/Terms rows don't map to
+  Snipe-IT concepts and were dropped.
+- **Classic untouched**: the whole block is gated on the `killa_design`
+  cookie — Classic renders the stock trigger + dropdown verbatim and none of
+  the new CSS loads there (KCP-054 gate).
+- Mobile: meta stack + caret are `hidden-xs`; trigger collapses to a
+  round avatar button ≤767px.
+
+Files: `resources/views/layouts/default.blade.php` (fenced
+`[killa-v2 profile-dropdown]` blocks), `public/css/killa-v2.css` (KCP-056
+section appended; token-driven, dark mode via the in-file dark `:root`).
+Register: KCP-056 added.
+
+Not run locally: no PHP/composer on this machine — Blade change is additive
+markup gated on the same cookie already used by KCP-054; verified server-side
+via `view:cache` compile + authenticated curl of both designs.

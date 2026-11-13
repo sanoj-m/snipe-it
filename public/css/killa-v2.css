@@ -1723,3 +1723,231 @@ body .main-header .navbar #topSearchButton:hover {
     background-color: var(--k-hover-tint) !important;
     color: var(--k-accent) !important;
 }
+
+
+/* ==========================================================================
+   [killa-v2 profile-dropdown] KCP-056 (2026-11-13) — topbar user avatar area
+   Design ported from the kokonutui profile-dropdown React component to this
+   stack (Blade + plain CSS, no React/Tailwind — stack is fixed per AGENTS.md):
+   name+email trigger with gradient-ring avatar and bending-line caret,
+   dropdown with identity card, rounded item rows with icon tiles, gradient
+   divider, and a red sign-out row. Token-driven; dark mode follows :root
+   overrides. Markup lives in layouts/default.blade.php (v2 only — Classic
+   renders the stock trigger and gets none of this).
+   ========================================================================== */
+
+/* ---- trigger: quiet pill with meta stack + ring avatar + caret ---------- */
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user.user-menu > a.k-user-trigger {
+    height: auto;
+    min-width: 0;
+    gap: 10px;
+    padding: 4px 10px 4px 12px;
+    margin: 0 var(--k-space-1);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius-pill);
+    background-color: var(--k-surface) !important;
+    box-shadow: var(--k-shadow-1);
+    transition: border-color var(--k-motion), box-shadow var(--k-motion), background-color var(--k-motion);
+}
+
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user.user-menu > a.k-user-trigger:hover,
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user.user-menu > a.k-user-trigger:focus,
+body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user.user-menu.open > a.k-user-trigger {
+    background-color: var(--k-hover-tint) !important;
+    border-color: var(--k-border);
+    box-shadow: var(--k-shadow-2);
+    color: var(--k-text) !important;
+}
+
+/* name over email, right-aligned so the stack hugs the avatar */
+body .k-user-trigger .k-user-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    line-height: 1.2;
+    text-align: right;
+}
+
+body .k-user-trigger .k-user-name {
+    font-size: 12.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--k-text);
+}
+
+body .k-user-trigger .k-user-email {
+    font-size: 10.5px;
+    color: var(--k-text-muted);
+    max-width: 180px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* gradient ring around the avatar (accent → info → success sweep) */
+body .k-user-avatar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    flex: none;
+    padding: 2px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--k-accent), var(--k-tile-orange) 55%, var(--k-tile-teal));
+}
+
+body .k-user-avatar .user-image,
+body .k-user-avatar img {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    background: var(--k-surface);
+}
+
+/* no-gravatar fallback icon on the ring */
+body .k-user-avatar .fa,
+body .k-user-avatar .fas,
+body .k-user-avatar svg {
+    color: var(--k-text-muted);
+}
+
+/* bending-line caret: muted at rest, accent + slight scale when open */
+body .k-user-trigger .k-user-caret {
+    flex: none;
+    color: var(--k-text-muted);
+    opacity: 0.6;
+    transition: color var(--k-motion), opacity var(--k-motion), transform var(--k-motion);
+}
+
+body .k-user-trigger:hover .k-user-caret {
+    opacity: 1;
+}
+
+body li.user.user-menu.open .k-user-trigger .k-user-caret {
+    color: var(--k-accent);
+    opacity: 1;
+    transform: scale(1.15);
+}
+
+/* ---- dropdown panel: card with identity header + roomy item rows -------- */
+body .navbar-nav > li.user.user-menu > .dropdown-menu {
+    width: 264px;
+    padding: var(--k-space-2);
+    border-radius: var(--k-radius);
+    margin-top: 8px;
+}
+
+/* identity card at the top */
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-header {
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-3);
+    padding: var(--k-space-2) var(--k-space-3) var(--k-space-3);
+    margin-bottom: var(--k-space-1);
+    border-bottom: 1px solid var(--k-border-soft);
+}
+
+body .k-user-header .k-user-avatar-lg {
+    width: 40px;
+    height: 40px;
+}
+
+body .k-user-header .k-user-header-meta {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+}
+
+body .k-user-header .k-user-name {
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--k-text);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+body .k-user-header .k-user-email {
+    font-size: 11.5px;
+    color: var(--k-text-muted);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* item rows: rounded, breathable, icon + label */
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li > a {
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-3);
+    padding: 8px var(--k-space-3);
+    margin: 1px 0;
+    border-radius: var(--k-radius-chip);
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.3;
+}
+
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li > a:hover {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li > a .fa,
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li > a .fas,
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li > a .far {
+    width: 16px;
+    text-align: center;
+    color: var(--k-text-muted) !important;
+    transition: color var(--k-motion);
+}
+
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li > a:hover .fa,
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li > a:hover .fas,
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li > a:hover .far {
+    color: var(--k-accent) !important;
+}
+
+/* gradient divider instead of the hard 1px rule */
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.divider {
+    height: 1px;
+    margin: var(--k-space-2) var(--k-space-1);
+    background: linear-gradient(90deg, transparent, var(--k-border), transparent);
+}
+
+/* sign-out row: red tint, matches the component's destructive action */
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a,
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a:link,
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a:visited {
+    background-color: color-mix(in srgb, var(--k-danger) 10%, transparent) !important;
+    color: var(--k-danger) !important;
+}
+
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a .fa,
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a .fas {
+    color: var(--k-danger) !important;
+}
+
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a:hover {
+    background-color: color-mix(in srgb, var(--k-danger) 20%, transparent) !important;
+    color: var(--k-danger) !important;
+}
+
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a:hover .fa,
+body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a:hover .fas {
+    color: var(--k-danger) !important;
+}
+
+/* phones: avatar-only trigger (meta stack + caret are .hidden-xs) */
+@media (max-width: 767px) {
+    body .main-header .navbar .navbar-custom-menu > .navbar-nav > li.user.user-menu > a.k-user-trigger {
+        padding: 3px;
+        gap: 0;
+        border-radius: 50%;
+    }
+}

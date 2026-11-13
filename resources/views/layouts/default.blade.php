@@ -328,6 +328,32 @@
                             @auth
                                 <li class="dropdown user user-menu">
 
+                                    {{-- [killa-v2 profile-dropdown] KCP-056: v2 trigger =
+                                         name+email stack + gradient-ring avatar + bending-line
+                                         caret (design ported from the kokonutui profile-dropdown
+                                         component to this Blade/CSS stack — no React). The
+                                         dropdown gains a user header card and a red sign-out row
+                                         via CSS. Classic keeps the stock trigger/dropdown. --}}
+                                    @if (request()->cookie('killa_design') !== 'classic')
+                                        <a href="#" class="dropdown-toggle k-user-trigger" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            <span class="k-user-meta hidden-xs">
+                                                <span class="k-user-name">{{ Auth::user()->display_name }}</span>
+                                                <span class="k-user-email">{{ Auth::user()->email }}</span>
+                                            </span>
+                                            <span class="k-user-avatar">
+                                                @if (auth()->user()->present()->gravatar())
+                                                    <img src="{{ Auth::user()->present()->gravatar() }}" class="user-image"
+                                                         referrerpolicy="no-referrer"
+                                                         alt="">
+                                                @else
+                                                    <x-icon type="user" />
+                                                @endif
+                                            </span>
+                                            <svg class="k-user-caret hidden-xs" width="10" height="18" viewBox="0 0 12 24" fill="none" aria-hidden="true">
+                                                <path d="M2 4C6 8 6 16 2 20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                                            </svg>
+                                        </a>
+                                    @else
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         @if (auth()->user()->present()->gravatar())
                                             <img src="{{ Auth::user()->present()->gravatar() }}" class="user-image"
@@ -342,9 +368,32 @@
                                             <strong class="caret"></strong>
                                         </span>
                                     </a>
+                                    @endif
+                                    {{-- [/killa-v2 profile-dropdown] --}}
 
 
                                     <ul class="dropdown-menu">
+
+                                        {{-- [killa-v2 profile-dropdown] KCP-056: identity card
+                                             heading the v2 dropdown (avatar ring + name + email) --}}
+                                        @if (request()->cookie('killa_design') !== 'classic')
+                                            <li class="k-user-header">
+                                                <span class="k-user-avatar k-user-avatar-lg">
+                                                    @if (auth()->user()->present()->gravatar())
+                                                        <img src="{{ Auth::user()->present()->gravatar() }}" class="user-image"
+                                                             referrerpolicy="no-referrer"
+                                                             alt="">
+                                                    @else
+                                                        <x-icon type="user" />
+                                                    @endif
+                                                </span>
+                                                <span class="k-user-header-meta">
+                                                    <span class="k-user-name">{{ Auth::user()->display_name }}</span>
+                                                    <span class="k-user-email">{{ Auth::user()->email }}</span>
+                                                </span>
+                                            </li>
+                                        @endif
+                                        {{-- [/killa-v2 profile-dropdown] --}}
 
                                         <!-- User assets -->
                                         @can('self.profile')
@@ -408,7 +457,8 @@
                                         @endcan
                                         
                                         <li class="divider"></li>
-                                        <li>
+                                        {{-- [killa-v2 profile-dropdown] KCP-056: k-user-signout = red row --}}
+                                        <li class="k-user-signout">
                                             <a href="{{ route('logout.get') }}"
                                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                                 <x-icon type="logout" class="fa-fw" />
