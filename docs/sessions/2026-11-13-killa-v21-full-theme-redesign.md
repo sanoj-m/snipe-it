@@ -50,17 +50,19 @@ previously loaded only `all.css` and were completely unthemed.
 
 ## Deploy status
 
-**Blocked on SSH auth from this machine** (same as 2026-11-12): no pageant key,
-no saved PuTTY session, no `~/.ssh` key; server offers `publickey,password`.
-Commits `039fe064b2` (2026-11-12 remediation) and `4578b1ff2b` (this pass) are
-both pending deploy. Once a key is available:
+**Deployed 2026-11-13 ~10:53 UTC** together with the pending 2026-11-12
+remediation commit (SSH password auth provided by the owner). Server script
+ran clean: backup, rsync, composer, nothing to migrate, caches cleared, fresh
+version stamp `v8.8.0+d20261113_105300` (Cloudflare cache busted).
 
-```bash
-git archive --format=tar.gz -o /tmp/snipeit-v21.tar.gz HEAD
-"C:\Program Files\PuTTY\pscp.exe" /tmp/snipeit-v21.tar.gz root@40.30.20.6:/tmp/snipeit-update.tar.gz
-"C:\Program Files\PuTTY\plink.exe" root@40.30.20.6 "bash /usr/local/sbin/snipeit-apply-update.sh /tmp/snipeit-update.tar.gz"
-curl -sI "https://asset.killadesign.co/css/killa-v2.css?v=<new app_version>"   # cf-cache-status + 200
-```
+Live verification:
+- `GET /css/killa-v2.css?v=…105300` → 200, `cf-cache-status: MISS`, contains
+  the new `inset 0 2px 0` tile-edge rules (7 hits).
+- `GET /css/killa-v2-setup.css?v=…105300` → 200, `bs-wizard` rules present (15 hits).
+- `GET /css/killa-v2-dark.css?v=…105300` → 200, slim 8px scrollbar rule present.
+- `/` → 302 (login), `/setup` → 302 (installed) — expected.
+- Server copy of `layouts/setup.blade.php` carries the KCP-053 fence;
+  `public/css/killa-v2-setup.css` present (4,703 bytes).
 
 ## Rollback
 
