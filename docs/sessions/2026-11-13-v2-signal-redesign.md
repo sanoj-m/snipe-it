@@ -202,3 +202,24 @@ Register: KCP-056 added.
 Not run locally: no PHP/composer on this machine — Blade change is additive
 markup gated on the same cookie already used by KCP-054; verified server-side
 via `view:cache` compile + authenticated curl of both designs.
+
+
+## Addendum 5 — dropdown language unified across the topbar (2026-11-14)
+
+Owner accepted the KCP-056 follow-up: the profile-dropdown component language
+now covers all three topbar dropdowns, not just the user menu. Pure CSS in the
+Killa-owned layers (`killa-v2.css`, `killa-v2-notifications.css`) — zero
+upstream markup touched, zero new core patches; KCP-056 register entry amended.
+
+- **Create menu** — panel becomes a padded rounded card (220px+, `var(--k-radius)`,
+  8px offset from the bar); item rows get the rounded roomy treatment (8px 12px,
+  `--k-radius-chip`, flex gap, 12.5px/500); icons muted → accent on hover;
+  the current-target row (`/hardware/create` etc.) gets a quiet accent tint
+  matching the topbar's active-shortcut state.
+- **Alerts / notifications panel** — panel padding + rounded card; the solid
+  header band becomes a small-caps muted section label; rows swap full-bleed
+  hairline separators for rounded margin-spaced items; deprecation warning
+  banners keep their warning identity but join the card rhythm (rounded,
+  inset). Scroll containment, SlimScroll suppression, and the fixed-position
+  offset from the v2.2 header are unchanged.
+- Classic design unaffected (layers don't load there, KCP-054 gate).

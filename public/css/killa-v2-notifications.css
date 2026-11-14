@@ -127,3 +127,61 @@ body .navbar-nav > .tasks-menu > .dropdown-menu .progress.xs {
 body .navbar-nav > .tasks-menu > .dropdown-menu .progress-bar-yellow {
     background-color: var(--k-warning);
 }
+
+
+/* ==========================================================================
+   [killa-v2 profile-dropdown] dropdown language unification (2026-11-14)
+   Same component family as the user menu (KCP-056): the panel becomes a
+   rounded padded card, rows become rounded roomy items with margins instead
+   of full-bleed hairline-separated strips, and the header reads as a quiet
+   section label. Progress bars and warning banners keep their semantics.
+   ========================================================================== */
+
+body .navbar-nav > .notifications-menu > .dropdown-menu,
+body .navbar-nav > .messages-menu > .dropdown-menu,
+body .navbar-nav > .tasks-menu > .dropdown-menu {
+    border-radius: var(--k-radius);
+    padding: var(--k-space-2);
+}
+
+/* section header: small-caps label row inside the card, not a solid band */
+body .navbar-nav > .notifications-menu > .dropdown-menu > li.header:not(.alert-warning),
+body .navbar-nav > .messages-menu > .dropdown-menu > li.header:not(.alert-warning),
+body .navbar-nav > .tasks-menu > .dropdown-menu > li.header:not(.alert-warning) {
+    background-color: transparent !important;
+    border-bottom: 0;
+    padding: var(--k-space-1) var(--k-space-3) var(--k-space-2);
+    font-size: 10.5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--k-text-muted) !important;
+}
+
+/* rows: rounded items with breathing room, no full-bleed hairlines */
+body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a,
+body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a,
+body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a {
+    border-bottom: 0;
+    border-radius: var(--k-radius-chip);
+    margin: 1px 0;
+    padding: 10px var(--k-space-3);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li:hover > a,
+body .navbar-nav > .notifications-menu > .dropdown-menu > li .menu > li > a:focus,
+body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li:hover > a,
+body .navbar-nav > .messages-menu > .dropdown-menu > li .menu > li > a:focus,
+body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li:hover > a,
+body .navbar-nav > .tasks-menu > .dropdown-menu > li .menu > li > a:focus {
+    background-color: var(--k-hover-tint) !important;
+}
+
+/* deprecation/warning banner rows keep their warning identity but join the
+   card rhythm (rounded, inset) instead of touching the panel edges */
+body .navbar-nav > .tasks-menu > .dropdown-menu > li.header.alert-warning {
+    border-radius: var(--k-radius-chip);
+    margin: 1px 0 var(--k-space-1);
+    padding: 8px var(--k-space-3);
+}

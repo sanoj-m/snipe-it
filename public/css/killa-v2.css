@@ -1951,3 +1951,67 @@ body .navbar-nav > li.user.user-menu > .dropdown-menu > li.k-user-signout > a:ho
         border-radius: 50%;
     }
 }
+
+
+/* ==========================================================================
+   [killa-v2 profile-dropdown] dropdown language unification (2026-11-14)
+   Extends the KCP-056 user-menu language to the other topbar dropdowns so
+   all three read as one component family: rounded card panels, roomy
+   rounded item rows, muted icons that turn accent on hover. The alerts
+   (tasks-menu) half lives at the end of killa-v2-notifications.css.
+   ========================================================================== */
+
+/* ---- Create menu: same card + row language as the user menu ------------- */
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu {
+    min-width: 220px;
+    padding: var(--k-space-2);
+    border-radius: var(--k-radius);
+    margin-top: 8px;
+}
+
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a {
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-3);
+    padding: 8px var(--k-space-3);
+    margin: 1px 0;
+    border-radius: var(--k-radius-chip);
+    font-size: 12.5px;
+    font-weight: 500;
+    line-height: 1.3;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a:hover,
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a:focus {
+    background-color: var(--k-hover-tint) !important;
+    color: var(--k-text) !important;
+}
+
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a .fa,
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a .fas,
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a .far {
+    width: 16px;
+    text-align: center;
+    color: var(--k-text-muted) !important;
+    transition: color var(--k-motion);
+}
+
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a:hover .fa,
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a:hover .fas,
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li > a:hover .far {
+    color: var(--k-accent) !important;
+}
+
+/* current-target row (Create Asset on /hardware/create etc.): quiet accent
+   tint, matching the topbar's active-shortcut treatment */
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li.active > a {
+    background-color: color-mix(in srgb, var(--k-accent) var(--k-tint-alpha), transparent) !important;
+    color: var(--k-accent) !important;
+}
+
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li.active > a .fa,
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li.active > a .fas,
+body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li.active > a .far {
+    color: var(--k-accent) !important;
+}
