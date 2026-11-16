@@ -643,18 +643,33 @@ body.ks-lock {
         width: 0;
     }
 
-    /* the tile */
+    /* the tile — 30px so the full rail fits laptop-height viewports */
     body.ks-collapsed .ks-link,
     html.ks-collapsed-pre body .ks-link,
     body.ks-collapsed .ks-footer-link,
     html.ks-collapsed-pre body .ks-footer-link {
         justify-content: center;
         gap: 0;
-        width: 36px;
-        min-height: 36px;
-        height: 36px;
+        width: 30px;
+        min-height: 30px;
+        height: 30px;
         padding: 0;
-        margin: 2px auto;
+        margin: 1px auto;
+    }
+
+    body.ks-collapsed .ks-menu,
+    html.ks-collapsed-pre body .ks-menu {
+        gap: 1px;
+    }
+
+    body.ks-collapsed .ks-content,
+    html.ks-collapsed-pre body .ks-content {
+        padding: 6px 8px 12px;
+    }
+
+    body.ks-collapsed .ks-footer,
+    html.ks-collapsed-pre body .ks-footer {
+        padding: 4px 8px;
     }
 
     /* active tile: solid module color + white icon + subtle shadow */
@@ -681,14 +696,14 @@ body.ks-lock {
     /* groups: no label gap, tiles only, hairline between groups */
     body.ks-collapsed .ks-group,
     html.ks-collapsed-pre body .ks-group {
-        padding: 4px 0 0;
+        padding: 2px 0 0;
     }
 
     body.ks-collapsed .ks-group + .ks-group,
     html.ks-collapsed-pre body .ks-group + .ks-group {
         border-top: 1px solid var(--k-sidebar-border);
-        margin-top: 4px;
-        padding-top: 8px;
+        margin-top: 2px;
+        padding-top: 4px;
     }
 
     body.ks-collapsed .ks-group-label,
@@ -827,20 +842,30 @@ body.ks-lock {
 }
 
 body .main-header .logo.navbar-brand,
+body:not(.sidebar-collapse) .main-header .logo.navbar-brand,
 body.sidebar-collapse .main-header .logo.navbar-brand,
-body.ks-collapsed .main-header .logo.navbar-brand {
+body.sidebar-mini.sidebar-collapse .main-header .logo.navbar-brand,
+body.ks-collapsed .main-header .logo.navbar-brand,
+html.ks-collapsed-pre body .main-header .logo.navbar-brand {
     display: inline-flex;
     align-items: center;
     gap: 10px;
-    width: auto;
+    width: auto !important; /* beat all.css's `.main-header .logo { width: 100% !important }` */
+    min-width: 0 !important;
+    max-width: none !important;
+    flex: 0 0 auto !important; /* beat the legacy flex: 0 0 250px sidebar-tracking rule */
     float: none;
     padding-left: 12px;
     transition: none;
 }
 
+/* all.css centers the img with `margin: 0 auto` — that dumps any phantom
+   free space around the logo and makes the brand block jump between states */
 body .main-header .logo.navbar-brand .navbar-brand-img {
     max-height: 44px;
     max-width: 200px;
+    margin: 0 !important;
+    float: none !important;
     object-fit: contain;
 }
 
