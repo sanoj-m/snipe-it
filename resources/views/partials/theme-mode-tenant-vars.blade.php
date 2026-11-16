@@ -60,8 +60,13 @@
     };
 
     $killaHeaderBg = trim((string) ($snipeSettings->header_color ?? ''));
+    // The Setting accessor (app/Models/Setting.php) sanitizes NULL to the
+    // upstream default '#3c8dbc', so the value is never empty at render —
+    // treat the default as "not customized": the v2 header keeps its light
+    // token surface unless the admin picks a non-default color.
+    $killaHeaderCustom = ($killaHeaderBg !== '') && (strtolower($killaHeaderBg) !== '#3c8dbc');
     $killaNavText = trim((string) ($nav_link_color ?? ''));
-    if ($killaHeaderBg !== '') {
+    if ($killaHeaderCustom) {
         $killaHeaderLum = $killaRelLum($killaHeaderBg);
         $killaAutoText = (($killaHeaderLum !== null) && ($killaHeaderLum > 0.35)) ? '#1f2933' : '#ffffff';
         $killaNavTextFinal = ($killaNavText !== '') ? $killaNavText : $killaAutoText;
@@ -73,7 +78,7 @@
     }
 @endphp
 <style>
-    @if (($killaHeaderBg ?? '') !== '')
+    @if ($killaHeaderCustom ?? false)
     :root,
     html[data-theme='dark'] {
         --k-navbar-bg: {{ $killaHeaderBg }};

@@ -1505,7 +1505,14 @@ body .main-header .navbar {
 
 /* upstream still offsets the navbar past the classic external logo block
    (230px expanded / 50px collapsed) — meaningless here: the logo is a
-   navbar-brand INSIDE the bar and the bar is full-width */
+   navbar-brand INSIDE the bar and the bar is full-width. The 50px collapsed
+   margin also lands on .main-header itself (AdminLTE .sidebar-mini
+   .sidebar-collapse rule) — white notch above the rail, rail seam shifted
+   18px right of the bar edge — so pin BOTH elements in every collapse state */
+body .main-header,
+body.sidebar-mini.sidebar-collapse .main-header,
+body.ks-collapsed .main-header,
+html.ks-collapsed-pre body .main-header,
 body .main-header .navbar,
 body.sidebar-mini.sidebar-collapse .main-header .navbar,
 body.ks-collapsed .main-header .navbar,
