@@ -9,8 +9,8 @@ Generated: Phase 1 discovery (2026). Regenerate after every upstream upgrade.
 | `origin` | https://github.com/sanoj-m/snipe-it.git (Killa Asset fork) |
 | `upstream` | https://github.com/grokability/snipe-it.git |
 | Fork branch | `master` |
-| Merge base | `2c466fa8a5a68525439bf1bbbc24470d6670c516` = **tag v8.8.0** |
-| Latest upstream tag at analysis | **v8.8.0** (Killa is based on the newest release) |
+| Merge base | **tag v8.8.3** (merged 2026-11-20; previous base v8.8.0 `2c466fa`) |
+| Latest upstream tag at analysis | **v8.8.3** (Killa is based on the newest release) |
 | Commits unique to Killa | **55** |
 | Commits upstream is ahead | **112** (post-8.8.0 development on `upstream/master`, unreleased) |
 
