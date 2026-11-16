@@ -119,11 +119,18 @@
     }
 
     /* Native tooltip labels for the collapsed icon rail: stamp each top-level
-       link's title from its hidden label text. */
+       link's title from its hidden label text. Also stamp each submenu with
+       data-title so the collapsed flyout hover card can show the group name. */
     sidebar.querySelectorAll('.ks-menu > .ks-item > .ks-link').forEach(function (link) {
         var label = link.querySelector('.ks-label');
-        if (label && !link.getAttribute('title')) {
+        var sub = link.parentElement.querySelector(':scope > .ks-sub');
+        /* Parents get no native tooltip when collapsed — their flyout hover
+           card already names the group; a title tooltip would overlap it. */
+        if (label && !sub && !link.getAttribute('title')) {
             link.setAttribute('title', label.textContent.trim());
+        }
+        if (label && sub) {
+            sub.setAttribute('data-title', label.textContent.trim());
         }
     });
 

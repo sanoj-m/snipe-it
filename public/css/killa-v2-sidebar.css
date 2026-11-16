@@ -117,7 +117,7 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 2px 8px 24px;
+    padding: 10px 8px 24px;
     scrollbar-width: thin;
     scrollbar-color: var(--k-sidebar-scrollbar) transparent;
 }
@@ -129,81 +129,6 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
 .ks-content::-webkit-scrollbar-thumb {
     background: var(--k-sidebar-scrollbar);
     border-radius: var(--k-radius-pill);
-}
-
-/* --------------------------------------------------------------------------
-   Brand lockup: 36px tile + two-line text, whole block navigates home
-   -------------------------------------------------------------------------- */
-.ks-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin: 10px 12px 0;
-    padding: 6px 8px;
-    border-radius: 12px;
-    color: var(--k-sidebar-text-active);
-    text-decoration: none;
-    white-space: nowrap;
-    transition: background-color 200ms ease;
-}
-
-.ks-brand:hover,
-.ks-brand:focus {
-    background-color: var(--k-sidebar-hover-bg);
-    color: var(--k-sidebar-text-active);
-    text-decoration: none;
-}
-
-.ks-brand-tile {
-    flex: none;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 36px;
-    height: 36px;
-    border-radius: 12px;
-    background: var(--k-accent);
-    color: var(--k-accent-contrast);
-    font-size: 16px;
-    font-weight: 700;
-    overflow: hidden;
-}
-
-.ks-brand-tile img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-.ks-brand-text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    line-height: 1.25;
-    transition: opacity 160ms ease;
-}
-
-.ks-brand-name {
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: -.01em;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.ks-brand-caption {
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: .14em;
-    text-transform: uppercase;
-    color: var(--k-sidebar-muted);
-}
-
-.ks-brand-divider {
-    height: 1px;
-    margin: 10px 12px 8px;
-    background: var(--k-sidebar-border);
-    opacity: .6;
 }
 
 /* --------------------------------------------------------------------------
@@ -689,20 +614,11 @@ body.ks-lock {
 
     body.ks-collapsed .ks-label,
     html.ks-collapsed-pre body .ks-label,
-    body.ks-collapsed .ks-brand-text,
-    html.ks-collapsed-pre body .ks-brand-text,
     body.ks-collapsed .ks-footer-signout-icon,
     html.ks-collapsed-pre body .ks-footer-signout-icon {
         opacity: 0;
         position: absolute;
         pointer-events: none;
-    }
-
-    body.ks-collapsed .ks-brand,
-    html.ks-collapsed-pre body .ks-brand {
-        justify-content: center;
-        margin: 10px 6px 0;
-        padding: 6px 0;
     }
 
     body.ks-collapsed .ks-chevron,
@@ -774,14 +690,14 @@ body.ks-lock {
         margin-left: 0;
     }
 
-    /* in-rail submenus never render inline when collapsed: floating panel
-       with rounded-2xl corners */
+    /* in-rail submenus never render inline when collapsed: floating hover
+       card with an uppercase group title + hairline above the child list */
     body.ks-collapsed .ks-item--parent > .ks-sub,
     html.ks-collapsed-pre body .ks-item--parent > .ks-sub {
         position: absolute;
         left: calc(100% + 6px);
         top: -6px;
-        min-width: 200px;
+        min-width: 210px;
         margin: 0;
         padding: 8px;
         background: var(--k-sidebar-flyout-bg);
@@ -796,6 +712,22 @@ body.ks-lock {
         visibility: hidden;
         transform: translateX(-4px);
         transition: opacity 160ms ease, transform 180ms var(--k-ease-drawer), visibility 0s 180ms;
+    }
+
+    /* hover-card title, stamped from the parent label by killa-sidebar.js */
+    body.ks-collapsed .ks-item--parent > .ks-sub::before,
+    html.ks-collapsed-pre body .ks-item--parent > .ks-sub::before {
+        content: attr(data-title);
+        display: block;
+        padding: 4px 8px 8px;
+        margin-bottom: 6px;
+        border-bottom: 1px solid var(--k-sidebar-border);
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--k-sidebar-muted);
+        white-space: nowrap;
     }
 
     body.ks-collapsed .ks-item--parent:hover > .ks-sub,
