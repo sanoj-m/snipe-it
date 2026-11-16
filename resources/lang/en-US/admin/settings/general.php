@@ -342,6 +342,9 @@ return [
     'show_images_in_email' => 'Show images in emails',
     'show_images_in_email_help' => 'Uncheck this box if your Killa Asset installation is behind a VPN or closed network and users outside the network will not be able to load images served from this installation in their emails.',
     'site_name' => 'Site Name',
+    // [killa site-tagline]
+    'site_tagline' => 'Site Tagline',
+    // [/killa site-tagline]
     'integrations' => 'Integrations',
     'slack' => 'Slack',
     'general_webhook' => 'General Webhook',

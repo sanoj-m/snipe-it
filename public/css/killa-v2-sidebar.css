@@ -76,10 +76,11 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
         margin-left: var(--k-sidebar-w);
     }
 
-    /* !important: AdminLTE's sidebar-mini collapsed rule carries its own
+    /* !important + .sidebar-mini: AdminLTE's collapsed rule
+       (.sidebar-mini.sidebar-collapse → 0,2,0) carries its own
        !important (margin-left:50px) — the blanket justified case */
-    body.sidebar-collapse .content-wrapper,
-    body.sidebar-collapse .main-footer,
+    body.sidebar-mini.sidebar-collapse .content-wrapper,
+    body.sidebar-mini.sidebar-collapse .main-footer,
     body.ks-collapsed .content-wrapper,
     body.ks-collapsed .main-footer,
     html.ks-collapsed-pre body .content-wrapper,

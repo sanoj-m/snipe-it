@@ -47,6 +47,8 @@
     <link rel="stylesheet" href="{{ url('css/killa-v2-fonts.css') }}?v={{ config('version.app_version') }}">
     {{-- [killa-v2] theme layer: plain committed stylesheets, no build step. Load after all.css so they win the cascade; tenant branding vars below still override brand colors. Cache-busted on app version (changes each release), not per-request md5_file(). --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2.css') }}?v={{ config('version.app_version') }}">
+    {{-- [killa-v2 header] top header bar redesign: module chips, search pill, Create CTA (KCP-058) --}}
+    <link rel="stylesheet" href="{{ url('css/killa-v2-header.css') }}?v={{ config('version.app_version') }}">
     {{-- [killa-v2 sidebar] animated sidebar rail overlay (KCP-049) --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2-sidebar.css') }}?v={{ config('version.app_version') }}">
     <link rel="stylesheet" href="{{ url('css/killa-v2-forms.css') }}?v={{ config('version.app_version') }}">
@@ -153,7 +155,14 @@
                                              src="{{ Storage::disk('public')->url($snipeSettings->logo) }}"
                                              alt="{{ $snipeSettings->site_name }} logo">
                                     @endif
-                                    {{ $snipeSettings->site_name }}
+                                    {{-- [killa site-tagline] tagline under the site name --}}
+                                    <span class="killa-brand-text" style="display:inline-flex;flex-direction:column;justify-content:center;line-height:1.2;text-align:left">
+                                        {{ $snipeSettings->site_name }}
+                                        @if ($snipeSettings->site_tagline)
+                                            <span class="killa-site-tagline" style="display:block;font-size:11px;font-weight:400;opacity:.75">{{ $snipeSettings->site_tagline }}</span>
+                                        @endif
+                                    </span>
+                                    {{-- [/killa site-tagline] --}}
                                 </a>
                             @elseif ($snipeSettings->brand == '2')
                                 <a class="logo navbar-brand no-hover" href="{{ config('app.url') }}">
@@ -166,7 +175,14 @@
                                 </a>
                             @else
                                 <a class="logo navbar-brand no-hover" href="{{ config('app.url') }}">
-                                    {{ $snipeSettings->site_name }}
+                                    {{-- [killa site-tagline] tagline under the site name --}}
+                                    <span class="killa-brand-text" style="display:inline-flex;flex-direction:column;justify-content:center;line-height:1.2;text-align:left">
+                                        {{ $snipeSettings->site_name }}
+                                        @if ($snipeSettings->site_tagline)
+                                            <span class="killa-site-tagline" style="display:block;font-size:11px;font-weight:400;opacity:.75">{{ $snipeSettings->site_tagline }}</span>
+                                        @endif
+                                    </span>
+                                    {{-- [/killa site-tagline] --}}
                                 </a>
                             @endif
                         </div>
@@ -187,12 +203,12 @@
 
                             {{-- [killa-v2 header] KCP-058: module shortcuts become tinted pill chips
                                  (data-knav drives the per-module color in killa-v2-header.css); labels
-                                 are visible (.knav-label) in the v2 design and stay sr-only in Classic. --}}
+                                 stay sr-only — names ride on the tooltips (owner call: icon-only). --}}
                             @can('index', \App\Models\Asset::class)
                                 <li aria-hidden="true" data-knav="assets"{!! (request()->is('hardware*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ url('hardware') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=1" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.assets') }}">
                                         <x-icon type="assets" class="fa-fw" />
-                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.assets') }}</span>
+                                        <span class="sr-only">{{ trans('general.assets') }}</span>
                                     </a>
                                 </li>
                             @endcan
@@ -200,7 +216,7 @@
                                 <li aria-hidden="true" data-knav="licenses"{!! (request()->is('licenses*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('licenses.index') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=2" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.licenses') }}">
                                         <x-icon type="licenses" class="fa-fw" />
-                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.licenses') }}</span>
+                                        <span class="sr-only">{{ trans('general.licenses') }}</span>
                                     </a>
                                 </li>
                             @endcan
@@ -208,7 +224,7 @@
                                 <li aria-hidden="true" data-knav="accessories"{!! (request()->is('accessories*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('accessories.index') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=3" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.accessories') }}">
                                         <x-icon type="accessories" class="fa-fw" />
-                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.accessories') }}</span>
+                                        <span class="sr-only">{{ trans('general.accessories') }}</span>
                                     </a>
                                 </li>
                             @endcan
@@ -216,7 +232,7 @@
                                 <li aria-hidden="true" data-knav="consumables"{!! (request()->is('consumables*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ url('consumables') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=4" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.consumables') }}">
                                         <x-icon type="consumables" class="fa-fw" />
-                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.consumables') }}</span>
+                                        <span class="sr-only">{{ trans('general.consumables') }}</span>
                                     </a>
                                 </li>
                             @endcan
@@ -224,7 +240,7 @@
                                 <li aria-hidden="true" data-knav="components"{!! (request()->is('components*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('components.index') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=5" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.components') }}">
                                         <x-icon type="components" class="fa-fw" />
-                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.components') }}</span>
+                                        <span class="sr-only">{{ trans('general.components') }}</span>
                                     </a>
                                 </li>
                             @endcan
@@ -233,7 +249,7 @@
                                 <li aria-hidden="true" data-knav="users"{!! (request()->is('users*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('users.index') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=6" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.users') }}">
                                         <x-icon type="users" class="fa-fw" />
-                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.users') }}</span>
+                                        <span class="sr-only">{{ trans('general.users') }}</span>
                                     </a>
                                 </li>
                             @endcan

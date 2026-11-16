@@ -36,6 +36,20 @@
                         </x-slot:input>
                     </x-form.row>
 
+                    {{-- [killa site-tagline] Site tagline (shown under the site name in the header) --}}
+                    <x-form.row name="site_tagline" :label="trans('admin/settings/general.site_tagline')">
+                        <x-slot:input>
+                            <x-input.text
+                                name="site_tagline"
+                                :value="old('site_tagline', $setting->site_tagline)"
+                                :maxlength="191"
+                                placeholder="IT Asset Management"
+                                :disabled="config('app.lock_passwords')"
+                            />
+                        </x-slot:input>
+                    </x-form.row>
+                    {{-- [/killa site-tagline] --}}
+
                     <fieldset name="color-preferences">
                         <x-form.legend help_text="{!! trans('admin/settings/general.color_settings_help') !!}">
                             {{ trans('admin/settings/general.color_preferences') }}

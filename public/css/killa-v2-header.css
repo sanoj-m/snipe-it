@@ -4,10 +4,11 @@
    right after killa-v2.css, INSIDE the killa_design cookie gate (KCP-054) —
    Classic never loads this file, so nothing here needs a Classic fallback.
 
-   Design: module shortcuts become soft-tint pill chips (icon + label, one
-   semantic color per module), the asset-tag lookup becomes a unified rounded
-   search pill, and Create becomes the single primary accent CTA. Structure,
-   routes, gates, accesskeys and tooltips are unchanged — this is chrome only.
+   Design: module shortcuts become soft-tint pill chips (icon-only, one
+   semantic color per module, names on tooltips), the asset-tag lookup
+   becomes a unified rounded search pill, and Create becomes the single
+   primary accent CTA. Structure, routes, gates, accesskeys and tooltips
+   are unchanged — this is chrome only.
 
    Color discipline (killa-design-manual): accents are SOFT TINTS on the
    navbar surface, never solid washes; module colors come from the existing
@@ -17,20 +18,21 @@
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
-   Module nav chips: icon + label pill with a per-module semantic tint.
-   Idle = tinted icon + muted label; hover = soft tint wash; active = tint
-   wash + 3px rounded bottom indicator (accent-indicator DNA).
+   Module nav chips: icon-only pill with a per-module semantic tint (names
+   ride on the Bootstrap tooltips; sr-only labels unchanged for a11y).
+   Idle = tinted icon; hover = soft tint wash; active = tint wash + 3px
+   rounded bottom indicator (accent-indicator DNA).
    -------------------------------------------------------------------------- */
 body .main-header .navbar .navbar-nav > li[data-knav] > a {
     display: inline-flex;
     align-items: center;
-    gap: 7px;
+    justify-content: center;
     height: 36px;
+    min-width: 40px;
     margin: 10px 2px;
-    padding: 0 12px !important;
+    padding: 0 10px !important;
     border-radius: var(--k-radius-pill);
-    font-size: 13px;
-    font-weight: 600;
+    font-size: 14px;
     line-height: 1;
     position: relative;
     transition: background-color var(--k-motion), color var(--k-motion);
@@ -44,10 +46,6 @@ body .main-header .navbar .navbar-nav > li[data-knav] > a .far {
     transition: color var(--k-motion);
 }
 
-body .main-header .navbar .navbar-nav > li[data-knav] .knav-label {
-    white-space: nowrap;
-}
-
 /* per-module color map — chip tint + icon color (existing tokens only) */
 body .main-header .navbar .navbar-nav > li[data-knav='assets'] > a       { --knav: var(--k-info); }
 body .main-header .navbar .navbar-nav > li[data-knav='licenses'] > a     { --knav: var(--k-tile-purple); }
@@ -56,8 +54,8 @@ body .main-header .navbar .navbar-nav > li[data-knav='consumables'] > a  { --kna
 body .main-header .navbar .navbar-nav > li[data-knav='components'] > a   { --knav: var(--k-danger); }
 body .main-header .navbar .navbar-nav > li[data-knav='users'] > a        { --knav: var(--k-tile-teal); }
 
-/* idle: tinted icon, neutral label (beats the header-authority rules in
-   killa-v2.css via higher specificity) */
+/* idle: tinted icon on the navbar surface (beats the header-authority rules
+   in killa-v2.css via higher specificity) */
 body .main-header .navbar .navbar-nav > li[data-knav] > a,
 body .main-header .navbar .navbar-nav > li[data-knav] > a:link,
 body .main-header .navbar .navbar-nav > li[data-knav] > a:visited {
@@ -82,8 +80,8 @@ body .main-header .navbar .navbar-nav > li[data-knav].active > a:hover {
 body .main-header .navbar .navbar-nav > li[data-knav].active > a::after {
     content: '';
     position: absolute;
-    left: 12px;
-    right: 12px;
+    left: 10px;
+    right: 10px;
     bottom: -10px; /* lands on the navbar's bottom hairline */
     height: 3px;
     border-radius: 3px 3px 0 0;
@@ -207,18 +205,26 @@ body .main-header .navbar .navbar-custom-menu .navbar-nav > li:not([data-knav]):
 }
 
 /* --------------------------------------------------------------------------
-   Mobile (xs): labels drop, chips stay icon-only; search keeps the pill.
+   Mobile (xs): chips stay icon-only; search keeps the pill, narrower.
    -------------------------------------------------------------------------- */
 @media (max-width: 767px) {
-    body .main-header .navbar .navbar-nav > li[data-knav] .knav-label {
-        display: none;
-    }
-
-    body .main-header .navbar .navbar-nav > li[data-knav] > a {
-        padding: 0 10px !important;
-    }
-
     body .main-header .navbar .navbar-form.killa-header-search #tagSearch {
         width: 130px;
     }
+}
+
+/* --------------------------------------------------------------------------
+   [killa site-tagline] tagline under the site name in the brand block.
+   Structural styles are inline in layouts/default.blade.php so Classic (this
+   file is gated off there) still renders the stack correctly; this block only
+   tunes the v2 look via tokens (dark mode + tenant header_color safe).
+   -------------------------------------------------------------------------- */
+body .main-header .navbar .killa-brand-text {
+    padding: 4px 0;
+}
+
+body .main-header .navbar .killa-site-tagline {
+    color: var(--k-navbar-text, currentColor);
+    letter-spacing: 0.02em;
+    margin-top: 1px;
 }

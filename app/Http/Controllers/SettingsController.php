@@ -275,6 +275,12 @@ class SettingsController extends Controller
             $setting->nav_link_color = $request->input('nav_link_color', '#FFFFFF');
 
             $setting->site_name = $request->input('site_name', 'Snipe-IT');
+
+            // [killa site-tagline] optional tagline shown under the site name in the header
+            $request->validate(['site_tagline' => 'nullable|max:191']);
+            $setting->site_tagline = $request->input('site_tagline');
+            // [/killa site-tagline]
+
             $setting->custom_css = $request->input('custom_css');
 
             // Logo upload
