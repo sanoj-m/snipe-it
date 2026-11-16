@@ -25,7 +25,7 @@
 
 :root {
     /* px, not rem: Bootstrap 3 pins `html { font-size: 10px }` */
-    --k-sidebar-w: 220px;
+    --k-sidebar-w: 240px;
     --k-sidebar-w-icon: 60px;
     --k-sidebar-w-mobile: 288px;
     --k-sidebar-dur: 300ms;
@@ -304,8 +304,9 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     transition: background-color 200ms ease, color 200ms ease;
 }
 
-/* 28×28 icon chip — invisible at rest, solid module color when active */
-.ks-link > i,
+/* 28×28 icon chip — invisible at rest, solid module color when active.
+   The chevron is a direct <i> child too but must NEVER get chip styling. */
+.ks-link > i:not(.ks-chevron),
 .ks-link > svg {
     flex: none;
     width: 28px;
@@ -333,9 +334,9 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     text-decoration: none;
 }
 
-.ks-link:hover > i,
+.ks-link:hover > i:not(.ks-chevron),
 .ks-link:hover > svg,
-.ks-link:focus > i,
+.ks-link:focus > i:not(.ks-chevron),
 .ks-link:focus > svg {
     color: var(--k-sidebar-text);
 }
@@ -348,7 +349,7 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     font-weight: 600;
 }
 
-.ks-item.active > .ks-link > i,
+.ks-item.active > .ks-link > i:not(.ks-chevron),
 .ks-item.active > .ks-link > svg {
     background: var(--ks-mod);
     color: #fff;
@@ -450,7 +451,8 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     color: var(--k-sidebar-muted);
     font-size: 12px;
     font-weight: 500;
-    line-height: 1.4;
+    line-height: 1.3;
+    overflow-wrap: normal; /* never split a word ("Undeployable") */
     cursor: pointer;
     transition: background-color 200ms ease, color 200ms ease;
 }
@@ -523,6 +525,7 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
    when the row is active */
 .ks-sub .badge,
 .ks-sub > li > a > .badge {
+    flex: none; /* never let the badge squeeze the label into a wrap */
     margin-left: auto;
     background-color: var(--k-sidebar-badge-bg);
     color: var(--k-sidebar-badge-text);
@@ -729,9 +732,9 @@ body.ks-lock {
         box-shadow: 0 2px 8px rgba(15, 23, 42, .18);
     }
 
-    body.ks-collapsed .ks-item.active > .ks-link > i,
+    body.ks-collapsed .ks-item.active > .ks-link > i:not(.ks-chevron),
     body.ks-collapsed .ks-item.active > .ks-link > svg,
-    html.ks-collapsed-pre body .ks-item.active > .ks-link > i,
+    html.ks-collapsed-pre body .ks-item.active > .ks-link > i:not(.ks-chevron),
     html.ks-collapsed-pre body .ks-item.active > .ks-link > svg {
         background: transparent;
         color: #fff;

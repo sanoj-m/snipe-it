@@ -165,6 +165,9 @@
         }
         setOpen(item, open, true);
         schedulePill();
+        /* re-measure after the 300ms open/close animation settles — rows
+           below the toggled submenu shift, moving the active row */
+        setTimeout(schedulePill, 320);
     }
 
     /* animate=true marks the item .ks-stagger so the per-item stagger plays;
@@ -218,8 +221,11 @@
                 menu.classList.remove('ks-pill-on');
                 return;
             }
+            /* Measure the row LINK only: an active parent with an open
+               submenu must tint just its own row, never the whole tree. */
+            var link = active.querySelector(':scope > .ks-link');
             menu.style.setProperty('--pill-y', active.offsetTop + 'px');
-            menu.style.setProperty('--pill-h', active.offsetHeight + 'px');
+            menu.style.setProperty('--pill-h', (link ? link.offsetHeight : active.offsetHeight) + 'px');
             menu.classList.add('ks-pill-on');
         });
     }
