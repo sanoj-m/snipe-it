@@ -9,6 +9,9 @@ return [
     'insights_description' => 'A clearer view of inventory, activity, and work that needs attention.',
     'insights_title' => 'Operations insights',
     'inventory_overview' => 'Inventory overview',
+    // [killa lan-switch banner] KCP-060
+    'lan_banner_text' => 'You’re on the office network — the local server is faster.',
+    'lan_banner_button' => 'Switch to local',
     'last_30_days' => 'Last 30 days',
     'navigation' => 'Primary navigation',
     'nav_brand_caption' => 'Asset Manager',

@@ -666,6 +666,14 @@ return [
     'alt_hosts' => env('APP_ALT_HOSTS', ''),
     // [killa multi-host] END
 
+    // [killa lan-switch banner] BEGIN — KCP-060
+    // lan_wan_ips: comma-separated office WAN IPs (matched against the
+    // CF-Connecting-IP header) that should see the "switch to local" banner.
+    // lan_url: LAN base URL the banner links to. Empty of either = disabled.
+    'lan_wan_ips' => env('KILLA_LAN_WAN_IPS', ''),
+    'lan_url' => env('KILLA_LAN_URL', ''),
+    // [killa lan-switch banner] END
+
     /*
     |--------------------------------------------------------------------------
     | LDAP Execution Limits

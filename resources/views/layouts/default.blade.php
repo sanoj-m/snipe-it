@@ -531,6 +531,10 @@
 
                 @include('partials.impersonation-banner')
 
+                {{-- [killa lan-switch banner] BEGIN — KCP-060 --}}
+                @include('partials.killa-lan-banner')
+                {{-- [killa lan-switch banner] END --}}
+
                 @if ($debug_in_production)
                     <div class="row" style="margin-bottom: 0px; background-color: red; color: white; font-size: 15px;">
                         <div class="col-md-12"
