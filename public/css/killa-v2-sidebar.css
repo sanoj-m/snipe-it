@@ -123,13 +123,13 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 38px 8px 24px; /* top strip reserved for the floating toggle */
+    padding: 10px 8px 24px;
     scrollbar-width: thin;
     scrollbar-color: var(--k-sidebar-scrollbar) transparent;
 }
 
 .ks-content::-webkit-scrollbar {
-    width: 6px;
+    width: 3px;
 }
 
 .ks-content::-webkit-scrollbar-thumb {
@@ -553,15 +553,14 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
    Collapse toggle: 24px floating circle straddling the rail's right edge
    -------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------
-   Collapse toggle: 24px circle seated inside the rail's reserved top strip
-   (never hangs over the breadcrumb/content zone). The header hamburger is
-   redundant on desktop — the rail has this toggle + Ctrl/B — so it only
-   renders on mobile, where it opens the drawer.
+   Collapse toggle: 24px circle straddling the rail's right border. The
+   header hamburger is redundant on desktop — the rail has this toggle +
+   Ctrl/B — so it only renders on mobile, where it opens the drawer.
    -------------------------------------------------------------------------- */
 .ks-rail-toggle {
     position: absolute;
-    top: 7px;
-    right: 6px;
+    top: 8px;
+    right: -12px;
     z-index: 50;
     display: flex;
     align-items: center;
@@ -622,6 +621,13 @@ body.ks-lock {
     body.ks-collapsed .ks-sidebar,
     html.ks-collapsed-pre body .ks-sidebar {
         width: var(--k-sidebar-w-icon);
+    }
+
+    /* collapsed only: reserve a top strip so the border-straddling toggle
+       never covers the first tile */
+    body.ks-collapsed .ks-content,
+    html.ks-collapsed-pre body .ks-content {
+        padding-top: 40px;
     }
 
     /* hide ALL text on the rail — specificity must beat the expanded-mode
@@ -807,6 +813,23 @@ body.ks-lock {
     .ks-rail-toggle {
         display: none;
     }
+}
+
+/* --------------------------------------------------------------------------
+   Header brand (loaded after killa-v2.css, so these win): compact logo and
+   tight spacing now that the desktop hamburger is gone.
+   -------------------------------------------------------------------------- */
+body .main-header .logo.navbar-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-left: 12px;
+}
+
+body .main-header .logo.navbar-brand .navbar-brand-img {
+    max-height: 26px;
+    max-width: 120px;
+    object-fit: contain;
 }
 
 /* --------------------------------------------------------------------------
