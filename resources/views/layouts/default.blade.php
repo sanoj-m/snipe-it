@@ -185,59 +185,65 @@
 
                             </li>
 
+                            {{-- [killa-v2 header] KCP-058: module shortcuts become tinted pill chips
+                                 (data-knav drives the per-module color in killa-v2-header.css); labels
+                                 are visible (.knav-label) in the v2 design and stay sr-only in Classic. --}}
                             @can('index', \App\Models\Asset::class)
-                                <li aria-hidden="true"{!! (request()->is('hardware*') ? ' class="active" aria-current="page"' : '') !!}>
+                                <li aria-hidden="true" data-knav="assets"{!! (request()->is('hardware*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ url('hardware') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=1" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.assets') }}">
                                         <x-icon type="assets" class="fa-fw" />
-                                        <span class="sr-only">{{ trans('general.assets') }}</span>
+                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.assets') }}</span>
                                     </a>
                                 </li>
                             @endcan
                             @can('view', \App\Models\License::class)
-                                <li aria-hidden="true"{!! (request()->is('licenses*') ? ' class="active" aria-current="page"' : '') !!}>
+                                <li aria-hidden="true" data-knav="licenses"{!! (request()->is('licenses*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('licenses.index') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=2" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.licenses') }}">
                                         <x-icon type="licenses" class="fa-fw" />
-                                        <span class="sr-only">{{ trans('general.licenses') }}</span>
+                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.licenses') }}</span>
                                     </a>
                                 </li>
                             @endcan
                             @can('index', \App\Models\Accessory::class)
-                                <li aria-hidden="true"{!! (request()->is('accessories*') ? ' class="active" aria-current="page"' : '') !!}>
+                                <li aria-hidden="true" data-knav="accessories"{!! (request()->is('accessories*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('accessories.index') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=3" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.accessories') }}">
                                         <x-icon type="accessories" class="fa-fw" />
-                                        <span class="sr-only">{{ trans('general.accessories') }}</span>
+                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.accessories') }}</span>
                                     </a>
                                 </li>
                             @endcan
                             @can('index', \App\Models\Consumable::class)
-                                <li aria-hidden="true"{!! (request()->is('consumables*') ? ' class="active" aria-current="page"' : '') !!}>
+                                <li aria-hidden="true" data-knav="consumables"{!! (request()->is('consumables*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ url('consumables') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=4" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.consumables') }}">
                                         <x-icon type="consumables" class="fa-fw" />
-                                        <span class="sr-only">{{ trans('general.consumables') }}</span>
+                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.consumables') }}</span>
                                     </a>
                                 </li>
                             @endcan
                             @can('view', \App\Models\Component::class)
-                                <li aria-hidden="true"{!! (request()->is('components*') ? ' class="active" aria-current="page"' : '') !!}>
+                                <li aria-hidden="true" data-knav="components"{!! (request()->is('components*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('components.index') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=5" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.components') }}">
                                         <x-icon type="components" class="fa-fw" />
-                                        <span class="sr-only">{{ trans('general.components') }}</span>
+                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.components') }}</span>
                                     </a>
                                 </li>
                             @endcan
 
                             @can('index', \App\Models\User::class)
-                                <li aria-hidden="true"{!! (request()->is('users*') ? ' class="active" aria-current="page"' : '') !!}>
+                                <li aria-hidden="true" data-knav="users"{!! (request()->is('users*') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('users.index') }}" {{$snipeSettings->shortcuts_enabled == 1 ? "accesskey=6" : ''}} tabindex="-1" data-tooltip="true" data-placement="bottom" data-title="{{ trans('general.users') }}">
                                         <x-icon type="users" class="fa-fw" />
-                                        <span class="sr-only">{{ trans('general.users') }}</span>
+                                        <span class="{{ request()->cookie('killa_design') !== 'classic' ? 'knav-label' : 'sr-only' }}">{{ trans('general.users') }}</span>
                                     </a>
                                 </li>
                             @endcan
+                            {{-- [/killa-v2 header] --}}
 
                             @can('index', \App\Models\Asset::class)
                                 <li>
-                                    <form class="navbar-form navbar-left form-inline" role="search" action="{{ route('findbytag/hardware') }}" method="get">
+                                    {{-- [killa-v2 header] KCP-058: killa-header-search hook — unified rounded
+                                         search pill in the v2 design (killa-v2-header.css); inert in Classic --}}
+                                    <form class="navbar-form navbar-left form-inline killa-header-search" role="search" action="{{ route('findbytag/hardware') }}" method="get">
 
                                                 <div class="input-group col-xs-12" style="border: 0 !important;">
                                                     <label class="sr-only" for="tagSearch">
@@ -257,7 +263,9 @@
 
                             @can('admin')
                                 <li class="dropdown user-menu" aria-hidden="true">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" tabindex="-1" aria-haspopup="true" aria-expanded="false">
+                                    {{-- [killa-v2 header] KCP-058: k-create-toggle hook — primary accent pill
+                                         CTA in the v2 design (killa-v2-header.css); inert in Classic --}}
+                                    <a href="#" class="dropdown-toggle k-create-toggle" data-toggle="dropdown" tabindex="-1" aria-haspopup="true" aria-expanded="false">
                                         {{ trans('general.create') }}
                                         <strong class="caret"></strong>
                                     </a>

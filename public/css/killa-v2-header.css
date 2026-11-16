@@ -1,0 +1,224 @@
+/* ==========================================================================
+   [killa-v2 header] KCP-058 — top header bar redesign
+   Killa-owned layer (no build step). Loaded in layouts/default.blade.php
+   right after killa-v2.css, INSIDE the killa_design cookie gate (KCP-054) —
+   Classic never loads this file, so nothing here needs a Classic fallback.
+
+   Design: module shortcuts become soft-tint pill chips (icon + label, one
+   semantic color per module), the asset-tag lookup becomes a unified rounded
+   search pill, and Create becomes the single primary accent CTA. Structure,
+   routes, gates, accesskeys and tooltips are unchanged — this is chrome only.
+
+   Color discipline (killa-design-manual): accents are SOFT TINTS on the
+   navbar surface, never solid washes; module colors come from the existing
+   token palette (no violet — the palette maps purple to navy, see
+   --k-tile-purple); dark mode + tenant header_color (KCP-057) work for free
+   because everything below is token- or color-mix-based.
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   Module nav chips: icon + label pill with a per-module semantic tint.
+   Idle = tinted icon + muted label; hover = soft tint wash; active = tint
+   wash + 3px rounded bottom indicator (accent-indicator DNA).
+   -------------------------------------------------------------------------- */
+body .main-header .navbar .navbar-nav > li[data-knav] > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    height: 36px;
+    margin: 10px 2px;
+    padding: 0 12px !important;
+    border-radius: var(--k-radius-pill);
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1;
+    position: relative;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .main-header .navbar .navbar-nav > li[data-knav] > a .fa,
+body .main-header .navbar .navbar-nav > li[data-knav] > a .fas,
+body .main-header .navbar .navbar-nav > li[data-knav] > a .far {
+    font-size: 14px;
+    color: var(--knav, var(--k-accent));
+    transition: color var(--k-motion);
+}
+
+body .main-header .navbar .navbar-nav > li[data-knav] .knav-label {
+    white-space: nowrap;
+}
+
+/* per-module color map — chip tint + icon color (existing tokens only) */
+body .main-header .navbar .navbar-nav > li[data-knav='assets'] > a       { --knav: var(--k-info); }
+body .main-header .navbar .navbar-nav > li[data-knav='licenses'] > a     { --knav: var(--k-tile-purple); }
+body .main-header .navbar .navbar-nav > li[data-knav='accessories'] > a  { --knav: var(--k-success); }
+body .main-header .navbar .navbar-nav > li[data-knav='consumables'] > a  { --knav: var(--k-warning); }
+body .main-header .navbar .navbar-nav > li[data-knav='components'] > a   { --knav: var(--k-danger); }
+body .main-header .navbar .navbar-nav > li[data-knav='users'] > a        { --knav: var(--k-tile-teal); }
+
+/* idle: tinted icon, neutral label (beats the header-authority rules in
+   killa-v2.css via higher specificity) */
+body .main-header .navbar .navbar-nav > li[data-knav] > a,
+body .main-header .navbar .navbar-nav > li[data-knav] > a:link,
+body .main-header .navbar .navbar-nav > li[data-knav] > a:visited {
+    color: var(--k-navbar-text) !important;
+    background-color: transparent !important;
+}
+
+/* hover + focus: soft module tint, module color text */
+body .main-header .navbar .navbar-nav > li[data-knav] > a:hover,
+body .main-header .navbar .navbar-nav > li[data-knav] > a:focus-visible {
+    background-color: color-mix(in srgb, var(--knav, var(--k-accent)) var(--k-tint-alpha), transparent) !important;
+    color: var(--knav, var(--k-accent)) !important;
+}
+
+/* active module: tint + bottom indicator bar */
+body .main-header .navbar .navbar-nav > li[data-knav].active > a,
+body .main-header .navbar .navbar-nav > li[data-knav].active > a:hover {
+    background-color: color-mix(in srgb, var(--knav, var(--k-accent)) var(--k-tint-alpha-active), transparent) !important;
+    color: var(--knav, var(--k-accent)) !important;
+}
+
+body .main-header .navbar .navbar-nav > li[data-knav].active > a::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 12px;
+    bottom: -10px; /* lands on the navbar's bottom hairline */
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--knav, var(--k-accent));
+}
+
+/* --------------------------------------------------------------------------
+   Asset-tag lookup: unified rounded search pill (input + submit read as one
+   control), focus ring on the whole pill.
+   -------------------------------------------------------------------------- */
+body .main-header .navbar .navbar-form.killa-header-search {
+    margin: 0;
+    padding: 10px 8px;
+    border: none;
+    box-shadow: none;
+}
+
+body .main-header .navbar .navbar-form.killa-header-search .input-group {
+    display: flex;
+    align-items: stretch;
+    border-radius: var(--k-radius-pill);
+    border: 1px solid var(--k-border);
+    background-color: var(--k-hover-tint);
+    overflow: hidden;
+    transition: border-color var(--k-motion), box-shadow var(--k-motion), background-color var(--k-motion);
+}
+
+body .main-header .navbar .navbar-form.killa-header-search .input-group:focus-within {
+    border-color: var(--k-accent);
+    box-shadow: 0 0 0 4px var(--k-accent-ring);
+    background-color: var(--k-navbar-bg);
+}
+
+body .main-header .navbar .navbar-form.killa-header-search #tagSearch {
+    width: 220px;
+    height: 34px;
+    border: none !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    color: var(--k-text);
+    font-size: 13px;
+    padding: 0 4px 0 14px;
+}
+
+body .main-header .navbar .navbar-form.killa-header-search #tagSearch::placeholder {
+    color: var(--k-text-muted);
+}
+
+body .main-header .navbar .navbar-form.killa-header-search .input-group-btn {
+    display: flex;
+    width: auto;
+}
+
+body .main-header .navbar .navbar-form.killa-header-search #topSearchButton {
+    height: 34px;
+    padding: 0 14px !important; /* replaces the old inline padding */
+    border: none !important;
+    background-color: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    color: var(--k-text-muted) !important;
+    transition: color var(--k-motion);
+}
+
+body .main-header .navbar .navbar-form.killa-header-search .input-group:focus-within #topSearchButton,
+body .main-header .navbar .navbar-form.killa-header-search #topSearchButton:hover {
+    color: var(--k-accent) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Create: the single primary CTA in the header — solid accent pill.
+   (Dropdown panel itself already restyled by KCP-056.)
+   -------------------------------------------------------------------------- */
+body .main-header .navbar .navbar-nav > li > a.k-create-toggle,
+body .main-header .navbar .navbar-nav > li > a.k-create-toggle:link,
+body .main-header .navbar .navbar-nav > li > a.k-create-toggle:visited {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 36px;
+    margin: 10px 4px;
+    padding: 0 16px !important;
+    border-radius: var(--k-radius-pill);
+    background-color: var(--k-accent) !important;
+    color: var(--k-accent-contrast) !important;
+    font-size: 13px;
+    font-weight: 600;
+    box-shadow: var(--k-shadow-1);
+    transition: background-color var(--k-motion), box-shadow var(--k-motion);
+}
+
+body .main-header .navbar .navbar-nav > li > a.k-create-toggle:hover,
+body .main-header .navbar .navbar-nav > li.open > a.k-create-toggle,
+body .main-header .navbar .navbar-nav > li.open > a.k-create-toggle:hover {
+    background-color: var(--k-accent-hover) !important;
+    color: var(--k-accent-contrast) !important;
+    box-shadow: var(--k-shadow-2);
+}
+
+body .main-header .navbar .navbar-nav > li > a.k-create-toggle .caret {
+    border-top-color: currentColor;
+}
+
+/* --------------------------------------------------------------------------
+   Rhythm: vertically center the remaining header items (alerts bell, gear,
+   mobile toggle) against the 56px bar so the chips/CTA don't float alone.
+   The user-menu trigger owns its alignment via KCP-056.
+   -------------------------------------------------------------------------- */
+body .main-header .navbar .navbar-custom-menu .navbar-nav > li:not([data-knav]):not(.user) > a:not(.k-create-toggle) {
+    display: inline-flex;
+    align-items: center;
+    height: 36px;
+    margin: 10px 2px;
+    padding: 0 10px;
+    border-radius: var(--k-radius-pill);
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .main-header .navbar .navbar-custom-menu .navbar-nav > li:not([data-knav]):not(.user) > a:not(.k-create-toggle):hover {
+    background-color: var(--k-hover-tint) !important;
+}
+
+/* --------------------------------------------------------------------------
+   Mobile (xs): labels drop, chips stay icon-only; search keeps the pill.
+   -------------------------------------------------------------------------- */
+@media (max-width: 767px) {
+    body .main-header .navbar .navbar-nav > li[data-knav] .knav-label {
+        display: none;
+    }
+
+    body .main-header .navbar .navbar-nav > li[data-knav] > a {
+        padding: 0 10px !important;
+    }
+
+    body .main-header .navbar .navbar-form.killa-header-search #tagSearch {
+        width: 130px;
+    }
+}
