@@ -87,6 +87,12 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
         margin-left: var(--k-sidebar-w-icon) !important;
     }
 
+    /* the rail has its own collapse toggle — hide AdminLTE's hamburger on
+       desktop so there aren't two overlapping controls */
+    body .main-header .navbar .sidebar-toggle {
+        display: none;
+    }
+
     .content-wrapper,
     .main-footer {
         transition: margin-left var(--k-sidebar-dur) var(--k-ease-drawer);
@@ -546,10 +552,16 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
 /* --------------------------------------------------------------------------
    Collapse toggle: 24px floating circle straddling the rail's right edge
    -------------------------------------------------------------------------- */
+/* --------------------------------------------------------------------------
+   Collapse toggle: 24px circle seated inside the rail's reserved top strip
+   (never hangs over the breadcrumb/content zone). The header hamburger is
+   redundant on desktop — the rail has this toggle + Ctrl/B — so it only
+   renders on mobile, where it opens the drawer.
+   -------------------------------------------------------------------------- */
 .ks-rail-toggle {
     position: absolute;
-    top: 8px;
-    right: -12px;
+    top: 7px;
+    right: 6px;
     z-index: 50;
     display: flex;
     align-items: center;
