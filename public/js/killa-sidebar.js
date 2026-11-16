@@ -13,7 +13,8 @@
 
     var STORAGE_KEY = 'ks.sidebar';
     var MOBILE_BP = 768;
-    var FLYOUT_DELAY = 500; // hover-intent hold for collapsed flyout menus
+    var FLYOUT_OPEN_DELAY = 150; // hover-intent open delay for collapsed flyouts
+    var FLYOUT_CLOSE_DELAY = 200; // grace period so the pointer can cross over
     var reducedMotion = window.matchMedia
         && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -229,32 +230,36 @@
     }
     schedulePill();
 
-    /* ------------------------------------------------------------------
-       Hover-intent flyout in collapsed mode: instant open on enter,
-       delayed close on leave so the pointer can cross into the flyout.
-       ------------------------------------------------------------------ */
+    /* Hover-intent flyout in collapsed mode: 150ms open delay so a passing
+       cursor doesn't flash panels, 200ms close delay so the pointer can
+       cross into the flyout. */
     sidebar.querySelectorAll('.ks-item--parent').forEach(function (item) {
-        var timer = null;
+        var openTimer = null;
+        var closeTimer = null;
         item.addEventListener('mouseenter', function () {
             if (!isCollapsed() || isMobile()) {
                 return;
             }
-            clearTimeout(timer);
+            clearTimeout(closeTimer);
             sidebar.querySelectorAll('.ks-item--parent.ks-flyout-hold').forEach(function (other) {
                 if (other !== item) {
                     other.classList.remove('ks-flyout-hold');
                 }
             });
-            item.classList.add('ks-flyout-hold');
+            clearTimeout(openTimer);
+            openTimer = setTimeout(function () {
+                item.classList.add('ks-flyout-hold');
+            }, reducedMotion ? 0 : FLYOUT_OPEN_DELAY);
         });
         item.addEventListener('mouseleave', function () {
             if (!isCollapsed() || isMobile()) {
                 return;
             }
-            clearTimeout(timer);
-            timer = setTimeout(function () {
+            clearTimeout(openTimer);
+            clearTimeout(closeTimer);
+            closeTimer = setTimeout(function () {
                 item.classList.remove('ks-flyout-hold');
-            }, reducedMotion ? 0 : FLYOUT_DELAY);
+            }, reducedMotion ? 0 : FLYOUT_CLOSE_DELAY);
         });
     });
 

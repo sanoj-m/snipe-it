@@ -11,6 +11,10 @@
 > - Live server: `root@40.30.20.6` (app at `/opt/snipe-it`,
 >   `https://asset.killadesign.co`). On this Windows machine use PuTTY's
 >   `plink`/`pscp` for access.
+> - SSH auth: password login as root; the current password is stored in the
+>   untracked local file `.kimi-tmp/deploy-credentials.md` (never commit it).
+>   Use `plink -ssh root@40.30.20.6 -pw '<password>'`. Sync every change to
+>   live in the same session — this is a standing user rule.
 > - Code changes: commit → `git archive` tarball →
 >   `/usr/local/sbin/snipeit-apply-update.sh` on the server (backup, rsync,
 >   composer, migrate, caches). Hot single-file patches (scp + cache clear)

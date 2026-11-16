@@ -1,50 +1,74 @@
 /* ==========================================================================
-   [killa-v2 sidebar] — KCP-049 animated navigation rail (zero-build overlay)
+   [killa-v2 sidebar] — KCP-049 navigation rail (zero-build overlay)
 
-   Replaces the old `.main-sidebar`/`.sidebar-menu` chrome (superseded rules
-   in killa-v2.css simply stop matching — the old classes are no longer
-   rendered). Uses shared tokens from killa-v2.css; only sidebar-private
-   tokens are defined here (single-source rule: each token defined once,
-   dark overrides only under html[data-theme='dark']).
+   Design pass 3 — Killa ERM app-shell port (module color system):
+   - NEUTRAL AT REST, COLOR ONLY ON SELECTION. Icons sit in 28×28 chips,
+     grey at 70%; labels at 65% opacity. Hover is a neutral wash that only
+     raises opacity — never tinted.
+   - Each nav group carries a module color (ks-mod-* class on .ks-group):
+     overview = brand orange, inventory = green, people = violet,
+     system = slate. Module color appears ONLY on the active element:
+     soft tint row fill + solid 28px chip with white icon + module-dark label.
+   - Geometry: 220px rail / 60px icon rail, 300ms cubic-bezier(.16,1,.3,1)
+     width easing, 24px floating circular collapse toggle straddling the
+     right edge, 2px submenu guide with a 3×20 module accent bar lighting
+     up on the active child, 40ms staggered slide-in-left on open.
+   - Brand lockup on top (36px tile + two-line text), footer at the bottom
+     (utility rows + destructive-on-hover sign out).
 
-   Design pass 2 (beui animated-sidebar reference):
-   - Plain inline 16px icons, no boxed icon wells anywhere.
-   - Rows 36px, 13px/500, muted foreground; hover = faint wash + brighter text.
-   - Active top-level = NEUTRAL muted pill (the sliding .ks-pill) + a 3px
-     accent leading bar + accent-tinted icon as the single brand touch.
-   - Slim chevron-right on parents, muted, rotates 90° when open.
-   - Submenus are visually subordinate: indented with a 1px vertical guide,
-     32px/12px child rows, icons reduced to dots (8px status dots keep their
-     statuslabel colors; plain children get a 4px default dot).
-
-   Collapse state: `body.ks-collapsed` (mirrored from AdminLTE's
-   `body.sidebar-collapse` by killa-sidebar.js). `html.ks-collapsed-pre`
-   is stamped by the pre-paint head script so the rail never flashes
-   expanded on load.
+   Collapse state contract unchanged: `body.ks-collapsed` mirrored from
+   AdminLTE's `body.sidebar-collapse` by killa-sidebar.js; pre-paint marker
+   `html.ks-collapsed-pre`. Sidebar-private tokens live here (light in
+   :root, dark under html[data-theme='dark']); shared tokens stay in
+   killa-v2.css.
    ========================================================================== */
 
 :root {
-    /* px, not rem: Bootstrap 3 pins `html { font-size: 10px }`, so rems
-       render at 10px each (16rem would be 160px, not 256px) */
-    --k-sidebar-w: 256px;
-    --k-sidebar-w-icon: 68px;
+    /* px, not rem: Bootstrap 3 pins `html { font-size: 10px }` */
+    --k-sidebar-w: 220px;
+    --k-sidebar-w-icon: 60px;
     --k-sidebar-w-mobile: 288px;
-    --k-sidebar-dur: 280ms;
-    --k-sidebar-stagger: 45ms;
-    --k-ease-drawer: cubic-bezier(.32, .72, 0, 1);
+    --k-sidebar-dur: 300ms;
+    --k-sidebar-stagger: 40ms;
+    --k-ease-drawer: cubic-bezier(.16, 1, .3, 1);
     --k-ease-spring: cubic-bezier(.2, .9, .25, 1.1);
-    --k-sidebar-top: var(--k-header-h, 56px); /* rail docks flush under the fixed topbar (v2.2) */
+    --k-sidebar-top: var(--k-header-h, 56px); /* rail docks flush under the fixed topbar */
     --k-sidebar-icon-size: 16px;
-    --k-sidebar-guide: var(--k-sidebar-border);
+    --k-sidebar-icon: rgba(75, 85, 99, .7); /* sidebar-foreground/70 at rest */
+    --k-sidebar-guide: rgba(229, 231, 235, .5);
     --k-sidebar-pill-bg: var(--k-sidebar-hover-bg);
+    --k-destructive: #dc2626;
+    --k-destructive-soft: rgba(220, 38, 38, .1);
+
+    /* fallback module tokens (groups without a ks-mod-* class) */
+    --ks-mod: #f85a3e;
+    --ks-mod-soft: rgba(248, 90, 62, .1);
+    --ks-mod-text: #c2410c;
 }
+
+/* Module color tokens — solid / soft(10%) / dark-text variants per group.
+   Color appears only on the active element; nothing else reads these. */
+.ks-mod-overview { --ks-mod: #f85a3e; --ks-mod-soft: rgba(248, 90, 62, .1); --ks-mod-text: #c2410c; }
+.ks-mod-inventory { --ks-mod: #0ea47a; --ks-mod-soft: rgba(14, 164, 122, .1); --ks-mod-text: #0b6e52; }
+.ks-mod-people { --ks-mod: #8b5cf6; --ks-mod-soft: rgba(139, 92, 246, .1); --ks-mod-text: #6d28d9; }
+.ks-mod-system { --ks-mod: #64748b; --ks-mod-soft: rgba(100, 116, 139, .12); --ks-mod-text: #475569; }
+
+html[data-theme='dark'] {
+    --k-sidebar-icon: rgba(201, 205, 212, .7);
+    --k-sidebar-guide: rgba(255, 255, 255, .05);
+    --k-destructive: #f87171;
+    --k-destructive-soft: rgba(248, 113, 113, .12);
+}
+
+html[data-theme='dark'] .ks-mod-overview { --ks-mod: #fb7c63; --ks-mod-soft: rgba(251, 124, 99, .15); --ks-mod-text: #ffa38f; }
+html[data-theme='dark'] .ks-mod-inventory { --ks-mod: #34d399; --ks-mod-soft: rgba(52, 211, 153, .15); --ks-mod-text: #6ee7b7; }
+html[data-theme='dark'] .ks-mod-people { --ks-mod: #a78bfa; --ks-mod-soft: rgba(167, 139, 250, .15); --ks-mod-text: #c4b5fd; }
+html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(148, 163, 184, .15); --ks-mod-text: #cbd5e1; }
 
 /* --------------------------------------------------------------------------
    Page layout: keep content/footer margins in sync with the rail width.
-   The topbar itself is fixed and full-width since v2.2 (killa-v2.css) — it
-   no longer tracks the rail, so .main-header is intentionally absent here.
-   These rules intentionally shadow the 250px block in killa-v2.css
-   (source order after killa-v2.css wins at equal specificity).
+   The topbar is fixed and full-width (killa-v2.css) — it does not track
+   the rail, so .main-header is intentionally absent here.
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) {
     html:not(.ks-collapsed-pre) body:not(.sidebar-collapse):not(.ks-collapsed) .content-wrapper,
@@ -93,7 +117,7 @@
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: var(--k-space-3) 0 var(--k-space-6);
+    padding: 2px 8px 24px;
     scrollbar-width: thin;
     scrollbar-color: var(--k-sidebar-scrollbar) transparent;
 }
@@ -108,27 +132,113 @@
 }
 
 /* --------------------------------------------------------------------------
+   Brand lockup: 36px tile + two-line text, whole block navigates home
+   -------------------------------------------------------------------------- */
+.ks-brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 10px 12px 0;
+    padding: 6px 8px;
+    border-radius: 12px;
+    color: var(--k-sidebar-text-active);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: background-color 200ms ease;
+}
+
+.ks-brand:hover,
+.ks-brand:focus {
+    background-color: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+    text-decoration: none;
+}
+
+.ks-brand-tile {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 12px;
+    background: var(--k-accent);
+    color: var(--k-accent-contrast);
+    font-size: 16px;
+    font-weight: 700;
+    overflow: hidden;
+}
+
+.ks-brand-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ks-brand-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+    transition: opacity 160ms ease;
+}
+
+.ks-brand-name {
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ks-brand-caption {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--k-sidebar-muted);
+}
+
+.ks-brand-divider {
+    height: 1px;
+    margin: 10px 12px 8px;
+    background: var(--k-sidebar-border);
+    opacity: .6;
+}
+
+/* --------------------------------------------------------------------------
    Groups
    -------------------------------------------------------------------------- */
 .ks-group {
-    padding: var(--k-space-2) var(--k-space-2) 0;
+    padding: 4px 0 0;
 }
 
 .ks-group-label {
-    margin: var(--k-space-1) var(--k-space-3) 2px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 4px 12px 2px;
     padding: 0;
     font-size: 10px;
-    font-weight: 600;
+    font-weight: 700;
     letter-spacing: .14em;
     text-transform: uppercase;
     line-height: 1.6;
     color: var(--k-sidebar-muted);
+    opacity: .4;
     white-space: nowrap;
     overflow: hidden;
     max-height: 22px;
-    opacity: 1;
-    transition: opacity var(--k-motion), max-height var(--k-sidebar-dur) var(--k-ease-drawer),
+    transition: opacity 160ms ease, max-height var(--k-sidebar-dur) var(--k-ease-drawer),
                 margin var(--k-sidebar-dur) var(--k-ease-drawer);
+}
+
+/* hairline fading to the right after the label text */
+.ks-group-label::after {
+    content: '';
+    flex: 1 1 auto;
+    height: 1px;
+    background: linear-gradient(to right, var(--k-sidebar-border), transparent);
 }
 
 /* hide empty groups (all items gated away) */
@@ -141,10 +251,13 @@
     list-style: none;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
-/* sliding active pill — JS sets --pill-y/--pill-h on the owning .ks-menu.
-   Neutral muted fill; the accent touch is the 3px bar on the active link. */
+/* sliding active pill — module-tinted soft fill; JS sets --pill-y/--pill-h
+   on the owning .ks-menu (vars inherit from the group's ks-mod-* class) */
 .ks-pill {
     position: absolute;
     left: 0;
@@ -152,8 +265,8 @@
     top: 0;
     height: var(--pill-h, 0);
     transform: translateY(var(--pill-y, 0));
-    border-radius: var(--k-radius);
-    background: var(--k-sidebar-pill-bg);
+    border-radius: 12px;
+    background: var(--ks-mod-soft);
     opacity: 0;
     pointer-events: none;
     transition: transform var(--k-sidebar-dur) var(--k-ease-spring),
@@ -166,7 +279,7 @@
 }
 
 /* --------------------------------------------------------------------------
-   Top-level items: plain 16px inline icons, no wells/chips
+   Top-level rows: 28px icon chip, 13px/500 label at 65% opacity at rest
    -------------------------------------------------------------------------- */
 .ks-item {
     position: relative;
@@ -177,10 +290,10 @@
     position: relative;
     display: flex;
     align-items: center;
-    gap: 10px;
-    min-height: 34px;
-    padding: 6px var(--k-space-3);
-    border-radius: var(--k-radius);
+    gap: 12px;
+    min-height: 40px;
+    padding: 6px 12px;
+    border-radius: 12px;
     background: transparent;
     color: var(--k-sidebar-text);
     font-size: 13px;
@@ -188,19 +301,31 @@
     line-height: 1.4;
     white-space: nowrap;
     cursor: pointer;
-    transition: background-color var(--k-motion), color var(--k-motion);
+    transition: background-color 200ms ease, color 200ms ease;
 }
 
+/* 28×28 icon chip — invisible at rest, solid module color when active */
 .ks-link > i,
 .ks-link > svg {
     flex: none;
-    width: var(--k-sidebar-icon-size);
+    width: 28px;
+    height: 28px;
     font-size: var(--k-sidebar-icon-size);
-    line-height: 1;
+    line-height: 28px;
     text-align: center;
+    border-radius: 8px;
+    color: var(--k-sidebar-icon);
     background: transparent;
+    transition: background-color 200ms ease, color 200ms ease;
 }
 
+/* FA6 inline SVGs scale with font-size; keep them inside the chip box */
+.ks-link > svg {
+    padding: 6px;
+    box-sizing: border-box;
+}
+
+/* hover: neutral wash + full opacity. NO color on hover — ever. */
 .ks-link:hover,
 .ks-link:focus {
     background-color: var(--k-sidebar-hover-bg);
@@ -208,28 +333,25 @@
     text-decoration: none;
 }
 
-/* active: neutral pill (behind, via .ks-pill) + 3px accent leading bar +
-   accent icon tint — the ONE brand touch */
-.ks-item.active > .ks-link {
-    color: var(--k-sidebar-text-active);
-    font-weight: 600;
+.ks-link:hover > i,
+.ks-link:hover > svg,
+.ks-link:focus > i,
+.ks-link:focus > svg {
+    color: var(--k-sidebar-text);
 }
 
-.ks-item.active > .ks-link::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 3px;
-    height: 18px;
-    border-radius: var(--k-radius-pill);
-    background: var(--k-accent);
+/* ACTIVE — the only place module color lives:
+   soft tint fill (the sliding .ks-pill) + solid chip with white icon +
+   module-dark label */
+.ks-item.active > .ks-link {
+    color: var(--ks-mod-text);
+    font-weight: 600;
 }
 
 .ks-item.active > .ks-link > i,
 .ks-item.active > .ks-link > svg {
-    color: var(--k-accent);
+    background: var(--ks-mod);
+    color: #fff;
 }
 
 /* open-but-not-current parent: brighten text only, no fill */
@@ -242,40 +364,47 @@
     min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
-    opacity: 1;
+    opacity: .65;
     transition: opacity 160ms ease;
 }
 
-/* slim chevron-right, muted, rotates 90° when open */
+.ks-link:hover .ks-label,
+.ks-link:focus .ks-label,
+.ks-item.active > .ks-link .ks-label,
+.ks-item--parent.open > .ks-link .ks-label {
+    opacity: 1;
+}
+
+/* 16px chevron at 50% opacity, rotates 180° when open */
 .ks-chevron {
     flex: none;
     width: auto;
-    font-size: 12px;
+    font-size: 16px;
     line-height: 1;
     color: var(--k-sidebar-muted);
+    opacity: .5;
     transition: transform var(--k-sidebar-dur) var(--k-ease-drawer), opacity 160ms ease;
 }
 
 .ks-item--parent.open > .ks-link .ks-chevron {
-    transform: rotate(90deg);
+    transform: rotate(180deg);
 }
 
 /* --------------------------------------------------------------------------
-   Submenus: indented, subordinate, with a 1px vertical guide.
+   Submenus: indented under a single continuous 2px guide line.
 
    Visibility invariant: the OPEN state never depends on a transition having
    run. Children are ALWAYS visible; the closed state is expressed entirely
-   on the <ul> itself (max-height:0 + clip-path + opacity). A submenu that
-   renders active server-side (JS auto-opens it) is fully visible on first
-   paint. The per-item stagger is an opt-in enhancement: killa-sidebar.js
-   adds .ks-stagger only for user-initiated toggles.
+   on the <ul> itself (max-height:0 + clip-path + opacity). The stagger is
+   an opt-in enhancement (.ks-stagger, user-initiated toggles only).
    -------------------------------------------------------------------------- */
 .ks-sub {
     list-style: none;
-    margin: 0 var(--k-space-2) 2px;
-    margin-inline-start: calc(var(--k-space-3) + 8px); /* ~icon center */
-    padding: 2px 0 2px var(--k-space-3);
-    border-left: 1px solid var(--k-sidebar-guide);
+    margin: 0 8px 2px;
+    margin-inline-start: 26px; /* icon chip center */
+    padding: 2px 0 2px 12px;
+    border-left: 2px solid var(--k-sidebar-guide);
+    border-radius: 1px;
     background: transparent;
     max-height: 0;
     overflow: hidden;
@@ -292,13 +421,10 @@
     clip-path: inset(0 0 0 0);
 }
 
-/* stagger enhancement (user-initiated toggles only): children start hidden
-   and fade/slide in with a capped per-item delay; on close they snap back
-   with no delay, and re-opening quickly can never strand them hidden
-   because removing .ks-stagger restores the always-visible default */
+/* stagger enhancement: slide-in-left, 40ms per item, capped */
 .ks-item--parent.ks-stagger:not(.open) > .ks-sub > li {
     opacity: 0;
-    transform: translateY(-4px);
+    transform: translateX(-8px);
     transition: opacity 100ms ease;
 }
 
@@ -306,28 +432,32 @@
     opacity: 1;
     transform: none;
     transition: opacity 140ms ease, transform 180ms var(--k-ease-drawer);
-    transition-delay: min(calc(var(--i, 0) * 30ms), 300ms);
+    transition-delay: min(calc(var(--i, 0) * 40ms), 400ms);
+}
+
+.ks-sub > li {
+    position: relative;
 }
 
 .ks-sub > li > a {
     display: flex;
     align-items: center;
-    gap: var(--k-space-2);
-    min-height: 28px;
-    padding: 3px var(--k-space-2);
-    border-radius: var(--k-radius-sm);
+    gap: 8px;
+    min-height: 32px;
+    padding: 4px 8px;
+    border-radius: 8px;
     background: transparent;
     color: var(--k-sidebar-muted);
     font-size: 12px;
     font-weight: 500;
     line-height: 1.4;
     cursor: pointer;
-    transition: background-color var(--k-motion), color var(--k-motion);
+    transition: background-color 200ms ease, color 200ms ease;
 }
 
 /* existing FA child icons become 8px dots; inline styles / text-* classes
-   (statuslabel colors) flow through currentColor, so status dots keep their
-   colors */
+   (statuslabel colors) flow through currentColor, so status dots keep
+   their colors */
 .ks-sub > li > a > i,
 .ks-sub > li > a > svg {
     flex: none;
@@ -357,67 +487,166 @@
     text-decoration: none;
 }
 
-/* child active: neutral pill + brighter text (no accent fill) */
+/* child active: soft module tint + module-dark text + the 3×20 accent bar
+   lighting up its segment of the guide line */
 .ks-sub > li.active > a,
 .ks-sub > li.active > a:hover {
-    background-color: var(--k-sidebar-pill-bg);
-    color: var(--k-sidebar-text-active);
+    background-color: var(--ks-mod-soft);
+    color: var(--ks-mod-text);
     font-weight: 600;
 }
 
+.ks-sub > li.active::before {
+    content: '';
+    position: absolute;
+    left: -13px; /* sits on the 2px guide line (ul padding-left 12 + border 2) */
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 20px;
+    border-radius: 2px;
+    background: var(--ks-mod);
+}
+
 .ks-sub > li.divider {
-    margin: 4px var(--k-space-2);
+    margin: 4px 8px;
     border-top: 1px solid var(--k-sidebar-border);
     font-size: 0;
     line-height: 0;
 }
 
-/* right-aligned count badges, smaller and muted */
+.ks-sub > li.divider::before {
+    content: none;
+}
+
+/* right-aligned count badges: neutral pill at rest, solid module color
+   when the row is active */
 .ks-sub .badge,
 .ks-sub > li > a > .badge {
     margin-left: auto;
     background-color: var(--k-sidebar-badge-bg);
     color: var(--k-sidebar-badge-text);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 600;
     line-height: 1.4;
-    border-radius: var(--k-radius-pill);
-    padding: 0 6px;
+    border-radius: 999px;
+    padding: 1px 8px;
 }
 
 .ks-sub > li.active .badge {
-    background-color: var(--k-sidebar-badge-active-bg);
-    color: var(--k-accent);
+    background-color: var(--ks-mod);
+    color: #fff;
 }
 
 /* --------------------------------------------------------------------------
-   Rail toggle button (bottom edge)
+   Footer: utility rows + destructive-on-hover sign out
    -------------------------------------------------------------------------- */
-.ks-rail-toggle {
+.ks-footer {
     flex: 0 0 auto;
+    border-top: 1px solid var(--k-sidebar-border);
+    padding: 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.ks-footer-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: 40px;
+    padding: 6px 12px;
+    border-radius: 12px;
+    color: var(--k-sidebar-text);
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    transition: background-color 200ms ease, color 200ms ease;
+}
+
+.ks-footer-chip {
+    flex: none;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--k-space-2);
-    min-height: 36px;
-    margin: var(--k-space-2);
-    padding: 6px;
-    border: none;
-    border-radius: var(--k-radius);
-    background: transparent;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    font-size: var(--k-sidebar-icon-size);
+    color: var(--k-sidebar-icon);
+    transition: color 200ms ease;
+}
+
+.ks-footer-link:hover,
+.ks-footer-link:focus {
+    background-color: var(--k-sidebar-hover-bg);
+    color: var(--k-sidebar-text-active);
+    text-decoration: none;
+}
+
+.ks-footer-link:hover .ks-label,
+.ks-footer-link:focus .ks-label {
+    opacity: 1;
+}
+
+.ks-footer-divider {
+    height: 1px;
+    margin: 4px 12px;
+    background: var(--k-sidebar-border);
+    opacity: .6;
+}
+
+/* sign out: hover turns the row destructive red */
+.ks-footer-signout:hover,
+.ks-footer-signout:focus {
+    background-color: var(--k-destructive-soft);
+    color: var(--k-destructive);
+}
+
+.ks-footer-signout:hover .ks-footer-chip,
+.ks-footer-signout:focus .ks-footer-chip {
+    color: var(--k-destructive);
+}
+
+.ks-footer-signout-icon {
+    margin-left: auto;
+    font-size: 13px;
+    opacity: .5;
+}
+
+/* --------------------------------------------------------------------------
+   Collapse toggle: 24px floating circle straddling the rail's right edge
+   -------------------------------------------------------------------------- */
+.ks-rail-toggle {
+    position: absolute;
+    top: 20px;
+    right: -12px;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    border: 1px solid var(--k-sidebar-border);
+    border-radius: 50%;
+    background: var(--k-sidebar-bg);
     color: var(--k-sidebar-muted);
+    box-shadow: 0 2px 6px rgba(15, 23, 42, .12);
     cursor: pointer;
-    transition: background-color var(--k-motion), color var(--k-motion);
+    transition: transform 200ms ease, box-shadow 200ms ease, color 200ms ease;
 }
 
 .ks-rail-toggle:hover {
-    background-color: var(--k-sidebar-hover-bg);
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(15, 23, 42, .18);
     color: var(--k-sidebar-text-active);
 }
 
 .ks-rail-toggle svg,
 .ks-rail-toggle i {
-    font-size: 14px;
+    font-size: 11px;
     transition: transform var(--k-sidebar-dur) var(--k-ease-drawer);
 }
 
@@ -444,11 +673,10 @@ body.ks-lock {
 }
 
 /* --------------------------------------------------------------------------
-   Collapsed icon rail (desktop only): each top-level item becomes a centered
-   40×40 tile (16px icon, --k-radius), pitch 44px. Hover = muted wash; active
-   = static neutral pill tile + accent icon (the sliding .ks-pill is hidden
-   in this mode). Groups collapse to their tiles with a hairline separator.
-   Tooltips via title attributes (set by killa-sidebar.js from label text).
+   Collapsed icon rail (desktop only): 60px wide, items become centered
+   36×36 tiles; the active tile is solid module color + white icon + subtle
+   shadow — the ONLY colored element. Group labels become hairlines.
+   Submenus open as hover-intent flyout panels to the right.
    -------------------------------------------------------------------------- */
 @media (min-width: 768px) {
     body.ks-collapsed .ks-sidebar,
@@ -457,10 +685,21 @@ body.ks-lock {
     }
 
     body.ks-collapsed .ks-label,
-    html.ks-collapsed-pre body .ks-label {
+    html.ks-collapsed-pre body .ks-label,
+    body.ks-collapsed .ks-brand-text,
+    html.ks-collapsed-pre body .ks-brand-text,
+    body.ks-collapsed .ks-footer-signout-icon,
+    html.ks-collapsed-pre body .ks-footer-signout-icon {
         opacity: 0;
         position: absolute;
         pointer-events: none;
+    }
+
+    body.ks-collapsed .ks-brand,
+    html.ks-collapsed-pre body .ks-brand {
+        justify-content: center;
+        margin: 10px 6px 0;
+        padding: 6px 0;
     }
 
     body.ks-collapsed .ks-chevron,
@@ -471,23 +710,31 @@ body.ks-lock {
 
     /* the tile */
     body.ks-collapsed .ks-link,
-    html.ks-collapsed-pre body .ks-link {
+    html.ks-collapsed-pre body .ks-link,
+    body.ks-collapsed .ks-footer-link,
+    html.ks-collapsed-pre body .ks-footer-link {
         justify-content: center;
         gap: 0;
-        width: 40px;
-        min-height: 40px;
-        height: 40px;
+        width: 36px;
+        min-height: 36px;
+        height: 36px;
         padding: 0;
         margin: 2px auto;
     }
 
-    /* active: static tile fill + accent icon; no leading bar on the rail */
-    body.ks-collapsed .ks-item.active > .ks-link {
-        background-color: var(--k-sidebar-pill-bg);
+    /* active tile: solid module color + white icon + subtle shadow */
+    body.ks-collapsed .ks-item.active > .ks-link,
+    html.ks-collapsed-pre body .ks-item.active > .ks-link {
+        background: var(--ks-mod);
+        box-shadow: 0 2px 8px rgba(15, 23, 42, .18);
     }
 
-    body.ks-collapsed .ks-item.active > .ks-link::before {
-        content: none;
+    body.ks-collapsed .ks-item.active > .ks-link > i,
+    body.ks-collapsed .ks-item.active > .ks-link > svg,
+    html.ks-collapsed-pre body .ks-item.active > .ks-link > i,
+    html.ks-collapsed-pre body .ks-item.active > .ks-link > svg {
+        background: transparent;
+        color: #fff;
     }
 
     /* sliding pill measures full-width rows — meaningless on tiles */
@@ -499,14 +746,14 @@ body.ks-lock {
     /* groups: no label gap, tiles only, hairline between groups */
     body.ks-collapsed .ks-group,
     html.ks-collapsed-pre body .ks-group {
-        padding: var(--k-space-1) 0 0;
+        padding: 4px 0 0;
     }
 
     body.ks-collapsed .ks-group + .ks-group,
     html.ks-collapsed-pre body .ks-group + .ks-group {
         border-top: 1px solid var(--k-sidebar-border);
-        margin-top: var(--k-space-1);
-        padding-top: var(--k-space-2);
+        margin-top: 4px;
+        padding-top: 8px;
     }
 
     body.ks-collapsed .ks-group-label,
@@ -516,29 +763,16 @@ body.ks-lock {
         margin: 0;
     }
 
-    /* rail toggle matches the tile geometry */
-    body.ks-collapsed .ks-rail-toggle,
-    html.ks-collapsed-pre body .ks-rail-toggle {
-        width: 40px;
-        min-height: 40px;
-        margin: var(--k-space-1) auto var(--k-space-2);
-        padding: 0;
-    }
-
-    /* v2.2: the topbar is fixed and full-width now, so the header logo no
-       longer tracks the rail width — the old collapsed-mode logo-shrink
-       rules were removed (the brand stays put while the rail narrows). */
-
     /* overrides.css shifts the hamburger -48px to overlay the wide expanded
-       logo block; with the 68px collapsed logo that would push it over the
-       rail — reset it */
+       logo block; with the collapsed rail that would push it over the rail */
     body.ks-collapsed .main-header .sidebar-toggle,
     body.sidebar-collapse .main-header .sidebar-toggle,
     html.ks-collapsed-pre body .main-header .sidebar-toggle {
         margin-left: 0;
     }
 
-    /* in-rail submenus never render inline when collapsed: floating panel */
+    /* in-rail submenus never render inline when collapsed: floating panel
+       with rounded-2xl corners */
     body.ks-collapsed .ks-item--parent > .ks-sub,
     html.ks-collapsed-pre body .ks-item--parent > .ks-sub {
         position: absolute;
@@ -546,10 +780,10 @@ body.ks-lock {
         top: -6px;
         min-width: 200px;
         margin: 0;
-        padding: var(--k-space-2);
+        padding: 8px;
         background: var(--k-sidebar-flyout-bg);
         border: 1px solid var(--k-border);
-        border-radius: var(--k-radius);
+        border-radius: 16px;
         box-shadow: var(--k-shadow-lg);
         z-index: 900;
         display: block;
@@ -628,7 +862,7 @@ body.ks-lock {
 .ks-rail-toggle:focus-visible {
     outline: 2px solid var(--k-accent);
     outline-offset: 2px;
-    border-radius: var(--k-radius-sm);
+    border-radius: 8px;
 }
 
 @media (prefers-reduced-motion: reduce) {

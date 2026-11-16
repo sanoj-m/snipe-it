@@ -14,6 +14,7 @@ return [
     'inventory_overview' => 'Inventory overview',
     'last_30_days' => 'Last 30 days',
     'navigation' => 'Primary navigation',
+    'nav_brand_caption' => 'Asset Manager',
     'nav_group_overview' => 'Overview',
     'nav_group_inventory' => 'Inventory',
     'nav_group_people_org' => 'People & Org',

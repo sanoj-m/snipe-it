@@ -6,9 +6,25 @@
      block — only the wrapping markup/classes changed (ks-*).
      Registered in docs/customizations/CORE_PATCH_REGISTER.md. --}}
 <aside class="ks-sidebar" id="ks-sidebar" aria-label="{{ trans('killa.navigation') }}">
+    {{-- Brand lockup: 36px logo tile (image or first-letter fallback) +
+         two-line text lockup; the whole block navigates home. --}}
+    <a class="ks-brand" href="{{ route('home') }}" aria-label="{{ $snipeSettings->site_name }}">
+        <span class="ks-brand-tile" aria-hidden="true">
+            @if ($snipeSettings->logo != '')
+                <img src="{{ Storage::disk('public')->url($snipeSettings->logo) }}" alt="">
+            @else
+                {{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr($snipeSettings->site_name, 0, 1)) }}
+            @endif
+        </span>
+        <span class="ks-brand-text">
+            <span class="ks-brand-name">{{ $snipeSettings->site_name }}</span>
+            <span class="ks-brand-caption">{{ trans('killa.nav_brand_caption') }}</span>
+        </span>
+    </a>
+    <div class="ks-brand-divider" aria-hidden="true"></div>
     <nav class="ks-content" aria-label="{{ trans('killa.navigation') }}">
 
-        <div class="ks-group">
+        <div class="ks-group ks-mod-overview">
             <p class="ks-group-label">{{ trans('killa.nav_group_overview') }}</p>
             <ul class="ks-menu">
                 <span class="ks-pill" aria-hidden="true"></span>
@@ -23,7 +39,7 @@
             </ul>
         </div>
 
-        <div class="ks-group">
+        <div class="ks-group ks-mod-inventory">
             <p class="ks-group-label">{{ trans('killa.nav_group_inventory') }}</p>
             <ul class="ks-menu">
                 <span class="ks-pill" aria-hidden="true"></span>
@@ -242,7 +258,7 @@
             </ul>
         </div>
 
-        <div class="ks-group">
+        <div class="ks-group ks-mod-people">
             <p class="ks-group-label">{{ trans('killa.nav_group_people_org') }}</p>
             <ul class="ks-menu">
                 <span class="ks-pill" aria-hidden="true"></span>
@@ -313,7 +329,7 @@
             </ul>
         </div>
 
-        <div class="ks-group">
+        <div class="ks-group ks-mod-system">
             <p class="ks-group-label">{{ trans('killa.nav_group_system') }}</p>
             <ul class="ks-menu">
                 <span class="ks-pill" aria-hidden="true"></span>
@@ -497,6 +513,23 @@
         </div>
 
     </nav>
+
+    {{-- Sidebar footer: utility rows, then the destructive-on-hover sign out. --}}
+    <div class="ks-footer">
+        @can('self.profile')
+            <a class="ks-footer-link" href="{{ route('profile') }}">
+                <span class="ks-footer-chip" aria-hidden="true"><x-icon type="user" class="fa-fw" /></span>
+                <span class="ks-label">{{ trans('general.editprofile') }}</span>
+            </a>
+        @endcan
+        <div class="ks-footer-divider" aria-hidden="true"></div>
+        <a class="ks-footer-link ks-footer-signout" href="{{ route('logout.get') }}"
+           onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+            <span class="ks-footer-chip" aria-hidden="true"><x-icon type="logout" class="fa-fw" /></span>
+            <span class="ks-label">{{ trans('general.logout') }}</span>
+            <i class="fas fa-arrow-right-from-bracket ks-footer-signout-icon" aria-hidden="true"></i>
+        </a>
+    </div>
 
     <button type="button" class="ks-rail-toggle" id="ks-rail-toggle"
             aria-label="{{ trans('general.toggle_navigation') }}">
