@@ -74,6 +74,8 @@
     --k-check-border: #d1d5db;
     --k-navbar-bg: #ffffff;
     --k-navbar-text: #4b5563;
+    --k-navbar-title: var(--k-text); /* logo/brand block; KCP-057 overrides this
+       with the tenant nav_link_color when a header_color is set */
     /* fixed topbar height (v2.2): drives the content offset here, the rail
        top in killa-v2-sidebar.css and the notification-menu offset in
        killa-v2-notifications.css — one place to change */
@@ -157,6 +159,7 @@ html[data-theme='dark'] {
     --k-tint-border: 40%;
     --k-navbar-bg: #1a1d23;
     --k-navbar-text: #9aa3ad;
+    --k-navbar-title: var(--k-text);
     --k-login-bg-top: #121417;
     --k-login-bg-bottom: #0f1115;
     --k-shadow-1: 0 1px 2px rgba(0, 0, 0, 0.3);
@@ -234,7 +237,7 @@ body summary:focus-visible {
    -------------------------------------------------------------------------- */
 body .main-header .logo {
     background-color: var(--k-navbar-bg);
-    color: var(--k-text);
+    color: var(--k-navbar-title); /* follows tenant nav_link_color when a header color is set (KCP-057) */
     border: none; /* the navbar's own bottom hairline handles separation */
     font-family: var(--k-font-display);
     font-weight: 700;
@@ -1098,7 +1101,7 @@ body .main-header .navbar .navbar-form {
 body .main-header .logo,
 body .main-header .logo:hover {
     background-color: var(--k-navbar-bg) !important;
-    color: var(--k-text) !important;
+    color: var(--k-navbar-title) !important;
 }
 
 body .main-header .logo:hover {

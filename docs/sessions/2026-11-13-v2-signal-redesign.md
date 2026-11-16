@@ -223,3 +223,38 @@ upstream markup touched, zero new core patches; KCP-056 register entry amended.
   inset). Scroll containment, SlimScroll suppression, and the fixed-position
   offset from the v2.2 header are unchanged.
 - Classic design unaffected (layers don't load there, KCP-054 gate).
+
+
+## Addendum 6 — KCP-057 branding colors reach the v2 layer (2026-11-14)
+
+Owner report: Settings > Branding color pickers (header color, nav link
+color, light/dark link colors) had no effect in the v2 design, globally or
+per-user. Root cause: the v2 overlay pins the header to `--k-navbar-bg` and
+links to `--k-link` with `!important`-backed rules, so the upstream tenant
+variables (`--main-theme-color`, `--nav-primary-text-color`, `--link-color`)
+that the branding page feeds never reached v2 chrome.
+
+Fix (fenced `[killa-v2 branding]` block in
+`partials/theme-mode-tenant-vars.blade.php`, Killa-owned token additions in
+`killa-v2.css`):
+
+- `header_color` → `--k-navbar-bg` on `:root` AND `html[data-theme='dark']`
+  (the inline block loads after the layer, so it wins both schemes).
+- Navbar text + brand/logo title follow the admin/user `nav_link_color`,
+  with a WCAG contrast guard computed inline (relative luminance): below
+  3:1 against the chosen header color the text auto-falls to dark-on-light
+  or white-on-dark — the legacy white-on-white trap (which is why the v2
+  layer hard-pinned these) can never render. New `--k-navbar-title` token
+  (default `var(--k-text)`) carries it to the logo block.
+- `link_light_color` / `link_dark_color` → `--k-link` (+ derived
+  `--k-link-hover` via color-mix) per scheme. Per-user values flow through
+  the existing `CheckColorSettings` view shares, so profile-level pickers
+  work too.
+- Not mapped on purpose: `--k-accent` (Killa brand), surfaces, tables.
+  Classic design is untouched (the v2 layer isn't loaded there; upstream
+  vars already drive Classic).
+
+Verified live after deploy: with tenant `header_color=#000000` the inline
+block emits `--k-navbar-bg:#000000; --k-navbar-text:#ffffff` on both
+schemes (white passes the 3:1 guard on black), and `/login` + an
+authenticated page both carry it.
