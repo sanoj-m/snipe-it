@@ -258,3 +258,33 @@ Verified live after deploy: with tenant `header_color=#000000` the inline
 block emits `--k-navbar-bg:#000000; --k-navbar-text:#ffffff` on both
 schemes (white passes the 3:1 guard on black), and `/login` + an
 authenticated page both carry it.
+
+## Addendum 7 — light header restored + header/sidebar seam fixed (2026-11-16)
+
+Owner report: the v2 header rendered black and the left sidebar did not sit
+flush with the header (white notch top-left, misaligned seam).
+
+Root causes (both diagnosed live with in-browser geometry measurement):
+
+1. **Black header** — tenant `settings.header_color` was `#000000`, and the
+   KCP-057 mapping deployed in Addendum 6 now honored it. The owner never
+   wanted black; it was a leftover value. Fixed as a **data change**:
+   `settings.header_color` set to `NULL` on the live DB (backup first:
+   `/tmp/settings-backup-20261116.sql` on the server). Gotcha surfaced while
+   doing this: the `Setting` accessor (`app/Models/Setting.php:220`) runs
+   `CssColor::sanitize($value, '#3c8dbc')`, so a NULL column still reads as
+   `#3c8dbc`. The KCP-057 blade now treats `#3c8dbc` (case-insensitive) as
+   "not customized": v2 keeps its own light header, Classic falls back to
+   stock Snipe-IT blue. Any deliberately chosen non-default color still
+   overrides, so the branding page keeps working.
+2. **Seam gap** — measured live: `.main-header` computed `margin-left: 50px`
+   (AdminLTE's `.sidebar-mini.sidebar-collapse .main-header` rule beat the
+   v2 `margin-left: 0`), while the collapsed rail is 68px at x=0. The
+   `margin-left: 0` block in `killa-v2.css` now covers `.main-header` itself
+   in every collapse state (`.sidebar-collapse`, `.ks-collapsed`,
+   `html.ks-collapsed-pre`), not just the inner `.navbar`.
+
+Verified live after deploy (`v8.8.0+d20261116_144130`): header x=0,
+`margin-left: 0`, background `rgb(255,255,255)`, sidebar top 56px flush
+under it; `/login` no longer emits `--k-navbar-bg` while `--k-link` branding
+(`#296282`/`#5fa4cc`) is unchanged.
