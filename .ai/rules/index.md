@@ -22,3 +22,4 @@ Before planning or editing, find the row whose globs match the file's path and r
 | app/Http/Requests/** | .ai/rules/requests.md |
 | tests/** | .ai/rules/tests.md |
 | resources/views/** | .ai/rules/views.md |
+| public/css/**, any UI/theming change | .ai/rules/theme-v2.md |

@@ -12,7 +12,6 @@
             <h1>{{ trans('killa.insights_title') }}</h1>
             <p>{{ trans('killa.insights_description') }}</p>
         </div>
-        <x-dashboard.view-switch active="insights" />
     </header>
 
     @if ($snipeSettings->dashboard_message != '')

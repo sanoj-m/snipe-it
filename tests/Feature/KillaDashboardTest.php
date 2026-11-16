@@ -35,7 +35,6 @@ class KillaDashboardTest extends TestCase
             ->assertSee(trans('killa.insights_title'))
             ->assertSee(trans('general.dashboard'))
             ->assertSee(route('home'))
-            ->assertSee('aria-current="page"', false)
             ->assertViewHas('metrics', function (array $metrics): bool {
                 return $metrics['asset']['total'] === 2
                     && $metrics['asset']['available'] === 2
@@ -44,15 +43,22 @@ class KillaDashboardTest extends TestCase
             });
     }
 
-    public function test_classic_dashboard_remains_available_and_links_to_insights(): void
+    public function test_v2_dashboard_is_the_insights_dashboard(): void
     {
         $this->actingAs(User::factory()->admin()->create())
             ->get(route('home'))
             ->assertOk()
-            ->assertViewIs('dashboard')
-            ->assertSee(route('dashboard.insights'))
-            ->assertSee(trans('killa.classic'))
-            ->assertSee(trans('killa.insights'));
+            ->assertViewIs('killa.dashboard')
+            ->assertSee(trans('killa.insights_title'));
+    }
+
+    public function test_classic_design_keeps_the_upstream_dashboard(): void
+    {
+        $this->actingAs(User::factory()->admin()->create())
+            ->withCookie('killa_design', 'classic')
+            ->get(route('home'))
+            ->assertOk()
+            ->assertViewIs('dashboard');
     }
 
     public function test_asset_viewer_receives_only_asset_metrics_and_charts(): void

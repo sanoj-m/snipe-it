@@ -1053,20 +1053,25 @@ Route::withoutMiddleware(['web'])->get(
     [HealthController::class, 'get']
 )->name('health');
 
-Route::middleware(['auth'])->get(
-    '/',
-    [DashboardController::class, 'index']
-)->name('home')
+// [killa-v2 insights dashboard] BEGIN
+// Insights is the v2 dashboard: '/' serves it unless the Classic design
+// cookie (killa_design=classic, KCP-054) is set, in which case the upstream
+// dashboard renders. /dashboard/insights is kept as a named alias.
+Route::middleware(['auth'])->get('/', function (\Illuminate\Http\Request $request) {
+    if ($request->cookie('killa_design') === 'classic') {
+        return app(DashboardController::class)->index();
+    }
+
+    return app(\App\Http\Controllers\Killa\DashboardController::class)->index();
+})->name('home')
     ->breadcrumbs(fn (Trail $trail) => $trail->push('Home', route('home'))
     );
 
-// [killa-v2 insights dashboard] BEGIN
 Route::middleware(['auth'])->get(
     '/dashboard/insights',
     [\App\Http\Controllers\Killa\DashboardController::class, 'index']
 )->name('dashboard.insights')
     ->breadcrumbs(fn (Trail $trail) => $trail
         ->push(trans('general.dashboard'), route('home'))
-        ->push(trans('killa.insights'), route('dashboard.insights'))
     );
 // [killa-v2 insights dashboard] END

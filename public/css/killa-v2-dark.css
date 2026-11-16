@@ -83,10 +83,10 @@ html[data-theme='dark'] body kbd {
 /* --------------------------------------------------------------------------
    Webkit scrollbars
    -------------------------------------------------------------------------- */
-/* v2.1: slimmed to match the global 8px light scrollbars in killa-v2.css */
+/* v2.1: slimmed to match the global 4px light scrollbars in killa-v2.css */
 html[data-theme='dark'] ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+    width: 4px;
+    height: 4px;
 }
 
 html[data-theme='dark'] ::-webkit-scrollbar-track {
