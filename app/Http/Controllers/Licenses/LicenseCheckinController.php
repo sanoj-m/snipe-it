@@ -15,6 +15,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Validator;
 
 class LicenseCheckinController extends Controller
@@ -26,7 +27,6 @@ class LicenseCheckinController extends Controller
      *
      * @since [v1.0]
      *
-     * @param  int  $seatId
      * @param  string  $backTo
      * @return View
      *
@@ -130,16 +130,11 @@ class LicenseCheckinController extends Controller
     }
 
     /**
-     * Bulk checkin all license seats
-     *
-     * @author [A. Gianotto] [<snipe@snipe.net>]
-     *
-     * @see LicenseCheckinController::create() method that provides the form view
-     * @since [v6.1.1]
+     * Render the bulk-checkin confirmation interstitial
      *
      * @throws AuthorizationException
      */
-    public function bulkCheckinSelected(Request $request): RedirectResponse
+    public function bulkCheckinShow(Request $request): View|RedirectResponse
     {
         $this->authorize('checkin', License::class);
 
@@ -162,12 +157,60 @@ class LicenseCheckinController extends Controller
             return redirect()->back()->with('warning', trans('admin/licenses/general.bulk.checkin_selected.no_seats_selected'));
         }
 
-        $seats = LicenseSeat::whereIn('id', $seatIds)
-            ->where(function ($query) {
-                $query->whereNotNull('assigned_to')->orWhereNotNull('asset_id');
-            })
-            ->with('license', 'user', 'asset')
-            ->get();
+        $seats = $this->scopedSeatsForBulkCheckin($seatIds);
+
+        // [floating-licenses addon] BEGIN — floating-only selections skip the seat check and ride along as ids
+        if ($seats->isEmpty() && empty($floatingAllocationIds)) {
+            return redirect()->back()->with('warning', trans('admin/licenses/general.bulk.checkin_selected.no_seats_selected'));
+        }
+
+        return view('licenses.bulk-checkin', [
+            'seats' => $seats,
+            'ids' => array_merge($seats->pluck('id')->all(), array_map(fn ($id) => 'floating:'.$id, $floatingAllocationIds)),
+            'return_url' => Helper::sameOriginUrl(URL::previous()) ?? route('licenses.index'),
+        ]);
+        // [floating-licenses addon] END
+    }
+
+    /**
+     * Apply the bulk checkin after the admin confirms on the
+     * interstitial. The shared `note` from the form rides every
+     * CheckoutableCheckedIn event.
+     *
+     * @throws AuthorizationException
+     */
+    public function bulkCheckinStore(Request $request): RedirectResponse
+    {
+        $this->authorize('checkin', License::class);
+
+        $redirectTo = Helper::sameOriginUrl($request->input('return_url')) ?? route('licenses.index');
+
+        $seatIds = $request->input('ids', []);
+
+        // [floating-licenses addon] BEGIN — floating rows ride the interstitial as "floating:<allocation_id>" ids
+        $floatingAllocationIds = [];
+        $seatIds = array_filter($seatIds, function ($id) use (&$floatingAllocationIds) {
+            if (is_string($id) && str_starts_with($id, 'floating:')) {
+                $floatingAllocationIds[] = (int) substr($id, strlen('floating:'));
+
+                return false;
+            }
+
+            return true;
+        });
+        // [floating-licenses addon] END
+
+        if (empty($seatIds) && empty($floatingAllocationIds)) {
+            return redirect($redirectTo)->with('warning', trans('admin/licenses/general.bulk.checkin_selected.no_seats_selected'));
+        }
+
+        $seats = $this->scopedSeatsForBulkCheckin($seatIds);
+
+        if ($seats->isEmpty()) {
+            return redirect($redirectTo)->with('warning', trans('admin/licenses/general.bulk.checkin_selected.no_seats_selected'));
+        }
+
+        $note = $request->input('note');
 
         $count = 0;
         foreach ($seats as $seat) {
@@ -181,7 +224,7 @@ class LicenseCheckinController extends Controller
                 $seat->unreassignable_seat = true;
             }
             if ($seat->save()) {
-                event(new CheckoutableCheckedIn($seat, $target, auth()->user(), null));
+                event(new CheckoutableCheckedIn($seat, $target, auth()->user(), $note));
                 $count++;
             }
         }
@@ -207,7 +250,26 @@ class LicenseCheckinController extends Controller
         }
         // [floating-licenses addon] END
 
-        return redirect()->back()->with('success', trans_choice('admin/licenses/general.bulk.checkin_selected.success', $count, ['count' => $count]));
+        return redirect($redirectTo)->with('success', trans_choice('admin/licenses/general.bulk.checkin_selected.success', $count, ['count' => $count]));
+    }
+
+    /**
+     * Narrow the lookup to seats actually assigned to someone or
+     * something. Unassigned seats posted via a stale selection just
+     * get skipped. The eager-loaded license + user + asset relations
+     * are reused for the auth check, event target, and interstitial.
+     *
+     * @param  array<int, mixed>  $seatIds
+     * @return \Illuminate\Database\Eloquent\Collection<int, LicenseSeat>
+     */
+    protected function scopedSeatsForBulkCheckin(array $seatIds)
+    {
+        return LicenseSeat::whereIn('id', $seatIds)
+            ->where(function ($query) {
+                $query->whereNotNull('assigned_to')->orWhereNotNull('asset_id');
+            })
+            ->with('license', 'user', 'asset')
+            ->get();
     }
 
     public function bulkCheckin(Request $request, $licenseId)

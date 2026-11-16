@@ -623,13 +623,6 @@ body.ks-lock {
         width: var(--k-sidebar-w-icon);
     }
 
-    /* collapsed only: reserve a top strip so the border-straddling toggle
-       never covers the first tile */
-    body.ks-collapsed .ks-content,
-    html.ks-collapsed-pre body .ks-content {
-        padding-top: 40px;
-    }
-
     /* hide ALL text on the rail — specificity must beat the expanded-mode
        "open/active raises label opacity" rules (0,3,1) */
     body.ks-collapsed .ks-item .ks-link .ks-label,
@@ -816,19 +809,37 @@ body.ks-lock {
 }
 
 /* --------------------------------------------------------------------------
-   Header brand (loaded after killa-v2.css, so these win): compact logo and
-   tight spacing now that the desktop hamburger is gone.
+   Header brand (loaded after killa-v2.css, so these win): bigger logo, fixed
+   geometry. AdminLTE still animates `.navbar { margin-left: 230↔50px }` and
+   `.logo { width: 230↔50px }` with the sidebar — that made the whole logo
+   zone widen/shrink when the rail toggles. Pin both so the header brand
+   never tracks the sidebar.
    -------------------------------------------------------------------------- */
-body .main-header .logo.navbar-brand {
+@media (min-width: 768px) {
+    body .main-header .navbar,
+    body.sidebar-collapse .main-header .navbar,
+    body.ks-collapsed .main-header .navbar,
+    html.ks-collapsed-pre body .main-header .navbar {
+        margin-left: 0 !important;
+        transition: none;
+    }
+}
+
+body .main-header .logo.navbar-brand,
+body.sidebar-collapse .main-header .logo.navbar-brand,
+body.ks-collapsed .main-header .logo.navbar-brand {
     display: inline-flex;
     align-items: center;
     gap: 10px;
+    width: auto;
+    float: none;
     padding-left: 12px;
+    transition: none;
 }
 
 body .main-header .logo.navbar-brand .navbar-brand-img {
-    max-height: 26px;
-    max-width: 120px;
+    max-height: 44px;
+    max-width: 200px;
     object-fit: contain;
 }
 

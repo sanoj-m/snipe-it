@@ -130,6 +130,13 @@
                             </li>
                             @endcan
 
+                            <li style="--i:59;" id="past-eol-sidenav-option"{!! (request()->is('hardware') && request()->boolean('past_eol') ? ' class="active" aria-current="page"' : '') !!}>
+                                <a href="{{ route('hardware.index', ['past_eol' => 1]) }}">
+                                    <x-icon type="due" class="text-orange fa-fw"/>
+                                    {{ trans('general.past_eol') }}
+                                </a>
+                            </li>
+
                             <li class="divider" style="--i:59;">&nbsp;</li>
                             @can('checkin', \App\Models\Asset::class)
                                 <li style="--i:60;"{!! (request()->is('hardware/quickscancheckin') ? ' class="active" aria-current="page"' : '') !!}>
@@ -289,6 +296,12 @@
                                     <a href="{{ route('users.index', ['activated' => false]) }}">
                                         <i class="fa-solid fa-person-circle-xmark text-danger fa-fw"></i>
                                         {{ trans('general.login_disabled') }}
+                                    </a>
+                                </li>
+                                <li style="--i:6;" class="{{ (request()->is('users') && request()->filled('end_date_within')) ? 'active' : '' }}" id="users-sidenav-offboarding">
+                                    <a href="{{ route('users.index', ['end_date_within' => \App\Livewire\NeedsAttention::OFFBOARDING_DAYS, 'with_assignments' => 1]) }}">
+                                        <x-icon type="offboarding" class="text-warning fa-fw"/>
+                                        {{ trans('general.offboarding_soon') }}
                                     </a>
                                 </li>
                             </ul>
@@ -463,12 +476,7 @@
                                     {{ trans('general.asset_maintenance_report') }}
                                 </a>
                             </li>
-                            <li style="--i:9;" {!! (request()->is('reports/unaccepted_assets') ? ' class="active" aria-current="page"' : '') !!}>
-                                <a href="{{ url('reports/unaccepted_assets') }}">
-                                    {{ trans('general.unaccepted_asset_report') }}
-                                </a>
-                            </li>
-                            <li style="--i:10;"  {!! (request()->is('reports/accessories') ? ' class="active" aria-current="page"' : '') !!}>
+                            <li style="--i:9;"  {!! (request()->is('reports/accessories') ? ' class="active" aria-current="page"' : '') !!}>
                                 <a href="{{ url('reports/accessories') }}">
                                     {{ trans('general.accessory_report') }}
                                 </a>
@@ -479,8 +487,14 @@
                     @can('canCheckoutAtLeastOneItemType')
                         <li class="ks-item"{!! (request()->is('requests.index') ? ' active" aria-current="page"' : '') !!}>
                             <a class="ks-link" href="{{ route('requests.index') }}">
-                                <i class="fa-solid fa-boxes-packing"></i>
+                                <x-icon type="pending-requests" class="fa-fw"/>
                                 <span class="ks-label">{{ trans('general.pending_requests') }}</span>
+                            </a>
+                        </li>
+                        <li class="ks-item"{!! (request()->is('unaccepted-acceptances') ? ' active" aria-current="page"' : '') !!}>
+                            <a class="ks-link" href="{{ route('unaccepted-acceptances.index') }}">
+                                <x-icon type="signature" class="fa-fw"/>
+                                <span class="ks-label">{{ trans('general.unaccepted_asset_report') }}</span>
                             </a>
                         </li>
                     @endcan

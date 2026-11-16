@@ -418,7 +418,7 @@
                                         <li {!! (request()->is('account/accept') ? ' class="active" aria-current="page"' : '') !!}>
                                             <a href="{{ route('account.accept') }}">
                                                 <x-icon type="signature" class="fa-fw"/>
-                                                {{ trans('general.accept_assets_menu') }}
+                                                {{ trans('general.accept_items') }}
                                             </a>
                                         </li>
 
@@ -499,6 +499,7 @@
                 @include('layouts.partials.killa-sidebar')
             @endif
             {{-- [/killa-v2 sidebar] --}}
+
 
             <!-- Content Wrapper. Contains page content -->
 
@@ -779,8 +780,17 @@
                     error.attr('aria-live', 'assertive');
 
                     if ($(element).hasClass('select2') || $(element).hasClass('js-data-ajax')) {
-                        // If the element is a select2 then append the error to the parent div
-                        element.parent('div').append(error);
+                        // If the element is a select2 then append the error to the parent div,
+                        // unless that parent is an input-group (select2 paired with a sibling
+                        // action button, like the sync-adapter refresh widget). Appending into
+                        // an input-group makes the error a display:table-cell sibling that
+                        // steals width from the select2. Insert after the group instead.
+                        var $parent = element.parent('div');
+                        if ($parent.hasClass('input-group')) {
+                            error.insertAfter($parent);
+                        } else {
+                            $parent.append(error);
+                        }
 
                      } else if ($(element).parent().hasClass('input-group')) {
                         var end_input_group = $(element).next('.input-group-addon').parent();

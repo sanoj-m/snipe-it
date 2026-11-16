@@ -9,7 +9,7 @@ class EncryptCookies extends BaseEncrypter
     /**
      * The names of the cookies that should not be encrypted.
      *
-     * @var array
+     * @var array<int, string>
      */
     protected $except = [
         // [killa-v2 design-toggle] BEGIN — KCP-054

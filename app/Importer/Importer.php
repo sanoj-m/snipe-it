@@ -113,6 +113,7 @@ abstract class Importer
         'qty' => 'quantity',
         'reassignable' => 'reassignable',
         'requestable' => 'requestable',
+        'archived' => 'archived',
         'seats' => 'seats',
         'serial' => 'serial number',
         'status' => 'status',
@@ -823,7 +824,6 @@ abstract class Importer
     /**
      * Defines mappings of csv fields
      *
-     * @param  bool  $updating  the updating
      * @return self
      */
     public function setFieldMappings($fields)

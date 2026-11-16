@@ -77,7 +77,8 @@
                         @if (! $floatingConfig)
                         <x-slot:bulkactions>
                             <x-table.bulk-actions
-                                action_route="{{ route('licenses.bulkcheckin.selected') }}"
+                                name="licenseAssignedSeats"
+                                action_route="{{ route('licenses.bulkcheckin.show') }}"
                                 model_name="seat"
                             >
                                 <option value="checkin">{{ trans('general.checkin') }}</option>
@@ -89,6 +90,7 @@
                         {{-- [floating-licenses addon] seats table suppressed for floating licenses --}}
                         @if (! $floatingConfig)
                         <x-table
+                            name="licenseAssignedSeats"
                             fixed_right_number="1"
                             fixed_number="1"
                             api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'assigned']) }}"
@@ -114,6 +116,7 @@
                         </x-slot:table_header>
 
                         <x-table
+                            name="licenseAvailableSeats"
                             show_search="false"
                             api_url="{{ route('api.licenses.seats.index', [$license->id, 'status' => 'available']) }}"
                             :presenter="\App\Presenters\LicensePresenter::dataTableLayoutSeats(false)"
@@ -127,7 +130,7 @@
 
                     <!-- start history tab pane -->
                     <x-tabs.pane name="history">
-                        <x-table.history :model="$license" :route="route('api.licenses.history', $license)"/>
+                        <x-table.history name="licenseHistory" :model="$license" :route="route('api.licenses.history', $license)"/>
                     </x-tabs.pane>
                     <!-- end history tab pane -->
 
