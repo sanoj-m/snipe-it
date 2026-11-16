@@ -707,12 +707,14 @@ body.ks-lock {
     }
 
     /* in-rail submenus never render inline when collapsed: floating hover
-       card with an uppercase group title + hairline above the child list */
+       card with an uppercase group title + hairline above the child list.
+       position:fixed — the panel must escape .ks-content's overflow
+       clipping; JS (killa-sidebar.js) sets --ks-flyout-top per hover. */
     body.ks-collapsed .ks-item--parent > .ks-sub,
     html.ks-collapsed-pre body .ks-item--parent > .ks-sub {
-        position: absolute;
-        left: calc(100% + 6px);
-        top: -6px;
+        position: fixed;
+        left: calc(var(--k-sidebar-w-icon) + 6px);
+        top: var(--ks-flyout-top, 0);
         min-width: 210px;
         margin: 0;
         padding: 8px;
@@ -722,7 +724,8 @@ body.ks-lock {
         box-shadow: var(--k-shadow-lg);
         z-index: 900;
         display: block;
-        max-height: none;
+        max-height: calc(100vh - var(--ks-flyout-top, 0px) - 12px);
+        overflow-y: auto;
         opacity: 0;
         clip-path: none;
         visibility: hidden;

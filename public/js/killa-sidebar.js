@@ -245,7 +245,25 @@
 
     /* Hover-intent flyout in collapsed mode: 150ms open delay so a passing
        cursor doesn't flash panels, 200ms close delay so the pointer can
-       cross into the flyout. */
+       cross into the flyout. The panel is position:fixed (it must escape
+       .ks-content's overflow clipping), so JS supplies its vertical anchor
+       via --ks-flyout-top on every hover/focus. */
+    function positionFlyout(item) {
+        var sub = item.querySelector(':scope > .ks-sub');
+        if (!sub) {
+            return;
+        }
+        var rect = item.getBoundingClientRect();
+        var top = Math.max(8, rect.top - 6);
+        sub.style.setProperty('--ks-flyout-top', top + 'px');
+        /* sub is display:block + visibility:hidden, so it is measurable;
+           pull it up if it would overflow the viewport bottom */
+        var maxTop = window.innerHeight - sub.offsetHeight - 8;
+        if (top > maxTop && maxTop >= 8) {
+            sub.style.setProperty('--ks-flyout-top', maxTop + 'px');
+        }
+    }
+
     sidebar.querySelectorAll('.ks-item--parent').forEach(function (item) {
         var openTimer = null;
         var closeTimer = null;
@@ -253,6 +271,7 @@
             if (!isCollapsed() || isMobile()) {
                 return;
             }
+            positionFlyout(item);
             clearTimeout(closeTimer);
             sidebar.querySelectorAll('.ks-item--parent.ks-flyout-hold').forEach(function (other) {
                 if (other !== item) {
@@ -263,6 +282,12 @@
             openTimer = setTimeout(function () {
                 item.classList.add('ks-flyout-hold');
             }, reducedMotion ? 0 : FLYOUT_OPEN_DELAY);
+        });
+        item.addEventListener('focusin', function () {
+            if (!isCollapsed() || isMobile()) {
+                return;
+            }
+            positionFlyout(item);
         });
         item.addEventListener('mouseleave', function () {
             if (!isCollapsed() || isMobile()) {
