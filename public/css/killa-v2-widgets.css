@@ -626,14 +626,14 @@ body .timeline > .time-label > span {
    description stack otherwise burns ~120px of vertical space before the
    first card (scoped via :has so classic pages keep their rhythm) */
 body .content-wrapper:has(.k-insights-header) .content-header {
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 6px;
+    padding-bottom: 2px;
 }
 
 body .content-wrapper:has(.k-insights-header) .content-header h1.pagetitle {
     /* !important: the h1 carries an inline style="margin-top: 5px" */
     margin-top: 0 !important;
-    margin-bottom: 0;
+    margin-bottom: 2px;
 }
 
 body .k-insights-header {
@@ -641,7 +641,7 @@ body .k-insights-header {
     align-items: flex-start;
     justify-content: space-between;
     gap: var(--k-space-4);
-    margin-bottom: var(--k-space-4);
+    margin-bottom: var(--k-space-5, 20px);
 }
 
 body .k-insights-header p {
@@ -790,6 +790,35 @@ body .k-insights-chart-wrap {
     position: relative;
     width: 100%;
     height: 280px;
+}
+
+/* doughnut center total — overlays the cutout; legend sits below the
+   canvas so the offset is approximate and the label stays generic */
+body .k-insights-chart-center {
+    position: absolute;
+    top: 42%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    pointer-events: none;
+}
+
+body .k-insights-chart-center strong {
+    display: block;
+    font-family: var(--k-font-display);
+    font-size: 28px;
+    font-weight: 650;
+    letter-spacing: -0.02em;
+    line-height: 1.1;
+    color: var(--k-text);
+}
+
+body .k-insights-chart-center span {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--k-text-muted);
 }
 
 body .k-insights-chart-state {
