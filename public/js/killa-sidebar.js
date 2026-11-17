@@ -190,12 +190,17 @@
         }
     }
 
-    /* Auto-open the parent that contains the active child (no stagger). */
-    sidebar.querySelectorAll('.ks-item--parent').forEach(function (item) {
-        if (item.classList.contains('active') || item.querySelector('.ks-sub .active')) {
-            setOpen(item, true, false);
+    /* Auto-open the parent that contains the active child (no stagger).
+       Only the FIRST match: some URLs (e.g. /statuslabels/{id}) are marked
+       active in two groups (Assets and Settings); opening both reads as the
+       Settings menu "triggering itself". DOM order decides — Assets first. */
+    var parents = sidebar.querySelectorAll('.ks-item--parent');
+    for (var i = 0; i < parents.length; i++) {
+        if (parents[i].classList.contains('active') || parents[i].querySelector('.ks-sub .active')) {
+            setOpen(parents[i], true, false);
+            break;
         }
-    });
+    }
 
     /* ------------------------------------------------------------------
        Sliding active pill: measure the active top-level item of each group
