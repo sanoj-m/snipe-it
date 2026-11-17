@@ -37,7 +37,9 @@ return [
     |
     */
 
-    'lifetime' => env('SESSION_LIFETIME', 12000),
+    // [killa session-keepalive] KCP-062: default raised 12000 (8 days) →
+    // 43200 (30 days); .env SESSION_LIFETIME still wins when set
+    'lifetime' => env('SESSION_LIFETIME', 43200),
 
     'expire_on_close' => env('EXPIRE_ON_CLOSE', false),
 

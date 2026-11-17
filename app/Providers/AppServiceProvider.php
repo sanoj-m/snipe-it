@@ -93,6 +93,19 @@ class AppServiceProvider extends ServiceProvider
         }
         // [killa multi-host] END
 
+        // [killa session-keepalive] BEGIN — KCP-062
+        // Secure-cookie flag follows the REQUEST scheme instead of a global
+        // .env flag: on the public https host the session cookie stays
+        // Secure, on the http LAN host (KCP-050 alt hosts) it must not be —
+        // a Secure cookie is never stored/sent over plain http, which is
+        // what made the local URL "lose" the login. If SECURE_COOKIES=true
+        // is set, the canonical (non-alt) host keeps Secure even when proxy
+        // headers misreport the scheme. Lifetime default raised in
+        // config/session.php (30 days) and "remember me" issues Laravel's
+        // 5-year recaller cookie, so both hosts keep sessions alive.
+        config(['session.secure' => request()->isSecure() || (config('session.secure') && ! $killa_alt_host)]);
+        // [killa session-keepalive] END
+
         if (! $killa_alt_host && ((str_starts_with(config('app.url'), 'https://')) || config('app.force_tls'))) {
             $url->forceScheme('https');
         }
