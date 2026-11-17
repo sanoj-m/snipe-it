@@ -1,4 +1,6 @@
+@props(['bare' => false])
 @can('canViewUsersAndCheckoutables')
+    @unless($bare)
     <div class="box box-default">
         <div class="box-header with-border">
             <h2 class="box-title">{{ trans('general.companies') }}</h2>
@@ -10,11 +12,12 @@
             </div>
         </div>
         <div class="box-body">
+    @endunless
             <div class="row">
                 <div class="col-md-12">
                     <table
                         data-cookie-id-table="dashCompanySummary"
-                        data-height="400"
+                        data-height="300"
                         data-pagination="false"
                         data-side-pagination="server"
                         data-sort-order="desc"
@@ -68,9 +71,11 @@
                     </table>
                 </div>
             </div>
+    @unless($bare)
         </div>
         <div class="box-footer text-center">
             <a href="{{ route('companies.index') }}" class="btn btn-theme btn-sm btn-block">{{ trans('general.viewall') }}</a>
         </div>
     </div>
+    @endunless
 @endcan

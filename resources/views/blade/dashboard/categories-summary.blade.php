@@ -1,8 +1,10 @@
+@props(['bare' => false])
 @if (Gate::allows('view', \App\Models\Asset::class)
      || Gate::allows('view', \App\Models\Accessory::class)
      || Gate::allows('view', \App\Models\Consumable::class)
      || Gate::allows('view', \App\Models\Component::class)
      || Gate::allows('view', \App\Models\License::class))
+    @unless($bare)
     <div class="box box-default">
         <div class="box-header with-border">
             <h2 class="box-title">{{ trans('general.categories') }}</h2>
@@ -14,11 +16,12 @@
             </div>
         </div>
         <div class="box-body">
+    @endunless
             <div class="row">
                 <div class="col-md-12">
                     <table
                         data-cookie-id-table="dashCategorySummary"
-                        data-height="400"
+                        data-height="300"
                         data-pagination="false"
                         data-side-pagination="server"
                         data-show-columns="false"
@@ -69,9 +72,11 @@
                     </table>
                 </div>
             </div>
+    @unless($bare)
         </div>
         <div class="box-footer text-center">
             <a href="{{ route('categories.index') }}" class="btn btn-theme btn-sm btn-block">{{ trans('general.viewall') }}</a>
         </div>
     </div>
+    @endunless
 @endif

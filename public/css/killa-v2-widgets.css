@@ -765,6 +765,43 @@ body .k-insights-panel-header {
     gap: var(--k-space-3);
 }
 
+/* header-aligned tabs (inventory breakdown panel) */
+body .k-insights-tabs {
+    border-bottom: none;
+    margin: -4px 0 0;
+    display: flex;
+    gap: var(--k-space-1);
+}
+
+body .k-insights-tabs > li {
+    margin-bottom: 0;
+}
+
+body .k-insights-tabs > li > a {
+    border: none;
+    border-radius: var(--k-radius-pill);
+    padding: 4px var(--k-space-3);
+    margin: 0;
+    color: var(--k-text-muted);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+body .k-insights-tabs > li > a:hover {
+    background: var(--k-hover-tint);
+    color: var(--k-accent);
+    border: none;
+}
+
+body .k-insights-tabs > li.active > a,
+body .k-insights-tabs > li.active > a:hover,
+body .k-insights-tabs > li.active > a:focus {
+    background: color-mix(in srgb, var(--k-accent) 12%, transparent);
+    color: var(--k-accent);
+    border: none;
+}
+
 body .k-insights-panel-header .box-title {
     margin: 0;
 }

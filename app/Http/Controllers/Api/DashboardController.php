@@ -87,6 +87,21 @@ class DashboardController extends Controller
             $query->TextSearch($request->input('search'));
         }
 
+        // [killa-v2 dashboard] BEGIN — optional action-type allowlist so the
+        // dashboard widget can hide import/CRUD noise (create/update/delete)
+        // and show only movement events. Values are intersected with a fixed
+        // set, so nothing outside it can be smuggled in.
+        if ($request->filled('action_types')) {
+            $allowedTypes = array_intersect(
+                explode(',', $request->input('action_types')),
+                ['checkout', 'checkin', 'checkin from', 'requested', 'accepted', 'declined', 'audit']
+            );
+            if ($allowedTypes !== []) {
+                $query->whereIn('action_type', $allowedTypes);
+            }
+        }
+        // [killa-v2 dashboard] END
+
         $limit = max(1, min(500, (int) $request->input('limit', 25)));
         $offset = max(0, (int) $request->input('offset', 0));
 

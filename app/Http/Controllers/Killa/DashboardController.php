@@ -5,16 +5,20 @@ namespace App\Http\Controllers\Killa;
 use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
 use App\Models\Accessory;
+use App\Models\AccessoryCheckout;
 use App\Models\Actionlog;
 use App\Models\Asset;
 use App\Models\Company;
 use App\Models\Component;
 use App\Models\Consumable;
 use App\Models\License;
+use App\Models\LicenseSeat;
+use App\Models\Setting;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Session;
 
@@ -41,23 +45,51 @@ class DashboardController extends Controller
         }
 
         if (Gate::allows('view', License::class)) {
-            $metrics['license'] = License::assetcount();
+            $metrics['license'] = [
+                'total' => License::assetcount(),
+                'free' => LicenseSeat::whereNull('asset_id')
+                    ->whereNull('assigned_to')
+                    ->where('unreassignable_seat', false)
+                    ->whereNull('deleted_at')
+                    ->count(),
+                'expiring' => License::expiringLicenses(
+                    (int) (Setting::getSettings()->alert_interval ?: 30)
+                )->count(),
+            ];
         }
 
         if (Gate::allows('view', Accessory::class)) {
-            $metrics['accessory'] = Accessory::count();
+            $metrics['accessory'] = [
+                'total' => Accessory::count(),
+                'remaining' => (int) Accessory::sum('qty') - AccessoryCheckout::count(),
+            ];
         }
 
         if (Gate::allows('view', Consumable::class)) {
-            $metrics['consumable'] = Consumable::count();
+            $metrics['consumable'] = [
+                'total' => Consumable::count(),
+                'low' => Consumable::where('min_amt', '>', 0)
+                    ->whereColumn('qty', '<', 'min_amt')
+                    ->count(),
+            ];
         }
 
         if (Gate::allows('view', Component::class)) {
-            $metrics['component'] = Component::count();
+            $metrics['component'] = [
+                'total' => Component::count(),
+                'remaining' => (int) Component::sum('qty')
+                    - (int) DB::table('components_assets')->sum('assigned_qty'),
+            ];
         }
 
         if (Gate::allows('view', User::class)) {
-            $metrics['user'] = Company::scopeCompanyables(User::query())->count();
+            $users = Company::scopeCompanyables(User::query());
+            $metrics['user'] = [
+                'total' => (clone $users)->count(),
+                'with_items' => $users->where(function ($query) {
+                    $query->has('assets')->orHas('licenses')->orHas('accessories')->orHas('consumables');
+                })->count(),
+            ];
         }
 
         return view('killa.dashboard', [

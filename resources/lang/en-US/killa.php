@@ -26,6 +26,7 @@ return [
     'meta_units_remaining' => ':count units remaining',
     'meta_low_stock' => ':count low on stock',
     'meta_with_items' => ':count with items assigned',
+    'inventory_breakdown' => 'Inventory breakdown',
     'no_asset_status' => 'No asset status data is available.',
     // [killa-ux] redesigned licenses list page (killa/licenses/index)
     'licenses_ux' => [

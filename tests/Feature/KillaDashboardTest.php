@@ -39,7 +39,11 @@ class KillaDashboardTest extends TestCase
                 return $metrics['asset']['total'] === 2
                     && $metrics['asset']['available'] === 2
                     && $metrics['asset']['deployed'] === 0
-                    && isset($metrics['license'], $metrics['accessory'], $metrics['consumable'], $metrics['component'], $metrics['user']);
+                    && isset($metrics['license']['total'], $metrics['license']['free'], $metrics['license']['expiring'])
+                    && isset($metrics['accessory']['total'], $metrics['accessory']['remaining'])
+                    && isset($metrics['consumable']['total'], $metrics['consumable']['low'])
+                    && isset($metrics['component']['total'], $metrics['component']['remaining'])
+                    && isset($metrics['user']['total'], $metrics['user']['with_items']);
             });
     }
 

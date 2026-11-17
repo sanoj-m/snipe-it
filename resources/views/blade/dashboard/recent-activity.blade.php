@@ -31,7 +31,7 @@
                         data-empty-message="{{ trans('general.dashboard_activity_empty') }}"
                         id="dashActivityReport"
                         class="table table-striped snipe-table"
-                        data-url="{{ route('api.dashboard.activity', ['limit' => 25]) }}">
+                        data-url="{{ route('api.dashboard.activity', ['limit' => 10, 'action_types' => 'checkout,checkin,checkin from,requested,accepted,declined,audit']) }}">
                         <thead>
                             <tr>
                                 <th scope="col" data-field="icon" data-visible="true" style="width: 40px;" class="hidden-xs" data-formatter="iconFormatter"><span class="sr-only">{{ trans('admin/hardware/table.icon') }}</span></th>
