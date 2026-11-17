@@ -331,7 +331,9 @@
             <ul class="ks-menu">
                 <span class="ks-pill" aria-hidden="true"></span>
                 @can('backend.interact')
-                    <li id="settings-sidenav-option" class="ks-item ks-item--parent {!! (request()->is(App\Helpers\Helper::SettingUrls()) ? ' active' : '') !!}">
+                    {{-- [killa-v2] statuslabels.show is an ASSET list reached from the
+                         Assets submenu — exclude it so Settings doesn't light up there --}}
+                    <li id="settings-sidenav-option" class="ks-item ks-item--parent {!! ((request()->is(App\Helpers\Helper::SettingUrls()) && !request()->routeIs('statuslabels.show')) ? ' active' : '') !!}">
                         <a class="ks-link" href="#" role="button" aria-expanded="false" id="settings">
                             <x-icon type="settings" class="fa-fw" />
                             <span class="ks-label">{{ trans('general.settings') }}</span>
@@ -348,7 +350,7 @@
                             @endif
 
                             @can('view', \App\Models\Statuslabel::class)
-                                <li style="--i:1;" {!! (request()->is('statuslabels*') ? ' class="active" aria-current="page"' : '') !!}>
+                                <li style="--i:1;" {!! ((request()->is('statuslabels*') && !request()->routeIs('statuslabels.show')) ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('statuslabels.index') }}">
                                         {{ trans('general.status_labels') }}
                                     </a>
