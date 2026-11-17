@@ -363,6 +363,96 @@ body .content-header .breadcrumb > li.active {
 }
 
 /* --------------------------------------------------------------------------
+   Page-title breadcrumb (h1.pagetitle > ul): connected flat segment bar.
+   One accent-tinted track; the current page reads as a flat surface chip.
+   Token-only colors → dark mode + tenant branding follow automatically. */
+body .content-header .pagetitle > ul {
+    display: inline-flex;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 0;
+    margin: 0;
+    padding: 3px;
+    background: var(--k-accent-tint);
+    border-radius: var(--k-radius-pill);
+    vertical-align: middle;
+}
+
+body .content-header .pagetitle > ul .breadcrumb-item {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    line-height: 1;
+}
+
+body .content-header .pagetitle > ul .breadcrumb-item + .breadcrumb-item {
+    margin-left: 2px;
+}
+
+/* segment links */
+body .content-header .pagetitle > ul .breadcrumb-item > a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border-radius: var(--k-radius-pill);
+    color: var(--k-link) !important;
+    text-decoration: none;
+    transition: background-color var(--k-motion), color var(--k-motion);
+}
+
+body .content-header .pagetitle > ul .breadcrumb-item > a:hover,
+body .content-header .pagetitle > ul .breadcrumb-item > a:focus {
+    background: var(--k-surface);
+    color: var(--k-link-hover) !important;
+    text-decoration: none;
+}
+
+/* home icon keeps the link color */
+body .content-header .pagetitle > ul .breadcrumb-item > a .fa,
+body .content-header .pagetitle > ul .breadcrumb-item > a .fas,
+body .content-header .pagetitle > ul .breadcrumb-item > a svg {
+    color: inherit !important;
+}
+
+/* flat segments: separators are implied by the chips, hide the angle icons */
+body .content-header .pagetitle > ul .breadcrumb-item > .fa,
+body .content-header .pagetitle > ul .breadcrumb-item > .fas,
+body .content-header .pagetitle > ul .breadcrumb-item > svg {
+    display: none;
+}
+
+/* current page: flat surface chip (the "white segment" in the reference) */
+body .content-header .pagetitle > ul .breadcrumb-item.active,
+body .content-header .pagetitle > ul .breadcrumb-item:last-child {
+    background: var(--k-surface);
+    color: var(--k-accent);
+    border-radius: var(--k-radius-pill);
+    padding: 6px 14px;
+    font-weight: 650;
+    box-shadow: var(--k-shadow-1);
+}
+
+/* non-linked mid segments stay on the tint */
+body .content-header .pagetitle > ul .breadcrumb-item.active:not(:last-child) {
+    background: transparent;
+    color: var(--k-text-muted);
+    box-shadow: none;
+}
+
+/* keep long asset titles on one line but never blow out the header */
+body .content-header .pagetitle > ul .breadcrumb-item {
+    max-width: 42ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* --------------------------------------------------------------------------
    Dashboard stat tiles (.k-tile)
    -------------------------------------------------------------------------- */
 body .k-tile {
