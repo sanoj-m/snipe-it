@@ -13,6 +13,15 @@
                 <section class="sidebar">
                     <!-- sidebar menu: : style can be found in sidebar.less -->
                     <ul class="sidebar-menu" data-widget="tree" {{ \App\Helpers\Helper::determineLanguageDirection() == 'rtl' ? 'style="margin-right:12px' : '' }}>
+                        {{-- [incident-desk addon] --}}
+                        @can('view', \App\Models\Asset::class)
+                            <li {!! (request()->is('maintenances/incident-desk*') ? ' class="active" aria-current="page"' : '') !!} class="firstnav">
+                                <a href="{{ route('maintenances.incident-desk') }}">
+                                    <i class="fas fa-life-ring fa-fw" aria-hidden="true"></i>
+                                    <span>{{ trans('admin/incident_desk/general.incident_desk') }}</span>
+                                </a>
+                            </li>
+                        @endcan
                         @can('admin')
                             <li {!! (\request()->route()->getName()=='home' ? ' class="active" aria-current="page"' : '') !!} class="firstnav">
                                 <a href="{{ route('home') }}">

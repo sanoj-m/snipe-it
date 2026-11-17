@@ -12,8 +12,17 @@
             <p class="ks-group-label">{{ trans('killa.nav_group_overview') }}</p>
             <ul class="ks-menu">
                 <span class="ks-pill" aria-hidden="true"></span>
+                {{-- [incident-desk addon] --}}
+                @can('view', \App\Models\Asset::class)
+                    <li {!! (request()->is('maintenances/incident-desk*') ? ' class="ks-item active" aria-current="page"' : ' class="ks-item firstnav"') !!}>
+                        <a class="ks-link" href="{{ route('maintenances.incident-desk') }}">
+                            <i class="fas fa-life-ring fa-fw" aria-hidden="true"></i>
+                            <span class="ks-label">{{ trans('admin/incident_desk/general.incident_desk') }}</span>
+                        </a>
+                    </li>
+                @endcan
                 @can('admin')
-                    <li {!! (\request()->route()->getName()=='home' ? ' class="ks-item active" aria-current="page"' : ' class="ks-item firstnav"') !!}>
+                    <li {!! (\request()->route()->getName()=='home' ? ' class="ks-item active" aria-current="page"' : ' class="ks-item"') !!}>
                         <a class="ks-link" href="{{ route('home') }}">
                             <x-icon type="dashboard" class="fa-fw" />
                             <span class="ks-label">{{ trans('general.dashboard') }}</span>
@@ -198,15 +207,6 @@
                                         <a href="{{ route('maintenance-types.index') }}">
                                             <x-icon type="circle" class="text-grey fa-fw"/>
                                             {{ trans('admin/maintenance_types/general.maintenance_types') }}
-                                    </a>
-                                </li>
-                            @endcan
-                                {{-- [incident-desk addon] --}}
-                                @can('view', \App\Models\Asset::class)
-                                    <li style="--i:2;"{!! (request()->is('maintenances/incident-desk*') ? ' class="active" aria-current="page"' : '') !!}>
-                                        <a href="{{ route('maintenances.incident-desk') }}">
-                                            <x-icon type="circle" class="text-grey fa-fw"/>
-                                            {{ trans('admin/incident_desk/general.incident_desk') }}
                                     </a>
                                 </li>
                             @endcan

@@ -7,296 +7,328 @@
 @section('content')
 <div class="incident-desk">
     <style>
+        /* Incident Desk — killa-v2 native styling. All colors read the app's
+           --k-* theme tokens (with light-theme fallbacks so the page still
+           renders sanely in Classic mode where the v2 layer is not loaded).
+           Dark-mode parity comes for free from the token layer. */
+        .incident-desk{ color: var(--k-text, #1f2933); }
+        .incident-desk *, .incident-desk *::before, .incident-desk *::after{ box-sizing: border-box; }
+        .incident-desk .mono{ font-family: ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace; }
+
+        /* donut status colors (semantic, theme-aware) */
         .incident-desk{
-            --id-white:#FFFFFF;
-            --id-paper:#FAFAF8;
-            --id-ink:#121212;
-            --id-ink-soft:#6B6862;
-            --id-ink-faint:#A5A199;
-            --id-line:#E4E1DA;
-            --id-line-strong:#121212;
-            --id-red:#EF3326;
-            --id-font:'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
-            --id-font-display:'Inter Tight', 'Inter', -apple-system, 'Segoe UI', Roboto, sans-serif;
-            --id-font-mono:ui-monospace, 'Cascadia Mono', Menlo, Consolas, monospace;
-            background:var(--id-white);
-            color:var(--id-ink);
-            font-family:var(--id-font);
-            margin:-20px -15px;
-        }
-        .incident-desk *, .incident-desk *::before, .incident-desk *::after{box-sizing:border-box;}
-        .incident-desk .mono{font-family:var(--id-font-mono);}
-        .incident-desk .disp{font-family:var(--id-font-display);}
-
-        /* ---------- page header ---------- */
-        .incident-desk .pagebar{
-            display:flex; align-items:center; gap:14px;
-            padding:14px 28px; border-bottom:1px solid var(--id-line-strong);
-            background:var(--id-white);
-        }
-        .incident-desk .brand-sub{
-            font-family:var(--id-font-display); font-weight:600; font-size:12px;
-            letter-spacing:.12em; text-transform:uppercase; color:var(--id-ink-soft);
-        }
-        .incident-desk .storage-badge{
-            margin-left:auto; font-size:10.5px; letter-spacing:.04em; color:var(--id-ink-soft);
-            display:flex; align-items:center; gap:6px;
-        }
-        .incident-desk .storage-dot{width:7px; height:7px; border-radius:50%; background:var(--id-red);}
-
-        /* ---------- hero ---------- */
-        .incident-desk .hero{
-            position:relative;
-            display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap;
-            gap:24px; padding:56px 28px 36px; border-bottom:1px solid var(--id-line);
-            background:
-              linear-gradient(90deg, rgba(255,255,255,.97) 0%, rgba(255,255,255,.92) 38%, rgba(255,255,255,.55) 100%),
-              url('https://commons.wikimedia.org/wiki/Special:FilePath/Museum%20of%20the%20Future.jpg?width=1800') center 38% / cover no-repeat,
-              var(--id-ink);
-        }
-        .incident-desk .hero::after{
-            content:''; position:absolute; left:0; right:0; bottom:0; height:3px; background:var(--id-red);
-        }
-        .incident-desk .hero-credit{
-            position:absolute; right:28px; bottom:6px; font-size:8.5px; letter-spacing:.03em; color:var(--id-ink-faint);
-            background:rgba(255,255,255,.75); padding:2px 6px;
-        }
-        .incident-desk .hero h1{
-            font-family:var(--id-font-display); font-weight:700; font-size:38px; line-height:1.05;
-            margin:0; letter-spacing:-.01em; max-width:12ch; color:var(--id-ink);
-        }
-        .incident-desk .hero h1 em{font-style:normal; color:var(--id-red);}
-        .incident-desk .hero p{margin:12px 0 0; color:var(--id-ink-soft); font-size:13px; max-width:42ch; line-height:1.6;}
-        .incident-desk .counter-block{text-align:right;}
-        .incident-desk .counter-label{font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:var(--id-ink-soft); margin-bottom:4px;}
-        .incident-desk .counter-num{
-            font-family:var(--id-font-display); font-weight:800; font-size:56px; line-height:1;
-            color:var(--id-red); font-variant-numeric:tabular-nums;
+            --id-closed: var(--k-success, #2f9e6e);
+            --id-open: var(--k-accent, #E63B2E);
+            --id-vendor: var(--k-warning, #b97d10);
+            --id-muted: var(--k-text-muted, #6b7280);
+            --id-line: var(--k-border-soft, #eef0f2);
+            --id-border: var(--k-border, #e5e7eb);
         }
 
-        /* ---------- stat strip ---------- */
-        .incident-desk .stats{display:flex; border-bottom:1px solid var(--id-line); flex-wrap:wrap;}
-        .incident-desk .stat{flex:1; min-width:110px; padding:16px 28px; border-right:1px solid var(--id-line);}
-        .incident-desk .stat:last-child{border-right:none;}
-        .incident-desk .stat .n{font-family:var(--id-font-display); font-weight:700; font-size:26px; font-variant-numeric:tabular-nums;}
-        .incident-desk .stat .l{font-size:10px; letter-spacing:.12em; text-transform:uppercase; color:var(--id-ink-soft); margin-top:3px;}
-        .incident-desk .stat.open .n{color:var(--id-red);}
+        /* stat tiles reuse the dashboard k-tile markup; these tweaks just
+           tighten them into a 5-up strip and kill the footer offset */
+        .incident-desk .k-tile{ margin-bottom: var(--k-space-4, 16px); }
+        .incident-desk .k-tile .k-tile-body{ padding-bottom: var(--k-space-4, 16px); }
+        .incident-desk .k-tile .k-tile-icon i{ font-size: 15px; }
 
-        /* ---------- layout ---------- */
-        .incident-desk .body-grid{display:grid; grid-template-columns:340px 1fr;}
-        @media (max-width:900px){ .incident-desk .body-grid{grid-template-columns:1fr;} }
-        .incident-desk .rail{border-right:1px solid var(--id-line); padding:26px 28px;}
-        @media (max-width:900px){ .incident-desk .rail{border-right:none; border-bottom:1px solid var(--id-line);} }
-        .incident-desk .main{padding:26px 28px;}
+        /* form rhythm inside the file-a-ticket box */
+        .incident-desk .id-form label{
+            display: block; margin: 12px 0 4px;
+            font-size: 12px; font-weight: 600; color: var(--k-label, #374151);
+        }
+        .incident-desk .id-form label:first-of-type{ margin-top: 0; }
+        .incident-desk .id-form .form-control{ width: 100%; }
+        .incident-desk .id-form textarea.form-control{ min-height: 70px; resize: vertical; }
+        .incident-desk .id-form .select2-container{ width: 100% !important; }
 
-        .incident-desk .panel-title{
-            font-family:var(--id-font-display); font-weight:700; font-size:11px;
-            letter-spacing:.14em; text-transform:uppercase; margin:0 0 16px; color:var(--id-ink);
+        /* segmented status control */
+        .incident-desk .status-choices{
+            display: flex; border: 1px solid var(--id-border);
+            border-radius: var(--k-radius-sm, 6px); overflow: hidden;
         }
-
-        /* ---------- form ---------- */
-        .incident-desk label{display:block; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--id-ink-soft); margin:16px 0 6px; font-weight:600;}
-        .incident-desk textarea,
-        .incident-desk select,
-        .incident-desk input[type=text],
-        .incident-desk input[type=date]{
-            width:100%; font-family:var(--id-font); font-size:13.5px; color:var(--id-ink);
-            background:var(--id-white); border:1px solid var(--id-line-strong); padding:10px 11px;
-            outline:none; border-radius:0; height:auto;
-        }
-        .incident-desk textarea{resize:vertical; min-height:66px;}
-        .incident-desk textarea:focus, .incident-desk select:focus, .incident-desk input:focus{border-color:var(--id-red); box-shadow:0 0 0 1px var(--id-red);}
-        .incident-desk .select2-container{width:100% !important;}
-        .incident-desk .clock-row{
-            display:flex; justify-content:space-between; align-items:center;
-            border-top:1px dashed var(--id-line); border-bottom:1px dashed var(--id-line);
-            padding:10px 2px; font-size:11.5px; color:var(--id-ink-soft); margin-top:16px;
-        }
-        .incident-desk .clock-time{color:var(--id-ink); font-weight:600;}
-        .incident-desk .status-choices{display:flex; gap:0; border:1px solid var(--id-line-strong); margin-top:2px;}
         .incident-desk .status-choice{
-            flex:1; text-align:center; padding:9px 4px; font-size:10.5px; letter-spacing:.05em;
-            text-transform:uppercase; cursor:pointer; color:var(--id-ink-soft); border-right:1px solid var(--id-line-strong);
+            flex: 1; text-align: center; padding: 7px 4px;
+            font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+            cursor: pointer; color: var(--id-muted);
+            background: var(--k-surface, #fff);
+            border-right: 1px solid var(--id-border);
+            transition: background var(--k-motion, 160ms ease), color var(--k-motion, 160ms ease);
         }
-        .incident-desk .status-choice:last-child{border-right:none;}
-        .incident-desk .status-choice.active{background:var(--id-ink); color:var(--id-white); font-weight:600;}
-        .incident-desk .status-choice.active[data-s="Open"]{background:var(--id-red);}
-        .incident-desk .submit-btn{
-            margin-top:18px; width:100%; padding:13px; border:1px solid var(--id-ink);
-            background:var(--id-ink); color:var(--id-white); font-family:var(--id-font-display);
-            font-weight:700; font-size:12px; letter-spacing:.1em; text-transform:uppercase;
-            cursor:pointer; transition:background .15s, border-color .15s;
+        .incident-desk .status-choice:last-child{ border-right: none; }
+        .incident-desk .status-choice:hover{ background: var(--k-hover-tint, #f3f4f6); }
+        .incident-desk .status-choice.active{
+            background: color-mix(in srgb, var(--id-closed) 12%, var(--k-surface, #fff));
+            color: var(--id-closed);
         }
-        .incident-desk .submit-btn:hover:not(:disabled){background:var(--id-red); border-color:var(--id-red);}
-        .incident-desk .submit-btn:disabled{background:var(--id-white); color:var(--id-ink-faint); border-color:var(--id-line); cursor:default;}
-        .incident-desk .form-msg{font-size:11px; margin-top:10px; min-height:14px; color:var(--id-red);}
+        .incident-desk .status-choice.active[data-s="Open"]{
+            background: color-mix(in srgb, var(--id-open) 12%, var(--k-surface, #fff));
+            color: var(--id-open);
+        }
+        .incident-desk .status-choice.active[data-s="Need Vendor"]{
+            background: color-mix(in srgb, var(--id-vendor) 14%, var(--k-surface, #fff));
+            color: var(--id-vendor);
+        }
 
-        .incident-desk .ghost-btn{
-            text-align:center; padding:9px 6px; border:1px solid var(--id-line-strong);
-            background:var(--id-white); color:var(--id-ink); font-family:var(--id-font-display);
-            font-weight:600; font-size:10px; letter-spacing:.06em; text-transform:uppercase; cursor:pointer;
+        .incident-desk .clock-row{
+            display: flex; justify-content: space-between; align-items: center;
+            border-top: 1px dashed var(--id-border); border-bottom: 1px dashed var(--id-border);
+            padding: 8px 2px; font-size: 12px; color: var(--id-muted); margin-top: 14px;
         }
-        .incident-desk .ghost-btn:hover{background:var(--id-ink); color:var(--id-white);}
+        .incident-desk .clock-time{ color: var(--k-text, #1f2933); font-weight: 600; }
+        .incident-desk .form-msg{ font-size: 12px; margin-top: 8px; min-height: 16px; color: var(--k-danger, #c0392b); }
 
-        /* ---------- donut ---------- */
-        .incident-desk .donut-row{display:flex; align-items:center; gap:20px;}
+        /* donut */
+        .incident-desk .donut-row{ display: flex; align-items: center; gap: 20px; }
         .incident-desk .donut{
-            width:120px; height:120px; border-radius:50%; flex-shrink:0; position:relative;
-            background:conic-gradient(var(--id-line) 0deg 360deg);
+            width: 132px; height: 132px; border-radius: 50%; flex-shrink: 0; position: relative;
+            background: conic-gradient(var(--id-line) 0deg 360deg);
         }
         .incident-desk .donut-center{
-            position:absolute; inset:16px; background:var(--id-white); border-radius:50%;
-            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            position: absolute; inset: 18px; background: var(--k-surface, #fff); border-radius: 50%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .incident-desk .donut-total{font-family:var(--id-font-display); font-weight:800; font-size:24px; color:var(--id-ink); line-height:1;}
-        .incident-desk .donut-total-label{font-size:9px; letter-spacing:.08em; text-transform:uppercase; color:var(--id-ink-faint); margin-top:2px;}
-        .incident-desk .donut-legend{display:flex; flex-direction:column; gap:8px; font-size:11.5px;}
-        .incident-desk .donut-legend-row{display:flex; align-items:center; gap:8px;}
-        .incident-desk .donut-swatch{width:10px; height:10px; flex-shrink:0;}
-        .incident-desk .donut-legend-label{color:var(--id-ink-soft); flex:1;}
-        .incident-desk .donut-legend-count{font-family:var(--id-font-mono); font-weight:600; color:var(--id-ink);}
+        .incident-desk .donut-total{
+            font-family: var(--k-font-display, 'Inter Tight', 'Inter', sans-serif);
+            font-weight: 700; font-size: 24px; color: var(--k-text, #1f2933); line-height: 1;
+        }
+        .incident-desk .donut-total-label{
+            font-size: 10px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+            color: var(--id-muted); margin-top: 3px;
+        }
+        .incident-desk .donut-legend{ display: flex; flex-direction: column; gap: 8px; font-size: 12px; }
+        .incident-desk .donut-legend-row{ display: flex; align-items: center; gap: 8px; min-width: 150px; }
+        .incident-desk .donut-swatch{ width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+        .incident-desk .donut-legend-label{ color: var(--id-muted); flex: 1; }
+        .incident-desk .donut-legend-count{ font-weight: 600; color: var(--k-text, #1f2933); font-variant-numeric: tabular-nums; }
+        .incident-desk .donut-scope{ font-weight: 400; color: var(--id-muted); text-transform: none; }
 
-        /* ---------- ticket list controls ---------- */
-        .incident-desk .list-controls{display:flex; gap:10px; margin-bottom:16px; flex-wrap:wrap; align-items:center;}
-        .incident-desk .list-controls input[type=text]{flex:1; min-width:170px;}
-        .incident-desk .list-controls input[type=date]{width:auto;}
-        .incident-desk .filter-tabs{display:flex; border:1px solid var(--id-line-strong);}
+        /* ticket log controls */
+        .incident-desk .list-controls{ display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; align-items: center; }
+        .incident-desk .list-controls input[type=text]{ flex: 1; min-width: 170px; }
+        .incident-desk .list-controls input[type=date]{ width: auto; }
+        .incident-desk .filter-tabs{
+            display: flex; border: 1px solid var(--id-border);
+            border-radius: var(--k-radius-sm, 6px); overflow: hidden;
+        }
         .incident-desk .filter-tab{
-            padding:9px 13px; background:var(--id-white); border-right:1px solid var(--id-line-strong);
-            font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; cursor:pointer; color:var(--id-ink-soft);
-            font-family:var(--id-font-display); font-weight:600;
+            padding: 7px 12px; background: var(--k-surface, #fff);
+            border-right: 1px solid var(--id-border);
+            font-size: 11px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+            cursor: pointer; color: var(--id-muted);
         }
-        .incident-desk .filter-tab:last-child{border-right:none;}
-        .incident-desk .filter-tab.active{background:var(--id-ink); color:var(--id-white);}
-        .incident-desk .count-line{font-size:11px; color:var(--id-ink-faint); margin-bottom:4px;}
-        .incident-desk .date-chip{display:inline-flex; align-items:center; gap:8px; border:1px dashed var(--id-ink-faint); padding:6px 11px; font-size:11px; color:var(--id-ink); margin-bottom:12px;}
-        .incident-desk .date-chip button{border:none; background:none; color:var(--id-red); cursor:pointer; font-family:inherit; font-weight:700;}
+        .incident-desk .filter-tab:last-child{ border-right: none; }
+        .incident-desk .filter-tab:hover{ background: var(--k-hover-tint, #f3f4f6); }
+        .incident-desk .filter-tab.active{
+            background: color-mix(in srgb, var(--k-accent, #E63B2E) 10%, var(--k-surface, #fff));
+            color: var(--k-accent, #E63B2E);
+        }
+        .incident-desk .count-line{ font-size: 11.5px; color: var(--id-muted); margin-bottom: 6px; }
+        .incident-desk .date-chip{
+            display: inline-flex; align-items: center; gap: 8px;
+            border: 1px dashed var(--id-border); border-radius: var(--k-radius-sm, 6px);
+            padding: 5px 10px; font-size: 12px; color: var(--k-text, #1f2933); margin-bottom: 10px;
+        }
+        .incident-desk .date-chip button{
+            border: none; background: none; color: var(--k-link, #c52d21);
+            cursor: pointer; font-family: inherit; font-weight: 600;
+        }
 
-        /* ---------- ticket row ---------- */
+        /* ticket rows */
         .incident-desk .ticket{
-            position:relative;
-            display:grid; grid-template-columns:56px 1fr auto; gap:16px; align-items:start;
-            padding:16px 2px; border-bottom:1px solid var(--id-line);
+            position: relative;
+            display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: start;
+            padding: 12px 2px; border-bottom: 1px solid var(--id-line);
         }
-        .incident-desk .ticket:first-child{border-top:1px solid var(--id-line);}
-        .incident-desk .t-id{font-family:var(--id-font-mono); font-size:11px; color:var(--id-ink-faint); padding-top:2px;}
-        .incident-desk .t-body .t-details{font-size:14px; color:var(--id-ink); line-height:1.45; word-break:break-word;}
-        .incident-desk .t-meta{font-family:var(--id-font-mono); font-size:10px; color:var(--id-ink-faint); margin-top:5px; letter-spacing:.02em;}
-        .incident-desk .t-right{display:flex; flex-direction:column; align-items:flex-end; gap:7px;}
+        .incident-desk .ticket:first-child{ border-top: 1px solid var(--id-line); }
+        .incident-desk .t-id{ font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 11px; color: var(--id-muted); padding-top: 3px; }
+        .incident-desk .t-body .t-details{ font-size: 13.5px; color: var(--k-text, #1f2933); line-height: 1.45; word-break: break-word; }
+        .incident-desk .t-meta{ font-size: 11px; color: var(--id-muted); margin-top: 4px; }
+        .incident-desk .t-right{ display: flex; flex-direction: column; align-items: flex-end; gap: 7px; }
         .incident-desk .tag{
-            font-family:var(--id-font-display); font-weight:700; font-size:9.5px;
-            letter-spacing:.08em; text-transform:uppercase; padding:4px 9px; white-space:nowrap;
+            font-weight: 600; font-size: 10px; letter-spacing: .05em; text-transform: uppercase;
+            padding: 3px 9px; border-radius: var(--k-radius-pill, 999px); white-space: nowrap;
         }
-        .incident-desk .tag.Closed{background:var(--id-ink); color:var(--id-white);}
-        .incident-desk .tag.Open{background:var(--id-red); color:var(--id-white);}
-        .incident-desk .tag.Need-Vendor{background:var(--id-white); color:var(--id-red); border:1px solid var(--id-red);}
-        .incident-desk .t-actions{display:flex; gap:6px;}
-        .incident-desk .t-actions select{font-size:9.5px; padding:3px 4px; width:auto; border:1px solid var(--id-line);}
-        .incident-desk .t-del{background:none; border:1px solid var(--id-line); color:var(--id-ink-faint); font-size:9.5px; padding:3px 7px; cursor:pointer; font-family:var(--id-font);}
-        .incident-desk .t-del:hover{border-color:var(--id-red); color:var(--id-red);}
-        .incident-desk .empty-state{padding:36px 10px; text-align:center; color:var(--id-ink-faint); font-size:12.5px;}
-        .incident-desk .list-scroll{max-height:660px; overflow-y:auto; padding-right:4px;}
+        .incident-desk .tag.Closed{
+            background: color-mix(in srgb, var(--id-closed) 12%, transparent);
+            color: var(--id-closed);
+        }
+        .incident-desk .tag.Open{
+            background: color-mix(in srgb, var(--id-open) 12%, transparent);
+            color: var(--id-open);
+        }
+        .incident-desk .tag.Need-Vendor{
+            background: color-mix(in srgb, var(--id-vendor) 14%, transparent);
+            color: var(--id-vendor);
+        }
+        .incident-desk .t-actions{ display: flex; gap: 6px; align-items: center; }
+        .incident-desk .t-actions select{ width: auto; height: 26px; padding: 2px 6px; font-size: 11px; }
+        .incident-desk .empty-state{ padding: 36px 10px; text-align: center; color: var(--id-muted); font-size: 13px; }
+        .incident-desk .list-scroll{ max-height: 640px; overflow-y: auto; padding-right: 4px; }
 
-        .incident-desk .edit-row{background:var(--id-paper); grid-template-columns:56px 1fr; padding:16px 12px;}
-        .incident-desk .edit-body{display:flex; flex-direction:column;}
-        .incident-desk .edit-body label{margin:10px 0 4px;}
-        .incident-desk .edit-body label:first-child{margin-top:0;}
-        .incident-desk .edit-body input, .incident-desk .edit-body select, .incident-desk .edit-body textarea{font-size:13px;}
-        .incident-desk .edit-body textarea{min-height:54px;}
-        .incident-desk .edit-actions{display:flex; gap:8px;}
-        .incident-desk .edit-actions .submit-btn, .incident-desk .edit-actions .ghost-btn{flex:1;}
+        /* inline edit row */
+        .incident-desk .edit-row{
+            background: var(--k-hover-tint, #f3f4f6);
+            grid-template-columns: 64px 1fr; padding: 14px 12px;
+            border-radius: var(--k-radius-sm, 6px);
+        }
+        .incident-desk .edit-body{ display: flex; flex-direction: column; }
+        .incident-desk .edit-body label{ margin: 10px 0 4px; font-size: 12px; font-weight: 600; color: var(--k-label, #374151); }
+        .incident-desk .edit-body label:first-child{ margin-top: 0; }
+        .incident-desk .edit-body textarea.form-control{ min-height: 54px; }
+        .incident-desk .edit-actions{ display: flex; gap: 8px; margin-top: 12px; }
     </style>
 
-    <div class="pagebar">
-        <div class="brand-sub">{{ trans('admin/incident_desk/general.page_title') }}</div>
-        <div class="storage-badge"><span class="storage-dot"></span><span>{{ trans('admin/incident_desk/general.shared_badge') }}</span></div>
-    </div>
-
-    <div class="hero">
-        <div>
-            <h1 class="disp">{{ trans('admin/incident_desk/general.hero_title') }} <em>{{ trans('admin/incident_desk/general.hero_title_em') }}</em></h1>
-            <p>{{ trans('admin/incident_desk/general.hero_blurb') }}</p>
-        </div>
-        <div class="counter-block">
-            <div class="counter-label">{{ trans('admin/incident_desk/general.tickets_on_file') }}</div>
-            <div class="counter-num" id="idCounterNum">0</div>
-        </div>
-        <span class="hero-credit">Museum of the Future, Dubai &mdash; Killa Design</span>
-    </div>
-
-    <div class="stats" id="idStatsRow"></div>
-
-    <div class="body-grid">
-        <div class="rail">
-            <p class="panel-title">{{ trans('admin/incident_desk/general.file_ticket') }}</p>
-            <label for="idRequesterInput">{{ trans('admin/incident_desk/general.requester') }}</label>
-            <input type="text" id="idRequesterInput" list="idUsersDatalist" placeholder="{{ trans('admin/incident_desk/general.requester_placeholder') }}" autocomplete="off">
-            <datalist id="idUsersDatalist">
-                @foreach ($requesters as $requesterName)
-                    <option value="{{ $requesterName }}"></option>
-                @endforeach
-            </datalist>
-
-            <label for="idCategorySelect">{{ trans('admin/incident_desk/general.category') }}</label>
-            <select id="idCategorySelect">
-                <option value="">{{ trans('admin/incident_desk/general.select_category') }}</option>
-                @foreach ($taskCategories as $categoryName => $taskTypes)
-                    <option value="{{ $categoryName }}">{{ $categoryName }}</option>
-                @endforeach
-            </select>
-
-            <label for="idTaskTypeSelect">{{ trans('admin/incident_desk/general.task_type') }}</label>
-            <select id="idTaskTypeSelect" disabled>
-                <option value="">{{ trans('admin/incident_desk/general.select_category_first') }}</option>
-            </select>
-
-            <label for="idAssetSelect">{{ trans('admin/incident_desk/general.device_optional') }}</label>
-            <select id="idAssetSelect" class="js-data-ajax" data-endpoint="hardware" data-placeholder="{{ trans('general.select_asset') }}" style="width:100%">
-                <option value="" role="option">{{ trans('general.select_asset') }}</option>
-            </select>
-
-            <label for="idDetailsInput">{{ trans('admin/incident_desk/general.details') }} <span style="text-transform:none; letter-spacing:0; color:var(--id-ink-faint);">{{ trans('admin/incident_desk/general.details_optional') }}</span></label>
-            <textarea id="idDetailsInput" placeholder="{{ trans('admin/incident_desk/general.details_placeholder') }}"></textarea>
-
-            <label>{{ trans('admin/incident_desk/general.status') }}</label>
-            <div class="status-choices" id="idStatusChoices">
-                <div class="status-choice active" data-s="Closed">{{ trans('admin/incident_desk/general.closed') }}</div>
-                <div class="status-choice" data-s="Open">{{ trans('admin/incident_desk/general.open') }}</div>
-                <div class="status-choice" data-s="Need Vendor">{{ trans('admin/incident_desk/general.vendor') }}</div>
-            </div>
-
-            <div class="clock-row">
-                <span>{{ trans('admin/incident_desk/general.timestamp') }}</span>
-                <span class="clock-time mono" id="idLiveClock">&mdash;</span>
-            </div>
-
-            <button class="submit-btn" id="idSubmitBtn" disabled>{{ trans('admin/incident_desk/general.log_ticket') }}</button>
-            <div class="form-msg" id="idFormMsg"></div>
-
-            <button class="ghost-btn" id="idExportCsvBtn" type="button" style="width:100%; margin-top:18px;">{{ trans('admin/incident_desk/general.export_csv') }}</button>
-
-            <p class="panel-title" style="margin-top:30px;">{{ trans('admin/incident_desk/general.status_breakdown') }} <span id="idDonutDateLabel" style="text-transform:none; letter-spacing:0; color:var(--id-ink-faint); font-weight:400;"></span></p>
-            <div class="donut-row">
-                <div class="donut" id="idDonutChart"><div class="donut-center"><div class="donut-total" id="idDonutTotal">0</div><div class="donut-total-label">{{ trans('admin/incident_desk/general.tickets') }}</div></div></div>
-                <div class="donut-legend" id="idDonutLegend"></div>
-            </div>
-        </div>
-
-        <div class="main">
-            <p class="panel-title">{{ trans('admin/incident_desk/general.ticket_log') }}</p>
-            <div class="list-controls">
-                <input type="text" id="idSearchInput" placeholder="{{ trans('admin/incident_desk/general.search_placeholder') }}">
-                <input type="date" id="idDateJump" title="{{ trans('admin/incident_desk/general.jump_to_date') }}">
-                <div class="filter-tabs" id="idFilterTabs">
-                    <div class="filter-tab active" data-f="All">{{ trans('admin/incident_desk/general.all') }}</div>
-                    <div class="filter-tab" data-f="Closed">{{ trans('admin/incident_desk/general.closed') }}</div>
-                    <div class="filter-tab" data-f="Open">{{ trans('admin/incident_desk/general.open') }}</div>
-                    <div class="filter-tab" data-f="Need Vendor">{{ trans('admin/incident_desk/general.vendor') }}</div>
+    {{-- stat tiles: same k-tile card the dashboard uses --}}
+    <div class="row">
+        <div class="col-md-2 col-md-offset-1 col-sm-4 col-xs-6">
+            <div class="small-box k-tile bg-purple">
+                <div class="k-tile-body">
+                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-ticket"></i></span>
+                    <span class="k-tile-text">
+                        <span class="k-tile-number" id="idStatTotal">0</span>
+                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.tickets_on_file') }}</span>
+                    </span>
                 </div>
             </div>
-            <div class="count-line" id="idCountLine"></div>
-            <div id="idDateChip" style="display:none;"></div>
-            <div class="list-scroll"><div id="idTicketList"></div></div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="small-box k-tile bg-teal">
+                <div class="k-tile-body">
+                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-check-circle"></i></span>
+                    <span class="k-tile-text">
+                        <span class="k-tile-number" id="idStatClosed">0</span>
+                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.closed') }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="small-box k-tile bg-maroon">
+                <div class="k-tile-body">
+                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-exclamation-circle"></i></span>
+                    <span class="k-tile-text">
+                        <span class="k-tile-number" id="idStatOpen">0</span>
+                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.open') }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="small-box k-tile bg-orange">
+                <div class="k-tile-body">
+                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-truck"></i></span>
+                    <span class="k-tile-text">
+                        <span class="k-tile-number" id="idStatVendor">0</span>
+                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.need_vendor') }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 col-sm-4 col-xs-6">
+            <div class="small-box k-tile bg-light-blue">
+                <div class="k-tile-body">
+                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-calendar-day"></i></span>
+                    <span class="k-tile-text">
+                        <span class="k-tile-number" id="idStatToday">0</span>
+                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.logged_today') }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="box box-solid box-primary">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ trans('admin/incident_desk/general.file_ticket') }}</h3>
+                </div>
+                <div class="box-body id-form">
+                    <label for="idRequesterInput">{{ trans('admin/incident_desk/general.requester') }}</label>
+                    <input type="text" id="idRequesterInput" class="form-control" list="idUsersDatalist" placeholder="{{ trans('admin/incident_desk/general.requester_placeholder') }}" autocomplete="off">
+                    <datalist id="idUsersDatalist">
+                        @foreach ($requesters as $requesterName)
+                            <option value="{{ $requesterName }}"></option>
+                        @endforeach
+                    </datalist>
+
+                    <label for="idCategorySelect">{{ trans('admin/incident_desk/general.category') }}</label>
+                    <select id="idCategorySelect" class="form-control">
+                        <option value="">{{ trans('admin/incident_desk/general.select_category') }}</option>
+                        @foreach ($taskCategories as $categoryName => $taskTypes)
+                            <option value="{{ $categoryName }}">{{ $categoryName }}</option>
+                        @endforeach
+                    </select>
+
+                    <label for="idTaskTypeSelect">{{ trans('admin/incident_desk/general.task_type') }}</label>
+                    <select id="idTaskTypeSelect" class="form-control" disabled>
+                        <option value="">{{ trans('admin/incident_desk/general.select_category_first') }}</option>
+                    </select>
+
+                    <label for="idAssetSelect">{{ trans('admin/incident_desk/general.device_optional') }}</label>
+                    <select id="idAssetSelect" class="js-data-ajax form-control" data-endpoint="hardware" data-placeholder="{{ trans('general.select_asset') }}" style="width:100%">
+                        <option value="" role="option">{{ trans('general.select_asset') }}</option>
+                    </select>
+
+                    <label for="idDetailsInput">{{ trans('admin/incident_desk/general.details') }} <span style="font-weight:400; color:var(--k-text-muted,#6b7280);">{{ trans('admin/incident_desk/general.details_optional') }}</span></label>
+                    <textarea id="idDetailsInput" class="form-control" placeholder="{{ trans('admin/incident_desk/general.details_placeholder') }}"></textarea>
+
+                    <label>{{ trans('admin/incident_desk/general.status') }}</label>
+                    <div class="status-choices" id="idStatusChoices">
+                        <div class="status-choice active" data-s="Closed">{{ trans('admin/incident_desk/general.closed') }}</div>
+                        <div class="status-choice" data-s="Open">{{ trans('admin/incident_desk/general.open') }}</div>
+                        <div class="status-choice" data-s="Need Vendor">{{ trans('admin/incident_desk/general.vendor') }}</div>
+                    </div>
+
+                    <div class="clock-row">
+                        <span>{{ trans('admin/incident_desk/general.timestamp') }}</span>
+                        <span class="clock-time mono" id="idLiveClock">&mdash;</span>
+                    </div>
+
+                    <button class="btn btn-primary btn-block" id="idSubmitBtn" style="margin-top:14px;" disabled>{{ trans('admin/incident_desk/general.log_ticket') }}</button>
+                    <div class="form-msg" id="idFormMsg"></div>
+                </div>
+                <div class="box-footer">
+                    <button class="btn btn-default btn-block" id="idExportCsvBtn" type="button">
+                        <i class="fas fa-download" aria-hidden="true"></i> {{ trans('admin/incident_desk/general.export_csv') }}
+                    </button>
+                </div>
+            </div>
+
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ trans('admin/incident_desk/general.status_breakdown') }} <span class="donut-scope" id="idDonutDateLabel"></span></h3>
+                </div>
+                <div class="box-body">
+                    <div class="donut-row">
+                        <div class="donut" id="idDonutChart"><div class="donut-center"><div class="donut-total" id="idDonutTotal">0</div><div class="donut-total-label">{{ trans('admin/incident_desk/general.tickets') }}</div></div></div>
+                        <div class="donut-legend" id="idDonutLegend"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-8">
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">{{ trans('admin/incident_desk/general.ticket_log') }}</h3>
+                </div>
+                <div class="box-body">
+                    <div class="list-controls">
+                        <input type="text" id="idSearchInput" class="form-control" placeholder="{{ trans('admin/incident_desk/general.search_placeholder') }}">
+                        <input type="date" id="idDateJump" class="form-control" title="{{ trans('admin/incident_desk/general.jump_to_date') }}">
+                        <div class="filter-tabs" id="idFilterTabs">
+                            <div class="filter-tab active" data-f="All">{{ trans('admin/incident_desk/general.all') }}</div>
+                            <div class="filter-tab" data-f="Closed">{{ trans('admin/incident_desk/general.closed') }}</div>
+                            <div class="filter-tab" data-f="Open">{{ trans('admin/incident_desk/general.open') }}</div>
+                            <div class="filter-tab" data-f="Need Vendor">{{ trans('admin/incident_desk/general.vendor') }}</div>
+                        </div>
+                    </div>
+                    <div class="count-line" id="idCountLine"></div>
+                    <div id="idDateChip" style="display:none;"></div>
+                    <div class="list-scroll"><div id="idTicketList"></div></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
@@ -321,6 +353,17 @@
     let currentDate = new Date().toISOString().slice(0,10);
     let activeStatus = 'Closed';
     let editingId = null;
+
+    function themeVar(name){
+        return getComputedStyle(document.querySelector('.incident-desk')).getPropertyValue(name).trim();
+    }
+    function donutColors(){
+        return {
+            Closed: themeVar('--id-closed') || '#2f9e6e',
+            Open: themeVar('--id-open') || '#E63B2E',
+            'Need Vendor': themeVar('--id-vendor') || '#b97d10'
+        };
+    }
 
     async function api(url, options){
         options = options || {};
@@ -356,27 +399,23 @@
     function statusClass(s){ return s.replace(/ /g, '-'); }
 
     function renderStats(){
-        const total = tickets.length;
-        const closed = tickets.filter(t=>t.status==='Closed').length;
-        const open = tickets.filter(t=>t.status==='Open').length;
-        const vendor = tickets.filter(t=>t.status==='Need Vendor').length;
         const today = new Date().toISOString().slice(0,10);
-        const todayCount = tickets.filter(t=>(t.created_at||'').slice(0,10)===today).length;
-
-        document.getElementById('idCounterNum').textContent = total;
-        document.getElementById('idStatsRow').innerHTML =
-            '<div class="stat"><div class="n">' + closed + '</div><div class="l">{{ trans('admin/incident_desk/general.closed') }}</div></div>' +
-            '<div class="stat open"><div class="n">' + open + '</div><div class="l">{{ trans('admin/incident_desk/general.open') }}</div></div>' +
-            '<div class="stat"><div class="n">' + vendor + '</div><div class="l">{{ trans('admin/incident_desk/general.need_vendor') }}</div></div>' +
-            '<div class="stat"><div class="n">' + todayCount + '</div><div class="l">{{ trans('admin/incident_desk/general.logged_today') }}</div></div>';
+        document.getElementById('idStatTotal').textContent = tickets.length;
+        document.getElementById('idStatClosed').textContent = tickets.filter(t=>t.status==='Closed').length;
+        document.getElementById('idStatOpen').textContent = tickets.filter(t=>t.status==='Open').length;
+        document.getElementById('idStatVendor').textContent = tickets.filter(t=>t.status==='Need Vendor').length;
+        document.getElementById('idStatToday').textContent = tickets.filter(t=>(t.created_at||'').slice(0,10)===today).length;
     }
 
     function renderDonut(){
         const scope = currentDate ? tickets.filter(t=>(t.created_at||'').slice(0,10)===currentDate) : tickets;
-        const closed = scope.filter(t=>t.status==='Closed').length;
-        const open = scope.filter(t=>t.status==='Open').length;
-        const vendor = scope.filter(t=>t.status==='Need Vendor').length;
         const total = scope.length;
+        const colors = donutColors();
+        const segments = [
+            {label:'Closed', count:scope.filter(t=>t.status==='Closed').length, color:colors.Closed},
+            {label:'Open', count:scope.filter(t=>t.status==='Open').length, color:colors.Open},
+            {label:'Need Vendor', count:scope.filter(t=>t.status==='Need Vendor').length, color:colors['Need Vendor']}
+        ];
 
         const label = document.getElementById('idDonutDateLabel');
         if(currentDate){
@@ -388,12 +427,6 @@
         }
 
         document.getElementById('idDonutTotal').textContent = total;
-
-        const segments = [
-            {label:'Closed', count:closed, color:'#121212'},
-            {label:'Open', count:open, color:'#EF3326'},
-            {label:'Need Vendor', count:vendor, color:'#C9C4BB'}
-        ];
 
         const donut = document.getElementById('idDonutChart');
         const center = donut.querySelector('.donut-center');
@@ -577,11 +610,11 @@
             '<div class="t-right">' +
                 '<div class="tag ' + statusClass(t.status) + '">' + escapeHtml(t.status) + '</div>' +
                 '<div class="t-actions">' +
-                    '<select data-role="status-select">' +
+                    '<select data-role="status-select" class="form-control input-sm">' +
                         ['Closed','Open','Need Vendor'].map(s=>'<option value="' + s + '"' + (t.status===s?' selected':'') + '>' + s + '</option>').join('') +
                     '</select>' +
-                    '<button class="t-del" data-role="edit">{{ trans('admin/incident_desk/general.edit') }}</button>' +
-                    '<button class="t-del" data-role="del">{{ trans('admin/incident_desk/general.delete') }}</button>' +
+                    '<button class="btn btn-default btn-sm" data-role="edit">{{ trans('admin/incident_desk/general.edit') }}</button>' +
+                    '<button class="btn btn-danger btn-sm" data-role="del">{{ trans('admin/incident_desk/general.delete') }}</button>' +
                 '</div>' +
             '</div>' +
         '</div>';
@@ -596,15 +629,15 @@
             '<div class="t-id">' + escapeHtml(padId(t)) + '</div>' +
             '<div class="t-body edit-body">' +
                 '<label>{{ trans('admin/incident_desk/general.requester') }}</label>' +
-                '<input type="text" data-role="edit-requester" list="idUsersDatalist" value="' + escapeHtml(t.requester_name||'') + '">' +
+                '<input type="text" class="form-control" data-role="edit-requester" list="idUsersDatalist" value="' + escapeHtml(t.requester_name||'') + '">' +
                 '<label>{{ trans('admin/incident_desk/general.category') }}</label>' +
-                '<select data-role="edit-category"><option value="">{{ trans('admin/incident_desk/general.select_category') }}</option>' + catOptions + '</select>' +
+                '<select class="form-control" data-role="edit-category"><option value="">{{ trans('admin/incident_desk/general.select_category') }}</option>' + catOptions + '</select>' +
                 '<label>{{ trans('admin/incident_desk/general.task_type') }}</label>' +
-                '<select data-role="edit-tasktype"><option value="">{{ trans('admin/incident_desk/general.select_type') }}</option>' + typeOptions + '</select>' +
+                '<select class="form-control" data-role="edit-tasktype"><option value="">{{ trans('admin/incident_desk/general.select_type') }}</option>' + typeOptions + '</select>' +
                 '<label>{{ trans('admin/incident_desk/general.device_optional') }}</label>' +
                 '<select data-role="edit-asset" style="width:100%"><option value=""></option>' + assetOption + '</select>' +
                 '<label>{{ trans('admin/incident_desk/general.notes') }}</label>' +
-                '<textarea data-role="edit-notes">' + escapeHtml(t.issue||'') + '</textarea>' +
+                '<textarea class="form-control" data-role="edit-notes">' + escapeHtml(t.issue||'') + '</textarea>' +
                 '<label>{{ trans('admin/incident_desk/general.status') }}</label>' +
                 '<div class="status-choices" data-role="edit-status">' +
                     '<div class="status-choice' + (t.status==='Closed'?' active':'') + '" data-s="Closed">{{ trans('admin/incident_desk/general.closed') }}</div>' +
@@ -612,8 +645,8 @@
                     '<div class="status-choice' + (t.status==='Need Vendor'?' active':'') + '" data-s="Need Vendor">{{ trans('admin/incident_desk/general.vendor') }}</div>' +
                 '</div>' +
                 '<div class="edit-actions">' +
-                    '<button class="submit-btn" style="margin-top:12px;" data-role="edit-save" type="button">{{ trans('admin/incident_desk/general.save_changes') }}</button>' +
-                    '<button class="ghost-btn" style="margin-top:12px;" data-role="edit-cancel" type="button">{{ trans('admin/incident_desk/general.cancel') }}</button>' +
+                    '<button class="btn btn-primary" data-role="edit-save" type="button">{{ trans('admin/incident_desk/general.save_changes') }}</button>' +
+                    '<button class="btn btn-default" data-role="edit-cancel" type="button">{{ trans('admin/incident_desk/general.cancel') }}</button>' +
                 '</div>' +
             '</div>' +
         '</div>';
@@ -661,7 +694,7 @@
         const notes = document.getElementById('idDetailsInput').value.trim();
         const assetId = document.getElementById('idAssetSelect').value || null;
         if(!category || !taskType){
-            msg.style.color = 'var(--id-red)';
+            msg.style.color = 'var(--k-danger, #c0392b)';
             msg.textContent = '{{ trans('admin/incident_desk/general.validation_category') }}';
             return;
         }
@@ -678,12 +711,12 @@
             typeSel.disabled = true;
             typeSel.innerHTML = '<option value="">{{ trans('admin/incident_desk/general.select_category_first') }}</option>';
             if(window.jQuery) jQuery('#idAssetSelect').val(null).trigger('change');
-            msg.style.color = 'var(--id-ink-soft)';
+            msg.style.color = 'var(--k-success, #2f9e6e)';
             msg.textContent = '{{ trans('admin/incident_desk/general.logged') }}'.replace(':id', padId(res.ticket));
             setTimeout(()=>{ msg.textContent=''; }, 2500);
             render();
         }catch(err){
-            msg.style.color = 'var(--id-red)';
+            msg.style.color = 'var(--k-danger, #c0392b)';
             msg.textContent = err.message;
         }
     });
