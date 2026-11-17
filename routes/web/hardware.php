@@ -5,6 +5,7 @@ use App\Http\Controllers\Assets\AssetCheckoutController;
 use App\Http\Controllers\Assets\AssetsController;
 use App\Http\Controllers\Assets\BulkAssetsController;
 use App\Http\Controllers\BulkMaintenancesController;
+use App\Http\Controllers\IncidentDeskController;
 use App\Http\Controllers\MaintenancesController;
 use App\Models\Asset;
 use App\Models\Maintenance;
@@ -233,6 +234,28 @@ Route::group(['middleware' => ['auth']], function () {
 
     Route::post('maintenances', [MaintenancesController::class, 'store'])
         ->name('maintenances.store');
+
+    // [incident-desk addon] BEGIN
+    // Registered BEFORE the model-bound maintenances/{maintenance} routes
+    // below so "incident-desk" is never swallowed as a {maintenance} id.
+    Route::get('maintenances/incident-desk', [IncidentDeskController::class, 'index'])
+        ->name('maintenances.incident-desk')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('maintenances.index')
+            ->push(trans('admin/incident_desk/general.incident_desk'), route('maintenances.incident-desk'))
+        );
+
+    Route::get('maintenances/incident-desk/tickets', [IncidentDeskController::class, 'tickets'])
+        ->name('maintenances.incident-desk.tickets');
+
+    Route::post('maintenances/incident-desk/tickets', [IncidentDeskController::class, 'store'])
+        ->name('maintenances.incident-desk.tickets.store');
+
+    Route::put('maintenances/incident-desk/tickets/{ticket}', [IncidentDeskController::class, 'update'])
+        ->name('maintenances.incident-desk.tickets.update');
+
+    Route::delete('maintenances/incident-desk/tickets/{ticket}', [IncidentDeskController::class, 'destroy'])
+        ->name('maintenances.incident-desk.tickets.destroy');
+    // [incident-desk addon] END
 
     Route::get('maintenances/{maintenance}', [MaintenancesController::class, 'show'])
         ->name('maintenances.show')
