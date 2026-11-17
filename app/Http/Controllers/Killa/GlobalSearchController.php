@@ -5,24 +5,176 @@ namespace App\Http\Controllers\Killa;
 use App\Http\Controllers\Controller;
 use App\Models\Accessory;
 use App\Models\Asset;
+use App\Models\AssetModel;
+use App\Models\Category;
 use App\Models\Company;
 use App\Models\Component;
 use App\Models\Consumable;
+use App\Models\Department;
 use App\Models\License;
+use App\Models\Location;
+use App\Models\Manufacturer;
+use App\Models\PredefinedKit;
+use App\Models\Supplier;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 /**
  * [killa global-search] KCP-061: aggregated typeahead endpoint for the header
- * global search. One request fans out across the six header modules (same
- * permission gates as the nav chips), returning up to 5 matches per group.
- * Minimum query length 2 — the JS debounces and the UI renders groups.
+ * global search. One request fans out across all main entity types (each
+ * behind the same permission gate as its UI section), returning up to 5
+ * matches per group. Minimum query length 2 — the JS debounces and the UI
+ * renders groups.
+ *
+ * Amended: covers all primary entities (models, categories, locations,
+ * companies, departments, manufacturers, suppliers, kits on top of the six
+ * header modules) and widens the asset fields (notes, order number).
  */
 class GlobalSearchController extends Controller
 {
     private const PER_GROUP_LIMIT = 5;
+
+    /**
+     * Group specs: permission ability, columns searched, route, FMCS company
+     * scoping, and how title/subtitle are built. Order = dropdown order.
+     *
+     * @return array<string, array{model: class-string<Model>, ability: string, columns: array<int, string>, route: string, scoped: bool, title: callable(Model): string, subtitle: callable(Model): ?string}>
+     */
+    private function groups(): array
+    {
+        return [
+            'assets' => [
+                'model' => Asset::class,
+                'ability' => 'index',
+                'columns' => ['asset_tag', 'name', 'serial', 'order_number', 'notes'],
+                'route' => 'hardware.show',
+                'scoped' => true,
+                'title' => fn (Asset $asset) => $asset->present()->fullName ?: (string) $asset->asset_tag,
+                'subtitle' => fn (Asset $asset) => implode(' · ', array_filter([$asset->asset_tag, $asset->serial])),
+            ],
+            'licenses' => [
+                'model' => License::class,
+                'ability' => 'view',
+                'columns' => ['name', 'serial', 'license_name', 'license_email', 'order_number', 'notes'],
+                'route' => 'licenses.show',
+                'scoped' => true,
+                'title' => fn (License $license) => (string) $license->name,
+                'subtitle' => fn (License $license) => $license->serial,
+            ],
+            'accessories' => [
+                'model' => Accessory::class,
+                'ability' => 'index',
+                'columns' => ['name', 'model_number', 'order_number'],
+                'route' => 'accessories.show',
+                'scoped' => true,
+                'title' => fn (Accessory $accessory) => (string) $accessory->name,
+                'subtitle' => fn (Accessory $accessory) => $accessory->model_number,
+            ],
+            'consumables' => [
+                'model' => Consumable::class,
+                'ability' => 'index',
+                'columns' => ['name', 'model_number', 'order_number'],
+                'route' => 'consumables.show',
+                'scoped' => true,
+                'title' => fn (Consumable $consumable) => (string) $consumable->name,
+                'subtitle' => fn (Consumable $consumable) => $consumable->model_number,
+            ],
+            'components' => [
+                'model' => Component::class,
+                'ability' => 'view',
+                'columns' => ['name', 'serial', 'order_number'],
+                'route' => 'components.show',
+                'scoped' => true,
+                'title' => fn (Component $component) => (string) $component->name,
+                'subtitle' => fn (Component $component) => $component->serial,
+            ],
+            'users' => [
+                'model' => User::class,
+                'ability' => 'index',
+                'columns' => ['first_name', 'last_name', 'username', 'email', 'employee_num'],
+                'route' => 'users.show',
+                'scoped' => true,
+                'title' => fn (User $user) => trim($user->first_name.' '.$user->last_name) ?: (string) $user->username,
+                'subtitle' => fn (User $user) => implode(' · ', array_filter([$user->username, $user->email])),
+            ],
+            'models' => [
+                'model' => AssetModel::class,
+                'ability' => 'view',
+                'columns' => ['name', 'model_number'],
+                'route' => 'models.show',
+                'scoped' => false,
+                'title' => fn (AssetModel $model) => (string) $model->name,
+                'subtitle' => fn (AssetModel $model) => $model->model_number,
+            ],
+            'categories' => [
+                'model' => Category::class,
+                'ability' => 'view',
+                'columns' => ['name'],
+                'route' => 'categories.show',
+                'scoped' => false,
+                'title' => fn (Category $category) => (string) $category->name,
+                'subtitle' => fn (Category $category) => null,
+            ],
+            'locations' => [
+                'model' => Location::class,
+                'ability' => 'view',
+                'columns' => ['name', 'address', 'city'],
+                'route' => 'locations.show',
+                'scoped' => true,
+                'title' => fn (Location $location) => (string) $location->name,
+                'subtitle' => fn (Location $location) => implode(', ', array_filter([$location->address, $location->city])),
+            ],
+            'companies' => [
+                'model' => Company::class,
+                'ability' => 'view',
+                'columns' => ['name'],
+                'route' => 'companies.show',
+                'scoped' => false,
+                'title' => fn (Company $company) => (string) $company->name,
+                'subtitle' => fn (Company $company) => null,
+            ],
+            'departments' => [
+                'model' => Department::class,
+                'ability' => 'view',
+                'columns' => ['name'],
+                'route' => 'departments.show',
+                'scoped' => true,
+                'title' => fn (Department $department) => (string) $department->name,
+                'subtitle' => fn (Department $department) => null,
+            ],
+            'manufacturers' => [
+                'model' => Manufacturer::class,
+                'ability' => 'view',
+                'columns' => ['name'],
+                'route' => 'manufacturers.show',
+                'scoped' => false,
+                'title' => fn (Manufacturer $manufacturer) => (string) $manufacturer->name,
+                'subtitle' => fn (Manufacturer $manufacturer) => null,
+            ],
+            'suppliers' => [
+                'model' => Supplier::class,
+                'ability' => 'view',
+                'columns' => ['name', 'email', 'phone'],
+                'route' => 'suppliers.show',
+                'scoped' => false,
+                'title' => fn (Supplier $supplier) => (string) $supplier->name,
+                'subtitle' => fn (Supplier $supplier) => implode(' · ', array_filter([$supplier->email, $supplier->phone])),
+            ],
+            'kits' => [
+                'model' => PredefinedKit::class,
+                'ability' => 'view',
+                'columns' => ['name'],
+                'route' => 'kits.show',
+                'scoped' => false,
+                'title' => fn (PredefinedKit $kit) => (string) $kit->name,
+                'subtitle' => fn (PredefinedKit $kit) => null,
+            ],
+        ];
+    }
 
     public function search(Request $request): JsonResponse
     {
@@ -35,133 +187,40 @@ class GlobalSearchController extends Controller
         $like = '%'.str_replace(['%', '_'], ['\%', '\_'], $q).'%';
         $groups = [];
 
-        if (Gate::allows('index', Asset::class)) {
-            $assets = Company::scopeCompanyables(Asset::query())
-                ->where(fn ($query) => $query->where('asset_tag', 'LIKE', $like)
-                    ->orWhere('name', 'LIKE', $like)
-                    ->orWhere('serial', 'LIKE', $like))
+        foreach ($this->groups() as $key => $spec) {
+            if (! Gate::allows($spec['ability'], $spec['model'])) {
+                continue;
+            }
+
+            $query = $spec['model']::query();
+
+            if ($spec['scoped']) {
+                $query = Company::scopeCompanyables($query);
+            }
+
+            $results = $query
+                ->where(function (Builder $sub) use ($spec, $like) {
+                    foreach ($spec['columns'] as $i => $column) {
+                        $sub->{$i === 0 ? 'where' : 'orWhere'}($column, 'LIKE', $like);
+                    }
+                })
                 ->orderBy('id', 'desc')
                 ->limit(self::PER_GROUP_LIMIT)
-                ->get(['id', 'asset_tag', 'name', 'serial']);
+                ->get();
 
-            if ($assets->isNotEmpty()) {
-                $groups[] = [
-                    'key' => 'assets',
-                    'label' => trans('general.assets'),
-                    'results' => $assets->map(fn (Asset $asset) => [
-                        'title' => $asset->present()->fullName ?: $asset->asset_tag,
-                        'subtitle' => implode(' · ', array_filter([$asset->asset_tag, $asset->serial])),
-                        'url' => route('hardware.show', $asset->id),
-                    ])->all(),
-                ];
+            if ($results->isEmpty()) {
+                continue;
             }
-        }
 
-        if (Gate::allows('view', License::class)) {
-            $licenses = Company::scopeCompanyables(License::query())
-                ->where(fn ($query) => $query->where('name', 'LIKE', $like)
-                    ->orWhere('serial', 'LIKE', $like)
-                    ->orWhere('license_name', 'LIKE', $like)
-                    ->orWhere('license_email', 'LIKE', $like))
-                ->orderBy('id', 'desc')
-                ->limit(self::PER_GROUP_LIMIT)
-                ->get(['id', 'name', 'serial']);
-
-            if ($licenses->isNotEmpty()) {
-                $groups[] = [
-                    'key' => 'licenses',
-                    'label' => trans('general.licenses'),
-                    'results' => $licenses->map(fn (License $license) => [
-                        'title' => $license->name,
-                        'subtitle' => $license->serial,
-                        'url' => route('licenses.show', $license->id),
-                    ])->all(),
-                ];
-            }
-        }
-
-        if (Gate::allows('index', Accessory::class)) {
-            $accessories = Company::scopeCompanyables(Accessory::query())
-                ->where('name', 'LIKE', $like)
-                ->orderBy('id', 'desc')
-                ->limit(self::PER_GROUP_LIMIT)
-                ->get(['id', 'name']);
-
-            if ($accessories->isNotEmpty()) {
-                $groups[] = [
-                    'key' => 'accessories',
-                    'label' => trans('general.accessories'),
-                    'results' => $accessories->map(fn (Accessory $accessory) => [
-                        'title' => $accessory->name,
-                        'subtitle' => null,
-                        'url' => route('accessories.show', $accessory->id),
-                    ])->all(),
-                ];
-            }
-        }
-
-        if (Gate::allows('index', Consumable::class)) {
-            $consumables = Company::scopeCompanyables(Consumable::query())
-                ->where('name', 'LIKE', $like)
-                ->orderBy('id', 'desc')
-                ->limit(self::PER_GROUP_LIMIT)
-                ->get(['id', 'name']);
-
-            if ($consumables->isNotEmpty()) {
-                $groups[] = [
-                    'key' => 'consumables',
-                    'label' => trans('general.consumables'),
-                    'results' => $consumables->map(fn (Consumable $consumable) => [
-                        'title' => $consumable->name,
-                        'subtitle' => null,
-                        'url' => route('consumables.show', $consumable->id),
-                    ])->all(),
-                ];
-            }
-        }
-
-        if (Gate::allows('view', Component::class)) {
-            $components = Company::scopeCompanyables(Component::query())
-                ->where(fn ($query) => $query->where('name', 'LIKE', $like)
-                    ->orWhere('serial', 'LIKE', $like))
-                ->orderBy('id', 'desc')
-                ->limit(self::PER_GROUP_LIMIT)
-                ->get(['id', 'name', 'serial']);
-
-            if ($components->isNotEmpty()) {
-                $groups[] = [
-                    'key' => 'components',
-                    'label' => trans('general.components'),
-                    'results' => $components->map(fn (Component $component) => [
-                        'title' => $component->name,
-                        'subtitle' => $component->serial,
-                        'url' => route('components.show', $component->id),
-                    ])->all(),
-                ];
-            }
-        }
-
-        if (Gate::allows('index', User::class)) {
-            $users = Company::scopeCompanyables(User::query())
-                ->where(fn ($query) => $query->where('first_name', 'LIKE', $like)
-                    ->orWhere('last_name', 'LIKE', $like)
-                    ->orWhere('username', 'LIKE', $like)
-                    ->orWhere('email', 'LIKE', $like))
-                ->orderBy('id', 'desc')
-                ->limit(self::PER_GROUP_LIMIT)
-                ->get(['id', 'first_name', 'last_name', 'username', 'email']);
-
-            if ($users->isNotEmpty()) {
-                $groups[] = [
-                    'key' => 'users',
-                    'label' => trans('general.users'),
-                    'results' => $users->map(fn (User $user) => [
-                        'title' => trim($user->first_name.' '.$user->last_name) ?: $user->username,
-                        'subtitle' => implode(' · ', array_filter([$user->username, $user->email])),
-                        'url' => route('users.show', $user->id),
-                    ])->all(),
-                ];
-            }
+            $groups[] = [
+                'key' => $key,
+                'label' => trans('general.'.($key === 'models' ? 'asset_models' : $key)),
+                'results' => $results->map(fn (Model $item) => [
+                    'title' => ($spec['title'])($item),
+                    'subtitle' => ($spec['subtitle'])($item),
+                    'url' => route($spec['route'], $item->id),
+                ])->all(),
+            ];
         }
 
         return response()->json(['groups' => $groups]);

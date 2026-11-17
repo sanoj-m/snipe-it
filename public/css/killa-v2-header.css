@@ -205,12 +205,20 @@ body .kgs-result-icon {
 }
 
 /* per-group tints — same tokens as the header nav chips */
-body .kgs-tint-info        { color: var(--k-info);        background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha), transparent); }
-body .kgs-tint-licenses    { color: var(--k-tile-purple); background-color: color-mix(in srgb, var(--k-tile-purple) var(--k-tint-alpha), transparent); }
-body .kgs-tint-accessories { color: var(--k-success);     background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha), transparent); }
-body .kgs-tint-consumables { color: var(--k-warning);     background-color: color-mix(in srgb, var(--k-warning) var(--k-tint-alpha), transparent); }
-body .kgs-tint-components  { color: var(--k-danger);      background-color: color-mix(in srgb, var(--k-danger) var(--k-tint-alpha), transparent); }
-body .kgs-tint-users       { color: var(--k-tile-teal);   background-color: color-mix(in srgb, var(--k-tile-teal) var(--k-tint-alpha), transparent); }
+body .kgs-tint-info         { color: var(--k-info);            background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha), transparent); }
+body .kgs-tint-licenses     { color: var(--k-tile-purple);     background-color: color-mix(in srgb, var(--k-tile-purple) var(--k-tint-alpha), transparent); }
+body .kgs-tint-accessories  { color: var(--k-success);         background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha), transparent); }
+body .kgs-tint-consumables  { color: var(--k-warning);         background-color: color-mix(in srgb, var(--k-warning) var(--k-tint-alpha), transparent); }
+body .kgs-tint-components   { color: var(--k-danger);          background-color: color-mix(in srgb, var(--k-danger) var(--k-tint-alpha), transparent); }
+body .kgs-tint-users        { color: var(--k-tile-teal);       background-color: color-mix(in srgb, var(--k-tile-teal) var(--k-tint-alpha), transparent); }
+body .kgs-tint-models       { color: var(--k-tile-orange);     background-color: color-mix(in srgb, var(--k-tile-orange) var(--k-tint-alpha), transparent); }
+body .kgs-tint-categories   { color: var(--k-tile-yellow);     background-color: color-mix(in srgb, var(--k-tile-yellow) var(--k-tint-alpha), transparent); }
+body .kgs-tint-locations    { color: var(--k-tile-maroon);     background-color: color-mix(in srgb, var(--k-tile-maroon) var(--k-tint-alpha), transparent); }
+body .kgs-tint-companies    { color: var(--k-tile-light-blue); background-color: color-mix(in srgb, var(--k-tile-light-blue) var(--k-tint-alpha), transparent); }
+body .kgs-tint-departments  { color: var(--k-success);         background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha), transparent); }
+body .kgs-tint-manufacturers{ color: var(--k-tile-purple);     background-color: color-mix(in srgb, var(--k-tile-purple) var(--k-tint-alpha), transparent); }
+body .kgs-tint-suppliers    { color: var(--k-warning);         background-color: color-mix(in srgb, var(--k-warning) var(--k-tint-alpha), transparent); }
+body .kgs-tint-kits         { color: var(--k-info);            background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha), transparent); }
 
 body .kgs-result-text {
     display: flex;

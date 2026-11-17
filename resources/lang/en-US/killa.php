@@ -21,6 +21,11 @@ return [
     'nav_group_system' => 'System',
     'no_asset_movement' => 'No asset checkouts or check-ins in the last 30 days.',
     'all_clear' => 'All clear — nothing needs attention right now.',
+    'meta_seats_free' => ':count seats free',
+    'meta_expiring_soon' => ':count expiring soon',
+    'meta_units_remaining' => ':count units remaining',
+    'meta_low_stock' => ':count low on stock',
+    'meta_with_items' => ':count with items assigned',
     'no_asset_status' => 'No asset status data is available.',
     // [killa-ux] redesigned licenses list page (killa/licenses/index)
     'licenses_ux' => [
@@ -110,7 +115,7 @@ return [
     ],
     // [killa global-search] KCP-061: header global search typeahead
     'global_search' => [
-        'placeholder' => 'Global search: assets, people, licenses…',
+        'placeholder' => 'Global search: assets, people, licenses, locations…',
         'sr_label' => 'Global search',
         'loading' => 'Searching…',
         'no_results' => 'No matches for “:query”',

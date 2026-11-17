@@ -31,7 +31,15 @@
         accessories: { icon: 'far fa-keyboard', color: 'accessories' },
         consumables: { icon: 'fas fa-tint', color: 'consumables' },
         components: { icon: 'far fa-hdd', color: 'components' },
-        users: { icon: 'fas fa-users', color: 'users' }
+        users: { icon: 'fas fa-users', color: 'users' },
+        models: { icon: 'fa-solid fa-boxes-stacked', color: 'models' },
+        categories: { icon: 'fa-solid fa-icons', color: 'categories' },
+        locations: { icon: 'fas fa-map-marker-alt', color: 'locations' },
+        companies: { icon: 'fa-regular fa-building', color: 'companies' },
+        departments: { icon: 'fa-solid fa-building-user', color: 'departments' },
+        manufacturers: { icon: 'fa-solid fa-industry', color: 'manufacturers' },
+        suppliers: { icon: 'fa-solid fa-store', color: 'suppliers' },
+        kits: { icon: 'fas fa-object-group', color: 'kits' }
     };
 
     var csrfToken = (document.querySelector('meta[name="csrf-token"]') || {}).content || '';
