@@ -622,16 +622,30 @@ body .timeline > .time-label > span {
 /* --------------------------------------------------------------------------
    Killa Insights dashboard
    -------------------------------------------------------------------------- */
+/* Tighten the page-header band on the Insights dashboard only: the h1 +
+   description stack otherwise burns ~120px of vertical space before the
+   first card (scoped via :has so classic pages keep their rhythm) */
+body .content-wrapper:has(.k-insights-header) .content-header {
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+body .content-wrapper:has(.k-insights-header) .content-header h1.pagetitle {
+    /* !important: the h1 carries an inline style="margin-top: 5px" */
+    margin-top: 0 !important;
+    margin-bottom: 0;
+}
+
 body .k-insights-header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: var(--k-space-4);
-    margin-bottom: var(--k-space-6);
+    margin-bottom: var(--k-space-4);
 }
 
 body .k-insights-header p {
-    margin: var(--k-space-2) 0 0;
+    margin: 0;
     color: var(--k-text-muted);
     font-size: 13px;
 }
