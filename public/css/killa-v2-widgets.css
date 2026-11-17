@@ -765,6 +765,10 @@ body .k-insights-panel-header {
     gap: var(--k-space-3);
 }
 
+body .k-insights-panel-header .k-insights-tabs {
+    margin-left: auto;
+}
+
 /* header-aligned tabs (inventory breakdown panel) */
 body .k-insights-tabs {
     border-bottom: none;
