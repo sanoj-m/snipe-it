@@ -14,7 +14,7 @@
         <button type="button" class="close" data-killa-lan-dismiss aria-label="{{ trans('general.close') }}">&times;</button>
         <i class="fas fa-network-wired" aria-hidden="true"></i>
         {{ trans('killa.lan_banner_text') }}
-        <a href="{{ $killaLanUrl.request()->getRequestUri() }}" class="btn btn-sm btn-primary" style="margin-left:8px;">
+        <a href="{{ route('killa.lan-switch', ['to' => request()->getRequestUri()]) }}" class="btn btn-sm btn-primary" style="margin-left:8px;">
             {{ trans('killa.lan_banner_button') }}
         </a>
     </div>
