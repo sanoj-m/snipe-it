@@ -124,7 +124,7 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     flex: 1 1 auto;
     overflow-y: auto;
     overflow-x: hidden;
-    padding: 10px 8px 24px;
+    padding: 6px 8px 14px;
     scrollbar-width: thin;
     scrollbar-color: var(--k-sidebar-scrollbar) transparent;
 }
@@ -142,20 +142,24 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
    Groups
    -------------------------------------------------------------------------- */
 .ks-group {
-    padding: 4px 0 0;
+    padding: 10px 0 0;
+}
+
+.ks-group:first-child {
+    padding-top: 0;
 }
 
 .ks-group-label {
     display: flex;
     align-items: center;
     gap: 8px;
-    margin: 4px 12px 2px;
+    margin: 2px 12px 4px;
     padding: 0;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .14em;
     text-transform: uppercase;
-    line-height: 1.6;
+    line-height: 1.4;
     color: var(--k-sidebar-muted);
     opacity: .4;
     white-space: nowrap;
@@ -185,7 +189,7 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     padding: 0;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
 /* sliding active pill — module-tinted soft fill; JS sets --pill-y/--pill-h
@@ -223,8 +227,8 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
     display: flex;
     align-items: center;
     gap: 12px;
-    min-height: 40px;
-    padding: 6px 12px;
+    min-height: 32px;
+    padding: 2px 12px;
     border-radius: 12px;
     background: transparent;
     color: var(--k-sidebar-text);
@@ -479,18 +483,18 @@ html[data-theme='dark'] .ks-mod-system { --ks-mod: #94a3b8; --ks-mod-soft: rgba(
 .ks-footer {
     flex: 0 0 auto;
     border-top: 1px solid var(--k-sidebar-border);
-    padding: 8px;
+    padding: 6px 8px;
     display: flex;
     flex-direction: column;
-    gap: 2px;
+    gap: 1px;
 }
 
 .ks-footer-link {
     display: flex;
     align-items: center;
     gap: 12px;
-    min-height: 40px;
-    padding: 6px 12px;
+    min-height: 32px;
+    padding: 2px 12px;
     border-radius: 12px;
     color: var(--k-sidebar-text);
     font-size: 13px;
@@ -643,33 +647,18 @@ body.ks-lock {
         width: 0;
     }
 
-    /* the tile — 30px so the full rail fits laptop-height viewports */
+    /* the tile */
     body.ks-collapsed .ks-link,
     html.ks-collapsed-pre body .ks-link,
     body.ks-collapsed .ks-footer-link,
     html.ks-collapsed-pre body .ks-footer-link {
         justify-content: center;
         gap: 0;
-        width: 30px;
-        min-height: 30px;
-        height: 30px;
+        width: 36px;
+        min-height: 36px;
+        height: 36px;
         padding: 0;
-        margin: 1px auto;
-    }
-
-    body.ks-collapsed .ks-menu,
-    html.ks-collapsed-pre body .ks-menu {
-        gap: 1px;
-    }
-
-    body.ks-collapsed .ks-content,
-    html.ks-collapsed-pre body .ks-content {
-        padding: 6px 8px 12px;
-    }
-
-    body.ks-collapsed .ks-footer,
-    html.ks-collapsed-pre body .ks-footer {
-        padding: 4px 8px;
+        margin: 2px auto;
     }
 
     /* active tile: solid module color + white icon + subtle shadow */
@@ -696,14 +685,14 @@ body.ks-lock {
     /* groups: no label gap, tiles only, hairline between groups */
     body.ks-collapsed .ks-group,
     html.ks-collapsed-pre body .ks-group {
-        padding: 2px 0 0;
+        padding: 4px 0 0;
     }
 
     body.ks-collapsed .ks-group + .ks-group,
     html.ks-collapsed-pre body .ks-group + .ks-group {
         border-top: 1px solid var(--k-sidebar-border);
-        margin-top: 2px;
-        padding-top: 4px;
+        margin-top: 4px;
+        padding-top: 8px;
     }
 
     body.ks-collapsed .ks-group-label,
