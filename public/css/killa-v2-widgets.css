@@ -630,6 +630,13 @@ body .content-wrapper:has(.k-insights-header) .content-header {
     padding-bottom: 2px;
 }
 
+/* align the whole Insights page content with the title's left edge:
+   the content-header sits at 36px padding while section.content uses 15px,
+   so the description/cards drifted 21px left of the h1 */
+body .content-wrapper:has(.k-insights-header) section.content {
+    padding-left: 36px;
+}
+
 body .content-wrapper:has(.k-insights-header) .content-header h1.pagetitle {
     /* !important: the h1 carries an inline style="margin-top: 5px" */
     margin-top: 0 !important;
