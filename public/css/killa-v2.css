@@ -308,6 +308,13 @@ html:not([data-design='classic']) body .content-header > h1 {
     font-size: 24px;
 }
 
+/* The 24px rail-toggle circle straddles the sidebar border (protrudes 12px
+   into the content area) — give the header enough left clearance + a little
+   more top air so the title never tucks under it. */
+html:not([data-design='classic']) body .content-header {
+    padding: var(--k-space-5, 24px) var(--k-space-4) var(--k-space-2) calc(var(--k-space-4) + 20px);
+}
+
 body .content-header > h1 > small {
     color: var(--k-text-muted);
     font-family: var(--k-font);
