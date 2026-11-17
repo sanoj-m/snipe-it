@@ -15,8 +15,14 @@
              bouncing around with the badge width. See
              .dashboard-attention-list in overrides.less. --}}
         <ul class="list-group list-group-unbordered dashboard-attention-list" style="margin-bottom: 0;">
+            @if ($overdueAudits + $overdueCheckins + $overdueMaintenances + $pendingAcceptancesCount + $pendingRequestsCount + $licensesExpiringSoon + $assetsPastEol + $usersOffboardingSoon === 0)
+                <li class="list-group-item dashboard-attention-clear">
+                    <x-icon type="checkmark" class="fa-fw"/>
+                    <span class="dashboard-attention-label">{{ trans('killa.all_clear') }}</span>
+                </li>
+            @endif
             @can('audit', \App\Models\Asset::class)
-                <li class="list-group-item">
+                <li class="list-group-item{{ $overdueAudits === 0 ? ' is-zero' : '' }}">
                     <a href="{{ route('assets.audit.due') }}">
                         <x-icon type="audit" class="fa-fw"/>
                         <span class="dashboard-attention-label">{{ trans('general.dashboard_overdue_audits') }}</span>
@@ -25,7 +31,7 @@
                 </li>
             @endcan
             @can('checkin', \App\Models\Asset::class)
-                <li class="list-group-item">
+                <li class="list-group-item{{ $overdueCheckins === 0 ? ' is-zero' : '' }}">
                     {{-- #overdue hash preselects the "overdue" tab via
                          snipeit.js's deep-link handler, so the landing
                          view matches the count semantics. Default tab
@@ -38,7 +44,7 @@
                 </li>
             @endcan
                 @can('canCheckoutAtLeastOneItemType')
-                <li class="list-group-item">
+                <li class="list-group-item{{ $pendingAcceptancesCount === 0 ? ' is-zero' : '' }}">
                     <a href="{{ route('unaccepted-acceptances.index') }}">
                         <x-icon type="signature" class="fa-fw"/>
                         <span class="dashboard-attention-label">{{ trans('general.dashboard_unaccepted_assets') }}</span>
@@ -47,7 +53,7 @@
                 </li>
                 @endcan
             @can('canCheckoutAtLeastOneItemType')
-                <li class="list-group-item">
+                <li class="list-group-item{{ $pendingRequestsCount === 0 ? ' is-zero' : '' }}">
                     <a href="{{ route('requests.index') }}">
                         <x-icon type="pending-requests" class="fa-fw"/>
                         <span class="dashboard-attention-label">{{ trans('general.pending_requests') }}</span>
@@ -57,14 +63,14 @@
             @endcan
 
             @can('view', \App\Models\Asset::class)
-                <li class="list-group-item">
+                <li class="list-group-item{{ $assetsPastEol === 0 ? ' is-zero' : '' }}">
                     <a href="{{ $assetsPastEol > 0 ? route('hardware.index', ['past_eol' => 1]) : route('hardware.index') }}">
                         <x-icon type="due" class="fa-fw"/>
                         <span class="dashboard-attention-label">{{ trans('general.dashboard_assets_past_eol') }}</span>
                         <span class="badge dashboard-attention-count">{{ number_format($assetsPastEol) }}</span>
                     </a>
                 </li>
-                <li class="list-group-item">
+                <li class="list-group-item{{ $overdueMaintenances === 0 ? ' is-zero' : '' }}">
                     <a href="{{ route('maintenances.index', ['upcoming_status' => 'overdue']) }}">
                         <x-icon type="maintenances" class="fa-fw"/>
                         <span class="dashboard-attention-label">{{ trans('general.dashboard_overdue_maintenances') }}</span>
@@ -73,7 +79,7 @@
                 </li>
             @endcan
             @can('view', \App\Models\License::class)
-                <li class="list-group-item">
+                <li class="list-group-item{{ $licensesExpiringSoon === 0 ? ' is-zero' : '' }}">
                     <a href="{{ route('licenses.index', ['status' => 'expiring']) }}">
                         <x-icon type="license" class="fa-fw"/>
                         <span class="dashboard-attention-label">{{ trans('general.dashboard_licenses_expiring_soon') }}</span>
@@ -82,7 +88,7 @@
                 </li>
             @endcan
             @can('view', \App\Models\User::class)
-                <li class="list-group-item">
+                <li class="list-group-item{{ $usersOffboardingSoon === 0 ? ' is-zero' : '' }}">
                     <a href="{{ route('users.index', ['end_date_within' => \App\Livewire\NeedsAttention::OFFBOARDING_DAYS, 'with_assignments' => 1]) }}">
                         <x-icon type="offboarding" class="fa-fw"/>
                         <span class="dashboard-attention-label">{{ trans('general.dashboard_users_offboarding_soon') }}</span>

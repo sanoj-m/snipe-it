@@ -100,6 +100,34 @@ body .dashboard-attention-list .dashboard-attention-count {
     text-shadow: none;
 }
 
+/* zero rows recede; non-zero rows keep full contrast so real work pops */
+body .dashboard-attention-list > .list-group-item.is-zero > a {
+    color: var(--k-text-muted);
+}
+
+body .dashboard-attention-list > .list-group-item.is-zero > a:hover {
+    color: var(--k-accent);
+}
+
+body .dashboard-attention-list > .list-group-item.is-zero .dashboard-attention-label {
+    font-weight: 400;
+}
+
+/* non-zero badge: slightly stronger so the eye lands on real counts */
+body .dashboard-attention-list > .list-group-item:not(.is-zero) .dashboard-attention-count {
+    background-color: color-mix(in srgb, var(--k-text) 12%, transparent);
+    color: var(--k-text);
+}
+
+body .dashboard-attention-list > .list-group-item.dashboard-attention-clear {
+    color: var(--k-text-muted);
+}
+
+body .dashboard-attention-list > .list-group-item.dashboard-attention-clear > .fa,
+body .dashboard-attention-list > .list-group-item.dashboard-attention-clear > svg {
+    color: var(--k-success, #34d399);
+}
+
 /* generic badge (AdminLTE .badge) quiet treatment */
 body .badge {
     background-color: color-mix(in srgb, var(--k-text-muted) var(--k-tint-alpha-soft), transparent);
@@ -600,16 +628,6 @@ body .k-insights-header {
     justify-content: space-between;
     gap: var(--k-space-4);
     margin-bottom: var(--k-space-6);
-}
-
-body .k-insights-header h1 {
-    margin: 0;
-    color: var(--k-text);
-    font-family: var(--k-font-display);
-    font-size: 25px;
-    font-weight: 650;
-    letter-spacing: -0.025em;
-    line-height: 1.2;
 }
 
 body .k-insights-header p {

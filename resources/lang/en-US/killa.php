@@ -7,7 +7,7 @@ return [
     'asset_status_chart' => 'Doughnut chart of assets by status',
     'chart_unavailable' => 'Chart data could not be loaded. Try again later.',
     'insights_description' => 'A clearer view of inventory, activity, and work that needs attention.',
-    'insights_title' => 'Operations insights',
+    'insights_title' => 'Dashboard',
     'inventory_overview' => 'Inventory overview',
     // [killa lan-switch banner] KCP-060
     'lan_banner_text' => 'You’re on the office network — the local server is faster.',
@@ -20,6 +20,7 @@ return [
     'nav_group_people_org' => 'People & Org',
     'nav_group_system' => 'System',
     'no_asset_movement' => 'No asset checkouts or check-ins in the last 30 days.',
+    'all_clear' => 'All clear — nothing needs attention right now.',
     'no_asset_status' => 'No asset status data is available.',
     // [killa-ux] redesigned licenses list page (killa/licenses/index)
     'licenses_ux' => [

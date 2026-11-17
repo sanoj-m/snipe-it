@@ -8,10 +8,7 @@
 @section('content')
 <x-container>
     <header class="k-insights-header">
-        <div>
-            <h1>{{ trans('killa.insights_title') }}</h1>
-            <p>{{ trans('killa.insights_description') }}</p>
-        </div>
+        <p>{{ trans('killa.insights_description') }}</p>
     </header>
 
     @if ($snipeSettings->dashboard_message != '')
