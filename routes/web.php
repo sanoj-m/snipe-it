@@ -1115,7 +1115,7 @@ Route::middleware(['auth'])->get(
     );
 // [killa-v2 insights dashboard] END
 
-// [killa lan-switch] BEGIN — KCP-062
+// [killa lan-switch] BEGIN — KCP-063
 Route::middleware(['auth'])->get('killa/lan-switch', [\App\Http\Controllers\Killa\LanSwitchController::class, 'redirectToLan'])
     ->name('killa.lan-switch');
 Route::get('killa/lan-handoff', [\App\Http\Controllers\Killa\LanSwitchController::class, 'handoff'])

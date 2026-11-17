@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
 
 /**
- * [killa lan-switch] KCP-062 — one-time signed session handoff to the LAN URL.
+ * [killa lan-switch] KCP-063 — one-time signed session handoff to the LAN URL.
  *
  * redirectToLan() (authed, canonical host) mints a 60-second relative signed
  * URL for killa.lan-handoff and redirects to it on KILLA_LAN_URL. The handoff

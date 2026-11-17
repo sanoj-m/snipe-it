@@ -194,6 +194,14 @@ Notable console commands (~60): `LdapSync`, `LdapTroubleshooter`,
   the server does NOT reach users until `app_version` in `config/version.php`
   is bumped (the deploy script stamps it on full deploys) or the CF cache is
   purged. Verify with `curl -sI <url> | grep cf-cache-status`.
+- **LAN access (2026-11-17):** the app also answers at
+  `http://asset.ad.killadesign.com` and `http://40.30.20.6` (KCP-050
+  `APP_ALT_HOSTS`; nginx `conf.d/snipeit.conf` is the authoritative vhost —
+  the `sites-enabled` copy is ignored). Origin has a Let's Encrypt cert and a
+  `listen 443 ssl` block for `asset.killadesign.co` so AD split-horizon DNS
+  can bypass Cloudflare entirely. Office-WAN-IP users see a "switch to local"
+  banner (`KILLA_LAN_WAN_IPS`/`KILLA_LAN_URL`, KCP-060) whose button carries
+  the session over via a 60s signed handoff (KCP-063).
 
 ## 10. Constraints & traps for anyone proposing changes
 
