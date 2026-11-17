@@ -52,322 +52,268 @@
     }
   </style>
 
-  <div class="row">
-    <!-- search filter list -->
-    <div class="list clearfix">
+  {{-- [killa-v2 admin] KCP-066 BEGIN — grouped, color-coded settings grid.
+       All routes, icons, translation keys, permission gates and help texts are
+       unchanged from upstream; only structure + classes changed. The filter is
+       a small custom script (see moar_scripts) because upstream's List.js
+       targets #setting-list, an id that does not exist, so the upstream
+       search silently does nothing. Sections hide when all their tiles are
+       filtered out. Styles: killa-v2.css "[killa-v2 admin] KCP-066" block. --}}
+  <div class="kadmin" id="setting-list">
 
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-              <a href="{{ route('settings.branding.index') }}" class="settings_button">
-                <x-icon type="branding" class="fa-4x"/>
-                <br><br>
-                <span class="name">{{ trans('admin/settings/general.brand') }}</span>
-                <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.brand') }}</span>
-              </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.brand_help') }}</p>
-            </div>
-          </div>
+    {{-- Section: general & appearance --}}
+    <section class="kadmin-section" data-kadmin-section>
+      <header class="kadmin-section-head">
+        <span class="kadmin-section-icon" data-accent="sky"><i class="fas fa-sliders-h" aria-hidden="true"></i></span>
+        <h2 class="kadmin-section-title">{{ trans('killa.admin_sections.general') }}</h2>
+      </header>
+      <div class="kadmin-grid">
+
+        <div class="kadmin-tile" data-accent="navy">
+          <a href="{{ route('settings.general.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="general-settings"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.general_settings') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.general_settings_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.general_settings') }}</span>
+          </a>
         </div>
 
-
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.general.index') }}" class="settings_button">
-                  <x-icon type="general-settings" class="fa-4x"/>
-                  <br><br>
-                  <span class="name"> {{ trans('admin/settings/general.general_settings') }}</span>
-                  <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.general_settings') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.general_settings_help') }}</p>
-            </div>
-          </div>
+        <div class="kadmin-tile" data-accent="sky">
+          <a href="{{ route('settings.branding.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="branding"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.brand') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.brand_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.brand') }}</span>
+          </a>
         </div>
 
-
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.security.index') }}" class="settings_button">
-                  <x-icon type="locked" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('admin/settings/general.security') }}</span>
-                  <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.security') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.security_help') }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('groups.index') }}" class="settings_button">
-                  <x-icon type="groups" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('general.groups') }}</span>
-                  <span class="keywords" aria-hidden="true" style="display:none"> {{ trans('admin/settings/general.keywords.groups') }}</span>
-                  </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.groups_help') }}</p>
-            </div>
-          </div>
-        </div>
-
-        {{-- [killa currency] settings tile --}}
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.currency.index') }}" class="settings_button">
-                  <x-icon type="cost" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('killa.currency.title') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{{ trans('killa.currency.tile_help') }}</p>
-            </div>
-          </div>
+        {{-- [killa currency] settings tile (KCP-041, now folded into the KCP-066 grid) --}}
+        <div class="kadmin-tile" data-accent="amber">
+          <a href="{{ route('settings.currency.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="cost"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('killa.currency.title') }}</span>
+              <span class="kadmin-help index-block">{{ trans('killa.currency.tile_help') }}</span>
+            </span>
+          </a>
         </div>
         {{-- [killa currency] END --}}
 
-
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.localization.index') }}" class="settings_button">
-                  <x-icon type="globe-us" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('admin/settings/general.localization') }}</span>
-                  <span class="keywords" aria-hidden="true" style="display:none"> {{ trans('admin/settings/general.keywords.localization') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.localization_help') }}</p>
-
-            </div>
-          </div>
+        <div class="kadmin-tile" data-accent="teal">
+          <a href="{{ route('settings.localization.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="globe-us"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.localization') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.localization_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.localization') }}</span>
+          </a>
         </div>
 
-
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.alerts.index') }}" class="settings_button">
-                  <x-icon type="bell" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('admin/settings/general.notifications') }}</span>
-                  <span class="keywords" aria-hidden="true" style="display:none"> {{ trans('admin/settings/general.keywords.notifications') }}</span>
-
-                </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.notifications_help') }}</p>
-            </div>
-          </div>
+        <div class="kadmin-tile" data-accent="emerald">
+          <a href="{{ route('settings.labels.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="labels"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.labels') }}</span>
+              <span class="kadmin-help index-block">{!! trans('admin/settings/general.labels_help') !!}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.labels') }}</span>
+          </a>
         </div>
 
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.integrations.index') }}" class="settings_button">
-                  <x-icon type="hashtag" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('admin/settings/general.integrations') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.webhook_help') }}</p>
-            </div>
-          </div>
+        <div class="kadmin-tile" data-accent="orange">
+          <a href="{{ route('settings.asset_tags.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="asset-tags"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('general.asset_tags') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.asset_tags_help') }}</span>
+            </span>
+          </a>
         </div>
 
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.asset_tags.index') }}" class="settings_button">
-                  <x-icon type="asset-tags" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('general.asset_tags') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.asset_tags_help') }}</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.labels.index') }}" class="settings_button">
-                  <x-icon type="labels" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('admin/settings/general.labels') }}</span>
-                  <span class="keywords" aria-hidden="true" style="display:none"> {{ trans('admin/settings/general.keywords.labels') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{!! trans('admin/settings/general.labels_help') !!}</p>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                  <a href="{{ route('settings.ldap.wizard') }}" class="settings_button">
-                  <x-icon type="ldap" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('admin/settings/general.ldap') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{{ trans('admin/settings/general.ldap_help') }}</p>
-            </div>
-          </div>
-        </div>
-
-      <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-        <div class="admin box box-default">
-          <div class="box-body text-center">
-            <h5>
-              <a href="{{ route('settings.google.index') }}" class="settings_button">
-                <x-icon type="google" class="fa-4x"/>
-                <br><br>
-                <span class="name">Google</span>
-              </a>
-            </h5>
-            <p class="index-block">{{ trans('admin/settings/general.google_login') }}</p>
-          </div>
-        </div>
       </div>
+    </section>
 
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-            <div class="admin box box-default">
-                <div class="box-body text-center">
-                    <h5>
-                        <a href="{{ route('settings.adapters.index') }}" class="settings_button">
-                            <i class="fa-solid fa-network-wired fa-4x" aria-hidden="true"></i>
-                            <br><br>
-                            <span class="name">{{ trans('admin/settings/sync_adapters.title') }} <span class="label label-warning">beta</span></span>
-                            <span class="keywords" aria-hidden="true" style="display:none"> {{ $adapterKeywords }}</span>
-                        </a>
-                    </h5>
-                    <p class="index-block">{{ trans('admin/settings/sync_adapters.help') }}</p>
-                </div>
-            </div>
+    {{-- Section: security & access --}}
+    <section class="kadmin-section" data-kadmin-section>
+      <header class="kadmin-section-head">
+        <span class="kadmin-section-icon" data-accent="navy"><i class="fas fa-shield-alt" aria-hidden="true"></i></span>
+        <h2 class="kadmin-section-title">{{ trans('killa.admin_sections.security') }}</h2>
+      </header>
+      <div class="kadmin-grid">
+
+        <div class="kadmin-tile" data-accent="navy">
+          <a href="{{ route('settings.security.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="locked"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.security') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.security_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.security') }}</span>
+          </a>
         </div>
 
-      <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-        <div class="admin box box-default">
-          <div class="box-body text-center">
-            <h5>
-              <a href="{{ route('settings.saml.index') }}" class="settings_button">
-                <x-icon type="saml" class="fa-4x"/>
-                <br><br>
-                <span class="name">{{ trans('admin/settings/general.saml') }}</span>
-              </a>
-            </h5>
-            <p class="index-block">{{ trans('admin/settings/general.saml_help') }}</p>
-          </div>
+        <div class="kadmin-tile" data-accent="teal">
+          <a href="{{ route('groups.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="groups"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('general.groups') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.groups_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.groups') }}</span>
+          </a>
         </div>
+
+        <div class="kadmin-tile" data-accent="sky">
+          <a href="{{ route('settings.ldap.wizard') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="ldap"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.ldap') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.ldap_help') }}</span>
+            </span>
+          </a>
+        </div>
+
+        <div class="kadmin-tile" data-accent="orange">
+          <a href="{{ route('settings.saml.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="saml"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.saml') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.saml_help') }}</span>
+            </span>
+          </a>
+        </div>
+
+        <div class="kadmin-tile" data-accent="emerald">
+          <a href="{{ route('settings.google.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="google"/></span>
+            <span class="kadmin-text">
+              <span class="name">Google</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.google_login') }}</span>
+            </span>
+          </a>
+        </div>
+
+        <div class="kadmin-tile" data-accent="amber">
+          <a href="{{ route('settings.logins.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="logins"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.login') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.login_help') }}</span>
+            </span>
+          </a>
+        </div>
+
+        <div class="kadmin-tile" data-accent="navy">
+          <a href="{{ route('settings.oauth.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="oauth"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.oauth') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.oauth_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.oauth') }}</span>
+          </a>
+        </div>
+
       </div>
+    </section>
 
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-                <a href="{{ route('settings.backups.index') }}" class="settings_button">
-                  <x-icon type="backups" class="fa-4x"/>
-                  <br><br>
-                  <span class="name">{{ trans('admin/settings/general.backups') }}</span>
-                </a>
-              </h5>
-              <p class="index-block">{!! trans('admin/settings/general.backups_help') !!}</p>
-            </div>
-          </div>
+    {{-- Section: data & integrations --}}
+    <section class="kadmin-section" data-kadmin-section>
+      <header class="kadmin-section-head">
+        <span class="kadmin-section-icon" data-accent="amber"><i class="fas fa-plug" aria-hidden="true"></i></span>
+        <h2 class="kadmin-section-title">{{ trans('killa.admin_sections.integrations') }}</h2>
+      </header>
+      <div class="kadmin-grid">
+
+        <div class="kadmin-tile" data-accent="amber">
+          <a href="{{ route('settings.alerts.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="bell"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.notifications') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.notifications_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.notifications') }}</span>
+          </a>
         </div>
 
-
-      <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-        <div class="admin box box-default">
-          <div class="box-body text-center">
-            <h5>
-              <a href="{{ route('settings.logins.index') }}" class="settings_button">
-                <x-icon type="logins" class="fa-4x"/>
-                <br><br>
-                <span class="name">{{ trans('admin/settings/general.login') }}</span>
-              </a>
-            </h5>
-            <p class="index-block">{{ trans('admin/settings/general.login_help') }} </p>
-          </div>
+        <div class="kadmin-tile" data-accent="sky">
+          <a href="{{ route('settings.integrations.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="hashtag"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.integrations') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.webhook_help') }}</span>
+            </span>
+          </a>
         </div>
-      </div>
 
-        <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-          <div class="admin box box-default">
-            <div class="box-body text-center">
-              <h5>
-              <a href="{{ route('settings.oauth.index') }}" class="settings_button">
-                <x-icon type="oauth" class="fa-4x"/>
-                <br><br>
-                <span class="name">{{  trans('admin/settings/general.oauth') }}</span>
-              </a>
-              </h5>
-              <p class="index-block">{{  trans('admin/settings/general.oauth_help') }}</p>
-                <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.oauth') }}</span>
+        <div class="kadmin-tile" data-accent="teal">
+          <a href="{{ route('settings.adapters.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><i class="fa-solid fa-network-wired" aria-hidden="true"></i></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/sync_adapters.title') }} <span class="label label-warning">beta</span></span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/sync_adapters.help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ $adapterKeywords }}</span>
+          </a>
+        </div>
 
-            </div>
-          </div>
+        <div class="kadmin-tile" data-accent="emerald">
+          <a href="{{ route('settings.backups.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><x-icon type="backups"/></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.backups') }}</span>
+              <span class="kadmin-help index-block">{!! trans('admin/settings/general.backups_help') !!}</span>
+            </span>
+          </a>
         </div>
 
         @if (config('app.debug')=== true)
-          <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-            <div class="admin box box-default">
-              <div class="box-body text-center">
-                <h5>
-                  <a href="{{ route('settings.phpinfo.index') }}" class="settings_button">
-                    <i class="fab fa-php fa-4x" aria-hidden="true"></i>
-                    <br><br>
-                    <span class="name">{{ trans('admin/settings/general.php_overview') }}</span>
-                    <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.php_overview') }}</span>
-                  </a>
-                </h5>
-                <p class="index-block">{{ trans('admin/settings/general.php_overview_help') }}</p>
-              </div>
-            </div>
-          </div>
+        <div class="kadmin-tile" data-accent="navy">
+          <a href="{{ route('settings.phpinfo.index') }}" class="settings_button kadmin-link">
+            <span class="kadmin-icon"><i class="fab fa-php" aria-hidden="true"></i></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.php_overview') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.php_overview_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.php_overview') }}</span>
+          </a>
+        </div>
         @endif
 
-
-    <div class="col-md-4 col-lg-3 col-sm-6 col-xl-1">
-      <div class="admin box box-danger">
-        <div class="box-body text-center">
-          <h5>
-            <a href="{{ route('settings.purge.index') }}" class="link-danger">
-              <i class="fas fa-trash fa-4x" aria-hidden="true"></i>
-              <br><br>
-              <span class="name">{{ trans('admin/settings/general.purge') }}</span>
-              <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.purge') }}</span>
-            </a>
-          </h5>
-          <p class="index-block">{{ trans('admin/settings/general.purge_help') }}</p>
-        </div>
       </div>
-    </div>
-  </div>
-</div>
+    </section>
 
+    {{-- Section: danger zone --}}
+    <section class="kadmin-section" data-kadmin-section>
+      <header class="kadmin-section-head">
+        <span class="kadmin-section-icon" data-accent="rose"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></span>
+        <h2 class="kadmin-section-title">{{ trans('killa.admin_sections.danger') }}</h2>
+      </header>
+      <div class="kadmin-grid">
+
+        <div class="kadmin-tile kadmin-tile-danger" data-accent="rose">
+          <a href="{{ route('settings.purge.index') }}" class="settings_button kadmin-link link-danger">
+            <span class="kadmin-icon"><i class="fas fa-trash" aria-hidden="true"></i></span>
+            <span class="kadmin-text">
+              <span class="name">{{ trans('admin/settings/general.purge') }}</span>
+              <span class="kadmin-help index-block">{{ trans('admin/settings/general.purge_help') }}</span>
+            </span>
+            <span class="keywords" aria-hidden="true" style="display:none">{{ trans('admin/settings/general.keywords.purge') }}</span>
+          </a>
+        </div>
+
+      </div>
+    </section>
+
+    <p class="kadmin-empty text-muted" data-kadmin-empty hidden>{{ trans('killa.admin_sections.no_results') }}</p>
+
+  </div>
+  {{-- [killa-v2 admin] KCP-066 END --}}
 
 
 
@@ -539,26 +485,53 @@
 
 
   @section('moar_scripts')
+{{-- [killa-v2 admin] KCP-066 BEGIN — tile filter (replaces upstream List.js
+     init, which silently failed: no element with id "setting-list" existed).
+     Filters tiles on .name + .keywords text, hides empty sections, shows a
+     no-results line. --}}
 <script nonce="{{ csrf_token() }}">
 
+  (function () {
+    var input = document.getElementById('searchinput');
+    var clear = document.getElementById('searchclear');
+    var root = document.getElementById('setting-list');
+    if (!input || !root) { return; }
 
+    var tiles = root.querySelectorAll('.kadmin-tile');
+    var sections = root.querySelectorAll('[data-kadmin-section]');
+    var empty = root.querySelector('[data-kadmin-empty]');
 
-  var options = {
-    valueNames: [ 'name', 'keywords', 'summary', 'index-block']
-  };
+    function applyFilter() {
+      var q = input.value.trim().toLowerCase();
+      var anyVisible = false;
 
-  var settingList = new List('setting-list', options);
+      tiles.forEach(function (tile) {
+        var haystack = tile.textContent.toLowerCase();
+        var show = q === '' || haystack.indexOf(q) !== -1;
+        tile.classList.toggle('kadmin-tile-hidden', !show);
+        if (show) { anyVisible = true; }
+      });
 
-  $("#searchclear").click(function(){
-    $("#searchinput").val('');
-    settingList.search();
-  });
+      sections.forEach(function (section) {
+        var visible = section.querySelectorAll('.kadmin-tile:not(.kadmin-tile-hidden)').length > 0;
+        section.style.display = visible ? '' : 'none';
+      });
 
+      if (empty) { empty.hidden = anyVisible; }
+    }
 
+    input.addEventListener('input', applyFilter);
+    if (clear) {
+      clear.addEventListener('click', function () {
+        input.value = '';
+        applyFilter();
+        input.focus();
+      });
+    }
+  })();
 
 </script>
+{{-- [killa-v2 admin] KCP-066 END --}}
   @endsection
 
 @stop
-
-

@@ -122,8 +122,16 @@ return [
         'no_results' => 'No matches for “:query”',
         'error' => 'Search is unavailable right now.',
         'hint' => 'Type at least 2 characters — Enter opens the first result',
+    ],    // [killa-v2 admin] KCP-066: grouped settings grid on /admin
+    'admin_sections' => [
+        'general' => 'General & appearance',
+        'security' => 'Security & access',
+        'integrations' => 'Data & integrations',
+        'danger' => 'Danger zone',
+        'no_results' => 'No settings match your search.',
     ],
     'currency' => [
+
         'title' => 'Currency',
         'label' => 'Currency',
         'label_help' => 'Currency this license cost is in. Rates to :base are managed in Admin > Settings > Currency.',

@@ -2122,3 +2122,177 @@ body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li.active > a .fas
 body .navbar-nav > li.user-menu:not(.user) > .dropdown-menu > li.active > a .far {
     color: var(--k-accent) !important;
 }
+
+
+/* ==========================================================================
+   [killa-v2 admin] KCP-066 — grouped, color-coded /admin settings grid
+   Scope: only inside .kadmin (resources/views/settings/index.blade.php).
+   Token-based; dark mode + tenant branding inherit via --k-* variables.
+   Accent families map to the existing killa tile palette (no violet rule).
+   ========================================================================== */
+
+.kadmin {
+    --kadmin-accent: var(--k-info);
+}
+
+.kadmin [data-accent='sky']     { --kadmin-accent: var(--k-tile-light-blue); }
+.kadmin [data-accent='navy']    { --kadmin-accent: var(--k-tile-purple); }
+.kadmin [data-accent='teal']    { --kadmin-accent: var(--k-tile-teal); }
+.kadmin [data-accent='emerald'] { --kadmin-accent: var(--k-success); }
+.kadmin [data-accent='amber']   { --kadmin-accent: var(--k-warning); }
+.kadmin [data-accent='orange']  { --kadmin-accent: var(--k-tile-orange); }
+.kadmin [data-accent='rose']    { --kadmin-accent: var(--k-danger); }
+
+.kadmin-section {
+    margin-bottom: var(--k-space-6);
+}
+
+.kadmin-section-head {
+    display: flex;
+    align-items: center;
+    gap: var(--k-space-2);
+    margin: 0 0 var(--k-space-3);
+}
+
+.kadmin-section-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: var(--k-radius-sm);
+    font-size: 13px;
+    color: var(--kadmin-accent);
+    background: color-mix(in srgb, var(--kadmin-accent) var(--k-tint-alpha), transparent);
+}
+
+body .kadmin-section-title {
+    margin: 0;
+    font-family: var(--k-font-display);
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--k-text);
+}
+
+.kadmin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--k-space-3);
+}
+
+.kadmin-tile {
+    position: relative;
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: var(--k-shadow-1);
+    overflow: hidden;
+    transition: border-color var(--k-motion), box-shadow var(--k-motion), transform var(--k-motion);
+}
+
+/* top accent bar (module-grid-tile DNA) */
+.kadmin-tile::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--kadmin-accent);
+    opacity: 0;
+    transition: opacity var(--k-motion);
+}
+
+.kadmin-tile:hover,
+.kadmin-tile:focus-within {
+    border-color: color-mix(in srgb, var(--kadmin-accent) var(--k-tint-border), var(--k-border));
+    box-shadow: var(--k-shadow-2);
+    transform: translateY(-1px);
+}
+
+.kadmin-tile:hover::before,
+.kadmin-tile:focus-within::before {
+    opacity: 1;
+}
+
+.kadmin-tile-hidden {
+    display: none;
+}
+
+.kadmin-tile .kadmin-link {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--k-space-3);
+    padding: var(--k-space-4);
+    color: inherit;
+    text-decoration: none;
+}
+
+.kadmin-tile .kadmin-link:hover,
+.kadmin-tile .kadmin-link:focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+.kadmin-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    font-size: 17px;
+    color: var(--kadmin-accent);
+    background: color-mix(in srgb, var(--kadmin-accent) var(--k-tint-alpha), transparent);
+    transition: transform var(--k-motion);
+}
+
+.kadmin-tile:hover .kadmin-icon {
+    transform: scale(1.06);
+}
+
+.kadmin-text {
+    min-width: 0;
+}
+
+body .kadmin-text .name {
+    display: block;
+    font-size: 13.5px;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--k-text);
+}
+
+body .kadmin-text .kadmin-help {
+    display: block;
+    margin: 3px 0 0;
+    font-size: 12px;
+    line-height: 1.45;
+    color: var(--k-text-muted);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* danger tile keeps a permanent rose edge so it never blends in */
+.kadmin-tile-danger {
+    border-color: color-mix(in srgb, var(--k-danger) var(--k-tint-border), var(--k-border));
+}
+
+.kadmin-tile-danger::before {
+    opacity: 1;
+}
+
+.kadmin-empty {
+    padding: var(--k-space-6);
+    text-align: center;
+}
+
+@media (max-width: 767px) {
+    .kadmin-grid {
+        grid-template-columns: 1fr;
+    }
+}
