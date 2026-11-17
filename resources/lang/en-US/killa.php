@@ -107,6 +107,15 @@ return [
         'note_perpetual' => 'Perpetual — no expiry',
         'note_term' => ':years Year term',
     ],
+    // [killa global-search] KCP-061: header global search typeahead
+    'global_search' => [
+        'placeholder' => 'Global search: assets, people, licenses…',
+        'sr_label' => 'Global search',
+        'loading' => 'Searching…',
+        'no_results' => 'No matches for “:query”',
+        'error' => 'Search is unavailable right now.',
+        'hint' => 'Type at least 2 characters — Enter opens the first result',
+    ],
     'currency' => [
         'title' => 'Currency',
         'label' => 'Currency',

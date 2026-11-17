@@ -1663,4 +1663,15 @@ Route::group(['prefix' => 'v1', 'middleware' => ['api', 'api-throttle:api']], fu
     )->name('api.files.destroy')
         ->where(['object_type' => 'accessories|assets|components|consumables|hardware|licenses|locations|maintenances|models|suppliers|users|companies|departments']);
 
+    /* [killa global-search] KCP-061: aggregated typeahead endpoint for the
+       header global search (assets/licenses/accessories/consumables/
+       components/users in one call, permission-gated per group) */
+    Route::get('killa/search',
+        [
+            \App\Http\Controllers\Killa\GlobalSearchController::class,
+            'search',
+        ]
+    )->name('api.killa.search');
+    /* [/killa global-search] */
+
 }); // end API routes

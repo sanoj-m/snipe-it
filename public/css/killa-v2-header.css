@@ -89,66 +89,164 @@ body .main-header .navbar .navbar-nav > li[data-knav].active > a::after {
 }
 
 /* --------------------------------------------------------------------------
-   Asset-tag lookup: unified rounded search pill (input + submit read as one
-   control), focus ring on the whole pill.
+   [killa global-search] KCP-061: global search pill + results dropdown.
+   Replaces the KCP-058 tag-lookup pill styling (that form now renders in
+   Classic only, where it keeps its stock look).
    -------------------------------------------------------------------------- */
-body .main-header .navbar .navbar-form.killa-header-search {
-    margin: 0;
-    padding: 10px 8px;
-    border: none;
-    box-shadow: none;
+body .main-header .navbar .navbar-nav > li.killa-global-search-item {
+    display: flex;
+    align-items: center;
 }
 
-body .main-header .navbar .navbar-form.killa-header-search .input-group {
+body .main-header .navbar .killa-global-search {
+    position: relative;
     display: flex;
-    align-items: stretch;
+    align-items: center;
+    margin: 10px 8px;
+    height: 36px;
     border-radius: var(--k-radius-pill);
     border: 1px solid var(--k-border);
     background-color: var(--k-hover-tint);
-    overflow: hidden;
     transition: border-color var(--k-motion), box-shadow var(--k-motion), background-color var(--k-motion);
 }
 
-body .main-header .navbar .navbar-form.killa-header-search .input-group:focus-within {
+body .main-header .navbar .killa-global-search:focus-within {
     border-color: var(--k-accent);
     box-shadow: 0 0 0 4px var(--k-accent-ring);
     background-color: var(--k-navbar-bg);
 }
 
-body .main-header .navbar .navbar-form.killa-header-search #tagSearch {
-    width: 220px;
+body .main-header .navbar .killa-global-search .kgs-icon {
+    order: 2;
+    margin: 0 12px 0 4px;
+    color: var(--k-text-muted);
+    font-size: 13px;
+    transition: color var(--k-motion);
+}
+
+body .main-header .navbar .killa-global-search:focus-within .kgs-icon {
+    color: var(--k-accent);
+}
+
+body .main-header .navbar .killa-global-search #killaGlobalSearchInput {
+    order: 1;
+    width: 240px;
     height: 34px;
     border: none !important;
     background-color: transparent !important;
     box-shadow: none !important;
     color: var(--k-text);
     font-size: 13px;
-    padding: 0 4px 0 14px;
+    padding: 0 0 0 14px;
 }
 
-body .main-header .navbar .navbar-form.killa-header-search #tagSearch::placeholder {
+body .main-header .navbar .killa-global-search #killaGlobalSearchInput::placeholder {
     color: var(--k-text-muted);
 }
 
-body .main-header .navbar .navbar-form.killa-header-search .input-group-btn {
+/* results dropdown */
+body .main-header .navbar .killa-global-search .kgs-results {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 360px;
+    max-height: min(480px, 70vh);
+    overflow-y: auto;
+    background-color: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-radius: var(--k-radius);
+    box-shadow: var(--k-shadow-lg);
+    padding: var(--k-space-2);
+    z-index: 1050;
+}
+
+body .kgs-group + .kgs-group {
+    margin-top: var(--k-space-1);
+    padding-top: var(--k-space-1);
+    border-top: 1px solid var(--k-border-soft);
+}
+
+body .kgs-group-label {
     display: flex;
-    width: auto;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--k-text-muted);
 }
 
-body .main-header .navbar .navbar-form.killa-header-search #topSearchButton {
-    height: 34px;
-    padding: 0 14px !important; /* replaces the old inline padding */
-    border: none !important;
-    background-color: transparent !important;
-    background-image: none !important;
-    box-shadow: none !important;
-    color: var(--k-text-muted) !important;
-    transition: color var(--k-motion);
+body .kgs-result {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 10px;
+    border-radius: var(--k-radius-chip);
+    text-decoration: none !important;
+    transition: background-color var(--k-motion);
 }
 
-body .main-header .navbar .navbar-form.killa-header-search .input-group:focus-within #topSearchButton,
-body .main-header .navbar .navbar-form.killa-header-search #topSearchButton:hover {
-    color: var(--k-accent) !important;
+body .kgs-result:hover,
+body .kgs-result.kgs-active {
+    background-color: var(--k-hover-tint);
+}
+
+body .kgs-result-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 8px;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+/* per-group tints — same tokens as the header nav chips */
+body .kgs-tint-info        { color: var(--k-info);        background-color: color-mix(in srgb, var(--k-info) var(--k-tint-alpha), transparent); }
+body .kgs-tint-licenses    { color: var(--k-tile-purple); background-color: color-mix(in srgb, var(--k-tile-purple) var(--k-tint-alpha), transparent); }
+body .kgs-tint-accessories { color: var(--k-success);     background-color: color-mix(in srgb, var(--k-success) var(--k-tint-alpha), transparent); }
+body .kgs-tint-consumables { color: var(--k-warning);     background-color: color-mix(in srgb, var(--k-warning) var(--k-tint-alpha), transparent); }
+body .kgs-tint-components  { color: var(--k-danger);      background-color: color-mix(in srgb, var(--k-danger) var(--k-tint-alpha), transparent); }
+body .kgs-tint-users       { color: var(--k-tile-teal);   background-color: color-mix(in srgb, var(--k-tile-teal) var(--k-tint-alpha), transparent); }
+
+body .kgs-result-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+body .kgs-result-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--k-text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body .kgs-result-subtitle {
+    font-size: 11px;
+    color: var(--k-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body .kgs-status {
+    padding: 14px 12px;
+    font-size: 12px;
+    color: var(--k-text-muted);
+    text-align: center;
+}
+
+body .kgs-status.kgs-hint {
+    padding: 6px 10px 4px;
+    font-size: 10px;
+    border-top: 1px solid var(--k-border-soft);
+    text-align: left;
 }
 
 /* --------------------------------------------------------------------------
@@ -208,8 +306,16 @@ body .main-header .navbar .navbar-custom-menu .navbar-nav > li:not([data-knav]):
    Mobile (xs): chips stay icon-only; search keeps the pill, narrower.
    -------------------------------------------------------------------------- */
 @media (max-width: 767px) {
-    body .main-header .navbar .navbar-form.killa-header-search #tagSearch {
+    body .main-header .navbar .killa-global-search #killaGlobalSearchInput {
         width: 130px;
+    }
+
+    body .main-header .navbar .killa-global-search .kgs-results {
+        position: fixed;
+        left: 8px;
+        right: 8px;
+        top: 60px;
+        width: auto;
     }
 }
 

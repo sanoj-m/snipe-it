@@ -255,11 +255,32 @@
                             @endcan
                             {{-- [/killa-v2 header] --}}
 
+                            {{-- [killa global-search] KCP-061: the v2 design replaces the asset-tag
+                                 lookup form with a global typeahead across assets/licenses/accessories/
+                                 consumables/components/users (endpoint: api.killa.search; JS:
+                                 public/js/killa-global-search.js). Classic keeps the stock tag form. --}}
+                            @if (request()->cookie('killa_design') !== 'classic')
+                                <li class="killa-global-search-item">
+                                    <div class="killa-global-search" id="killaGlobalSearch"
+                                         data-endpoint="{{ route('api.killa.search') }}"
+                                         data-i18n-loading="{{ trans('killa.global_search.loading') }}"
+                                         data-i18n-no-results="{{ trans('killa.global_search.no_results') }}"
+                                         data-i18n-error="{{ trans('killa.global_search.error') }}"
+                                         data-i18n-hint="{{ trans('killa.global_search.hint') }}">
+                                        <label class="sr-only" for="killaGlobalSearchInput">{{ trans('killa.global_search.sr_label') }}</label>
+                                        <input type="search" class="form-control" id="killaGlobalSearchInput"
+                                               placeholder="{{ trans('killa.global_search.placeholder') }}"
+                                               autocomplete="off" spellcheck="false"
+                                               role="combobox" aria-expanded="false" aria-haspopup="listbox"
+                                               aria-controls="killaGlobalSearchResults">
+                                        <x-icon type="search" class="fa-fw kgs-icon" />
+                                        <div class="kgs-results" id="killaGlobalSearchResults" role="listbox" hidden></div>
+                                    </div>
+                                </li>
+                            @else
                             @can('index', \App\Models\Asset::class)
                                 <li>
-                                    {{-- [killa-v2 header] KCP-058: killa-header-search hook — unified rounded
-                                         search pill in the v2 design (killa-v2-header.css); inert in Classic --}}
-                                    <form class="navbar-form navbar-left form-inline killa-header-search" role="search" action="{{ route('findbytag/hardware') }}" method="get">
+                                    <form class="navbar-form navbar-left form-inline" role="search" action="{{ route('findbytag/hardware') }}" method="get">
 
                                                 <div class="input-group col-xs-12" style="border: 0 !important;">
                                                     <label class="sr-only" for="tagSearch">
@@ -276,6 +297,8 @@
                                     </form>
                                 </li>
                             @endcan
+                            @endif
+                            {{-- [/killa global-search] --}}
 
                             @can('admin')
                                 <li class="dropdown user-menu" aria-hidden="true">
@@ -749,6 +772,8 @@
              Classic renders stock markup driven by upstream's own push-menu/treeview JS (KCP-054) --}}
         @if (request()->cookie('killa_design') !== 'classic')
         <script src="{{ url(asset('js/killa-sidebar.js')) }}?v={{ config('version.app_version') }}" defer nonce="{{ csrf_token() }}"></script>
+        {{-- [killa global-search] header global typeahead (KCP-061) — v2 only --}}
+        <script src="{{ url(asset('js/killa-global-search.js')) }}?v={{ config('version.app_version') }}" defer nonce="{{ csrf_token() }}"></script>
         @endif
 
         {{-- [killa-v2 design-toggle] New/Classic topbar switch (KCP-054) --}}
