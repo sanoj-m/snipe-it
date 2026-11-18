@@ -23,13 +23,92 @@
             --id-muted: var(--k-text-muted, #6b7280);
             --id-line: var(--k-border-soft, #eef0f2);
             --id-border: var(--k-border, #e5e7eb);
+            --id-surface: var(--k-surface, #fff);
         }
 
-        /* stat tiles reuse the dashboard k-tile markup; these tweaks just
-           tighten them into a 5-up strip and kill the footer offset */
-        .incident-desk .k-tile{ margin-bottom: var(--k-space-4, 16px); }
-        .incident-desk .k-tile .k-tile-body{ padding-bottom: var(--k-space-4, 16px); }
-        .incident-desk .k-tile .k-tile-icon i{ font-size: 15px; }
+        /* ---------- header stat tiles (full-width strip) ---------- */
+        .incident-desk .id-tiles{
+            display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+            margin-bottom: 18px;
+        }
+        @media (max-width: 1100px){
+            .incident-desk .id-tiles{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+        }
+        .incident-desk .id-tile{
+            position: relative; overflow: hidden;
+            border-radius: 14px; padding: 15px 16px;
+            background: var(--id-surface);
+            border: 1px solid color-mix(in srgb, var(--tile) 34%, var(--id-border));
+            box-shadow: var(--k-shadow-sm, 0 1px 2px rgba(16,24,40,.06));
+            transition: box-shadow var(--k-motion, 160ms ease), transform var(--k-motion, 160ms ease);
+        }
+        .incident-desk .id-tile:hover{
+            transform: translateY(-1px);
+            box-shadow: 0 0 26px -8px color-mix(in srgb, var(--tile) 50%, transparent);
+        }
+        .incident-desk .id-tile::before{ /* left accent bar */
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
+            background: var(--tile);
+        }
+        .incident-desk .id-tile-glow{ /* decorative corner blob */
+            position: absolute; bottom: -22px; right: -22px; width: 84px; height: 84px;
+            border-radius: 50%; background: var(--tile); opacity: .15; filter: blur(22px);
+            pointer-events: none;
+        }
+        .incident-desk .id-tile-icon{
+            position: absolute; top: 12px; right: 12px;
+            width: 34px; height: 34px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: color-mix(in srgb, var(--tile) 12%, transparent);
+            color: var(--tile); font-size: 14px;
+        }
+        .incident-desk .id-tile-number{
+            display: block; position: relative;
+            font-family: var(--k-font-display, 'Inter Tight', 'Inter', sans-serif);
+            font-size: 24px; font-weight: 700; line-height: 1.1; letter-spacing: -.01em;
+            color: var(--k-text, #1f2933); font-variant-numeric: tabular-nums;
+        }
+        .incident-desk .id-tile-label{
+            display: block; margin-top: 3px; position: relative;
+            font-size: 10.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+            color: var(--id-muted);
+        }
+
+        /* ---------- cards ---------- */
+        .incident-desk .id-grid{
+            display: grid; grid-template-columns: 370px minmax(0, 1fr); gap: 16px; align-items: start;
+        }
+        @media (max-width: 991px){
+            .incident-desk .id-grid{ grid-template-columns: 1fr; }
+        }
+        .incident-desk .id-card{
+            --card-accent: var(--k-accent, #E63B2E);
+            background: var(--id-surface);
+            border: 1px solid var(--id-border);
+            border-radius: 14px; overflow: hidden;
+            box-shadow: var(--k-shadow-sm, 0 1px 2px rgba(16,24,40,.06));
+            margin-bottom: 16px;
+        }
+        .incident-desk .id-card-head{
+            display: flex; align-items: center; gap: 10px;
+            padding: 11px 16px; border-bottom: 1px solid var(--id-border);
+            background: color-mix(in srgb, var(--card-accent) 6%, var(--id-surface));
+        }
+        .incident-desk .id-card-icon{
+            width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: color-mix(in srgb, var(--card-accent) 15%, transparent);
+            color: var(--card-accent); font-size: 13px;
+        }
+        .incident-desk .id-card-head h3{
+            margin: 0; font-size: 14px; font-weight: 700; letter-spacing: -.01em;
+            color: var(--k-text, #1f2933);
+        }
+        .incident-desk .id-card-body{ padding: 16px; }
+        .incident-desk .id-card-foot{
+            padding: 12px 16px; border-top: 1px solid var(--id-border);
+            background: color-mix(in srgb, var(--card-accent) 3%, var(--id-surface));
+        }
 
         /* form rhythm inside the file-a-ticket box */
         .incident-desk .id-form label{
@@ -178,72 +257,48 @@
         .incident-desk .edit-actions{ display: flex; gap: 8px; margin-top: 12px; }
     </style>
 
-    {{-- stat tiles: same k-tile card the dashboard uses --}}
-    <div class="row">
-        <div class="col-md-2 col-md-offset-1 col-sm-4 col-xs-6">
-            <div class="small-box k-tile bg-purple">
-                <div class="k-tile-body">
-                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-ticket"></i></span>
-                    <span class="k-tile-text">
-                        <span class="k-tile-number" id="idStatTotal">0</span>
-                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.tickets_on_file') }}</span>
-                    </span>
-                </div>
-            </div>
+    {{-- header stat tiles: full-width strip, one accent family per tile --}}
+    <div class="id-tiles">
+        <div class="id-tile" style="--tile:#7c5cd6;">
+            <span class="id-tile-glow" aria-hidden="true"></span>
+            <span class="id-tile-icon" aria-hidden="true"><i class="fas fa-ticket"></i></span>
+            <span class="id-tile-number" id="idStatTotal">0</span>
+            <span class="id-tile-label">{{ trans('admin/incident_desk/general.tickets_on_file') }}</span>
         </div>
-        <div class="col-md-2 col-sm-4 col-xs-6">
-            <div class="small-box k-tile bg-teal">
-                <div class="k-tile-body">
-                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-check-circle"></i></span>
-                    <span class="k-tile-text">
-                        <span class="k-tile-number" id="idStatClosed">0</span>
-                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.closed') }}</span>
-                    </span>
-                </div>
-            </div>
+        <div class="id-tile" style="--tile:#2f9e6e;">
+            <span class="id-tile-glow" aria-hidden="true"></span>
+            <span class="id-tile-icon" aria-hidden="true"><i class="fas fa-check-circle"></i></span>
+            <span class="id-tile-number" id="idStatClosed">0</span>
+            <span class="id-tile-label">{{ trans('admin/incident_desk/general.closed') }}</span>
         </div>
-        <div class="col-md-2 col-sm-4 col-xs-6">
-            <div class="small-box k-tile bg-maroon">
-                <div class="k-tile-body">
-                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-exclamation-circle"></i></span>
-                    <span class="k-tile-text">
-                        <span class="k-tile-number" id="idStatOpen">0</span>
-                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.open') }}</span>
-                    </span>
-                </div>
-            </div>
+        <div class="id-tile" style="--tile:#E63B2E;">
+            <span class="id-tile-glow" aria-hidden="true"></span>
+            <span class="id-tile-icon" aria-hidden="true"><i class="fas fa-exclamation-circle"></i></span>
+            <span class="id-tile-number" id="idStatOpen">0</span>
+            <span class="id-tile-label">{{ trans('admin/incident_desk/general.open') }}</span>
         </div>
-        <div class="col-md-2 col-sm-4 col-xs-6">
-            <div class="small-box k-tile bg-orange">
-                <div class="k-tile-body">
-                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-truck"></i></span>
-                    <span class="k-tile-text">
-                        <span class="k-tile-number" id="idStatVendor">0</span>
-                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.need_vendor') }}</span>
-                    </span>
-                </div>
-            </div>
+        <div class="id-tile" style="--tile:#d97706;">
+            <span class="id-tile-glow" aria-hidden="true"></span>
+            <span class="id-tile-icon" aria-hidden="true"><i class="fas fa-truck"></i></span>
+            <span class="id-tile-number" id="idStatVendor">0</span>
+            <span class="id-tile-label">{{ trans('admin/incident_desk/general.need_vendor') }}</span>
         </div>
-        <div class="col-md-2 col-sm-4 col-xs-6">
-            <div class="small-box k-tile bg-light-blue">
-                <div class="k-tile-body">
-                    <span class="k-tile-icon" aria-hidden="true"><i class="fas fa-calendar-day"></i></span>
-                    <span class="k-tile-text">
-                        <span class="k-tile-number" id="idStatToday">0</span>
-                        <span class="k-tile-label">{{ trans('admin/incident_desk/general.logged_today') }}</span>
-                    </span>
-                </div>
-            </div>
+        <div class="id-tile" style="--tile:#0284c7;">
+            <span class="id-tile-glow" aria-hidden="true"></span>
+            <span class="id-tile-icon" aria-hidden="true"><i class="fas fa-calendar-day"></i></span>
+            <span class="id-tile-number" id="idStatToday">0</span>
+            <span class="id-tile-label">{{ trans('admin/incident_desk/general.logged_today') }}</span>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-md-4">
-            <div class="box box-solid box-primary">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ trans('admin/incident_desk/general.file_ticket') }}</h3>
+    <div class="id-grid">
+        <div>
+            <div class="id-card" style="--card-accent: var(--k-accent, #E63B2E);">
+                <div class="id-card-head">
+                    <span class="id-card-icon" aria-hidden="true"><i class="fas fa-plus"></i></span>
+                    <h3>{{ trans('admin/incident_desk/general.file_ticket') }}</h3>
                 </div>
-                <div class="box-body id-form">
+                <div class="id-card-body id-form">
                     <label for="idRequesterInput">{{ trans('admin/incident_desk/general.requester') }}</label>
                     <input type="text" id="idRequesterInput" class="form-control" list="idUsersDatalist" placeholder="{{ trans('admin/incident_desk/general.requester_placeholder') }}" autocomplete="off">
                     <datalist id="idUsersDatalist">
@@ -288,18 +343,19 @@
                     <button class="btn btn-primary btn-block" id="idSubmitBtn" style="margin-top:14px;" disabled>{{ trans('admin/incident_desk/general.log_ticket') }}</button>
                     <div class="form-msg" id="idFormMsg"></div>
                 </div>
-                <div class="box-footer">
+                <div class="id-card-foot">
                     <button class="btn btn-default btn-block" id="idExportCsvBtn" type="button">
                         <i class="fas fa-download" aria-hidden="true"></i> {{ trans('admin/incident_desk/general.export_csv') }}
                     </button>
                 </div>
             </div>
 
-            <div class="box box-default">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ trans('admin/incident_desk/general.status_breakdown') }} <span class="donut-scope" id="idDonutDateLabel"></span></h3>
+            <div class="id-card" style="--card-accent:#7c5cd6;">
+                <div class="id-card-head">
+                    <span class="id-card-icon" aria-hidden="true"><i class="fas fa-chart-pie"></i></span>
+                    <h3>{{ trans('admin/incident_desk/general.status_breakdown') }} <span class="donut-scope" id="idDonutDateLabel"></span></h3>
                 </div>
-                <div class="box-body">
+                <div class="id-card-body">
                     <div class="donut-row">
                         <div class="donut" id="idDonutChart"><div class="donut-center"><div class="donut-total" id="idDonutTotal">0</div><div class="donut-total-label">{{ trans('admin/incident_desk/general.tickets') }}</div></div></div>
                         <div class="donut-legend" id="idDonutLegend"></div>
@@ -308,12 +364,13 @@
             </div>
         </div>
 
-        <div class="col-md-8">
-            <div class="box box-default">
-                <div class="box-header with-border">
-                    <h3 class="box-title">{{ trans('admin/incident_desk/general.ticket_log') }}</h3>
+        <div>
+            <div class="id-card" style="--card-accent:#0284c7;">
+                <div class="id-card-head">
+                    <span class="id-card-icon" aria-hidden="true"><i class="fas fa-list"></i></span>
+                    <h3>{{ trans('admin/incident_desk/general.ticket_log') }}</h3>
                 </div>
-                <div class="box-body">
+                <div class="id-card-body">
                     <div class="list-controls">
                         <input type="text" id="idSearchInput" class="form-control" placeholder="{{ trans('admin/incident_desk/general.search_placeholder') }}">
                         <input type="date" id="idDateJump" class="form-control" title="{{ trans('admin/incident_desk/general.jump_to_date') }}">
