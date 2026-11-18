@@ -539,6 +539,9 @@ Icon:        w-4 h-4 text-{color}-600 dark:text-{color}-400
 Glow blob:   absolute -bottom-5 -right-5 w-20 h-20 rounded-full opacity-40 blur-2xl
              bg-{color}-300 dark:bg-{color}-500/40
              (moduleId path: bg-[hsl(var(--mod-{id})/0.18)] via tokens.glow)
+No side bar: NEVER add a left/right/top accent bar (e.g. ::before strip) to stat
+             tiles — the tile color comes ONLY from the border tint + icon chip +
+             glow blob (project owner directive, incident-desk tiles)
 Tokens:      colorStyles map in SettingsBlocks.tsx (named colors) +
              softBorder/glow on ModuleColorTokens (moduleConfig.ts, moduleColors.ts)
 Palette:     blue (total/overview), emerald (created/active), amber (warning/financial),

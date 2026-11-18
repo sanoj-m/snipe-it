@@ -22,7 +22,7 @@ class UpdateIncidentTicketRequest extends FormRequest
             'issue' => ['sometimes', 'nullable', 'string', 'max:5000'],
             'details' => ['sometimes', 'required', 'string', 'max:5000'],
             'status' => ['sometimes', Rule::in(IncidentTicket::STATUSES)],
-            'asset_id' => ['sometimes', 'nullable', 'integer', 'exists:assets,id'],
+            'asset_id' => ['sometimes', 'required', 'integer', 'exists:assets,id'],
         ];
     }
 }

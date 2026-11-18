@@ -46,10 +46,6 @@
             transform: translateY(-1px);
             box-shadow: 0 0 26px -8px color-mix(in srgb, var(--tile) 50%, transparent);
         }
-        .incident-desk .id-tile::before{ /* left accent bar */
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
-            background: var(--tile);
-        }
         .incident-desk .id-tile-glow{ /* decorative corner blob */
             position: absolute; bottom: -22px; right: -22px; width: 84px; height: 84px;
             border-radius: 50%; background: var(--tile); opacity: .15; filter: blur(22px);
@@ -299,8 +295,10 @@
                     <h3>{{ trans('admin/incident_desk/general.file_ticket') }}</h3>
                 </div>
                 <div class="id-card-body id-form">
-                    <label for="idRequesterInput">{{ trans('admin/incident_desk/general.requester') }}</label>
-                    <input type="text" id="idRequesterInput" class="form-control" list="idUsersDatalist" placeholder="{{ trans('admin/incident_desk/general.requester_placeholder') }}" autocomplete="off">
+                    <label for="idRequesterSelect">{{ trans('admin/incident_desk/general.requester') }}</label>
+                    <select id="idRequesterSelect" class="js-data-ajax form-control" data-endpoint="users" data-placeholder="{{ trans('admin/incident_desk/general.requester_placeholder') }}" style="width:100%">
+                        <option value="" role="option">{{ trans('admin/incident_desk/general.requester_placeholder') }}</option>
+                    </select>
                     <datalist id="idUsersDatalist">
                         @foreach ($requesters as $requesterName)
                             <option value="{{ $requesterName }}"></option>
@@ -320,7 +318,7 @@
                         <option value="">{{ trans('admin/incident_desk/general.select_category_first') }}</option>
                     </select>
 
-                    <label for="idAssetSelect">{{ trans('admin/incident_desk/general.device_optional') }}</label>
+                    <label for="idAssetSelect">{{ trans('admin/incident_desk/general.device_optional') }} <span style="color:var(--k-danger,#c0392b);">*</span></label>
                     <select id="idAssetSelect" class="js-data-ajax form-control" data-endpoint="hardware" data-placeholder="{{ trans('general.select_asset') }}" style="width:100%">
                         <option value="" role="option">{{ trans('general.select_asset') }}</option>
                     </select>
@@ -611,6 +609,7 @@
                 const assetSel = wrap.querySelector('[data-role="edit-asset"]');
                 const assetId = assetSel ? (assetSel.value || null) : null;
                 if(!category || !taskType){ alert('{{ trans('admin/incident_desk/general.validation_category') }}'); return; }
+                if(!assetId){ alert('{{ trans('admin/incident_desk/general.validation_asset') }}'); return; }
                 try{
                     const res = await api(URLS.update + '/' + id, {method:'PUT', body:{
                         requester_name: requester, category: category, task_type: taskType,
@@ -745,7 +744,10 @@
 
     document.getElementById('idSubmitBtn').addEventListener('click', async ()=>{
         const msg = document.getElementById('idFormMsg');
-        const requester = document.getElementById('idRequesterInput').value.trim();
+        const requesterOption = document.querySelector('#idRequesterSelect option:checked');
+        const requester = requesterOption && requesterOption.value
+            ? requesterOption.textContent.trim().replace(/\s*\(.*$/, '')
+            : '';
         const category = document.getElementById('idCategorySelect').value;
         const taskType = document.getElementById('idTaskTypeSelect').value;
         const notes = document.getElementById('idDetailsInput').value.trim();
@@ -755,6 +757,11 @@
             msg.textContent = '{{ trans('admin/incident_desk/general.validation_category') }}';
             return;
         }
+        if(!assetId){
+            msg.style.color = 'var(--k-danger, #c0392b)';
+            msg.textContent = '{{ trans('admin/incident_desk/general.validation_asset') }}';
+            return;
+        }
         try{
             const res = await api(URLS.store, {method:'POST', body:{
                 requester_name: requester, category: category, task_type: taskType,
@@ -762,7 +769,7 @@
             }});
             tickets.push(res.ticket);
             document.getElementById('idDetailsInput').value = '';
-            document.getElementById('idRequesterInput').value = '';
+            if(window.jQuery) jQuery('#idRequesterSelect').val(null).trigger('change');
             document.getElementById('idCategorySelect').value = '';
             const typeSel = document.getElementById('idTaskTypeSelect');
             typeSel.disabled = true;

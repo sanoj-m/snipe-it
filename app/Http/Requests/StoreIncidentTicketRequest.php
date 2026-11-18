@@ -21,7 +21,7 @@ class StoreIncidentTicketRequest extends FormRequest
             'task_type' => ['required', 'string', 'max:191'],
             'issue' => ['nullable', 'string', 'max:5000'],
             'status' => ['required', Rule::in(IncidentTicket::STATUSES)],
-            'asset_id' => ['nullable', 'integer', 'exists:assets,id'],
+            'asset_id' => ['required', 'integer', 'exists:assets,id'],
         ];
     }
 }
