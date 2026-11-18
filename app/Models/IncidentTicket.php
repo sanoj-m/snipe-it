@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\Killa\IncidentMaintenanceSync;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -10,6 +11,13 @@ class IncidentTicket extends Model
 {
     use SoftDeletes;
 
+    protected static function booted(): void
+    {
+        static::saved(fn (IncidentTicket $ticket) => IncidentMaintenanceSync::sync($ticket));
+        static::deleted(fn (IncidentTicket $ticket) => IncidentMaintenanceSync::deleteFor($ticket));
+        static::restored(fn (IncidentTicket $ticket) => IncidentMaintenanceSync::sync($ticket));
+    }
+
     public const STATUSES = ['Open', 'Closed', 'Need Vendor'];
 
     protected $fillable = [
@@ -17,6 +25,7 @@ class IncidentTicket extends Model
         'requester_name',
         'requester_user_id',
         'asset_id',
+        'maintenance_id',
         'category',
         'task_type',
         'issue',
@@ -43,6 +52,11 @@ class IncidentTicket extends Model
     public function asset(): BelongsTo
     {
         return $this->belongsTo(Asset::class, 'asset_id');
+    }
+
+    public function maintenance(): BelongsTo
+    {
+        return $this->belongsTo(Maintenance::class, 'maintenance_id');
     }
 
     /**

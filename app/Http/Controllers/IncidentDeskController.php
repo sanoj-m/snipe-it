@@ -6,6 +6,7 @@ use App\Http\Requests\StoreIncidentTicketRequest;
 use App\Http\Requests\UpdateIncidentTicketRequest;
 use App\Models\Asset;
 use App\Models\IncidentTicket;
+use App\Models\MaintenanceType;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\View\View;
@@ -32,6 +33,21 @@ class IncidentDeskController extends Controller
     {
         $this->authorize('view', Asset::class);
 
+        $taskCategories = self::TASK_CATEGORIES;
+
+        // Any maintenance type added via /maintenance-types that isn't in
+        // the desk's built-in taxonomy shows up under "Other".
+        $mapped = collect($taskCategories)->flatten()->all();
+        $extraTypes = MaintenanceType::orderBy('name')
+            ->pluck('name')
+            ->reject(fn ($name) => in_array($name, $mapped, true))
+            ->values()
+            ->all();
+
+        if ($extraTypes !== []) {
+            $taskCategories['Other'] = array_values(array_unique(array_merge($taskCategories['Other'], $extraTypes)));
+        }
+
         $requesters = IncidentTicket::query()
             ->whereNotNull('requester_name')
             ->distinct()
@@ -47,7 +63,7 @@ class IncidentDeskController extends Controller
         $requesters = $requesters->merge($userNames)->unique(fn ($name) => mb_strtolower($name))->sort()->values();
 
         return view('maintenances.incident-desk', [
-            'taskCategories' => self::TASK_CATEGORIES,
+            'taskCategories' => $taskCategories,
             'requesters' => $requesters,
         ]);
     }
