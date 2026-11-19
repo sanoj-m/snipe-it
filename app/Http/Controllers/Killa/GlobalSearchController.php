@@ -68,7 +68,7 @@ class GlobalSearchController extends Controller
             'accessories' => [
                 'model' => Accessory::class,
                 'ability' => 'index',
-                'columns' => ['name', 'model_number', 'order_number'],
+                'columns' => ['name', 'model_number', 'legacy_order_number'],
                 'route' => 'accessories.show',
                 'scoped' => true,
                 'title' => fn (Accessory $accessory) => (string) $accessory->name,
@@ -77,7 +77,7 @@ class GlobalSearchController extends Controller
             'consumables' => [
                 'model' => Consumable::class,
                 'ability' => 'index',
-                'columns' => ['name', 'model_number', 'order_number'],
+                'columns' => ['name', 'model_number', 'legacy_order_number'],
                 'route' => 'consumables.show',
                 'scoped' => true,
                 'title' => fn (Consumable $consumable) => (string) $consumable->name,
@@ -86,7 +86,7 @@ class GlobalSearchController extends Controller
             'components' => [
                 'model' => Component::class,
                 'ability' => 'view',
-                'columns' => ['name', 'serial', 'order_number'],
+                'columns' => ['name', 'serial', 'legacy_order_number'],
                 'route' => 'components.show',
                 'scoped' => true,
                 'title' => fn (Component $component) => (string) $component->name,
