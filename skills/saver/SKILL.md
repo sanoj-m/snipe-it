@@ -6,58 +6,51 @@ description: "Save the current chat/session as a durable record: write a session
 # Saver Skill
 
 Persists a work session into the repo so the next agent (or human) can resume
-without the chat. Follows this repo's docs conventions (`AGENTS.md`,
-`docs/upgrades/UPGRADE_HISTORY.md` style).
+without the chat. **Be token-frugal: you already know the session — don't
+re-research it.**
+
+## Budget rules (read first)
+
+- One `git log --oneline -8` + `git status --short` is all the gathering you
+  get. No diff spelunking, no re-reading files you edited this session.
+- Never read `PROJECT_HANDOFF.md` or `docs/sessions/README.md` in full. For the
+  index, `tail -2 docs/sessions/README.md` to copy the row format, then append.
+- Write the log from memory of THIS conversation. Verify only facts you're
+  unsure of (one cheap command max each).
+- Don't re-verify live state, don't run tests, don't screenshot.
 
 ## Procedure
 
-### 1. Gather
+### 1. Write the session log
 
-- `git log --oneline -15` and `git status --short` — what changed this session.
-- Scan the conversation for: goals, decisions made (and why), defects found +
-  root causes, verification evidence (screenshots, curl codes, logs),
-  unfinished items / follow-ups.
-- Server/environment facts learned (paths, credentials locations, CDN
-  behaviors, deploy mechanics) worth keeping.
-
-### 2. Write the session log
-
-Create `docs/sessions/YYYY-MM-DD-<short-slug>.md` (today's date, kebab-case
-topic) with:
+Create `docs/sessions/YYYY-MM-DD-<short-slug>.md`:
 
 ```
 # Session: <title> — YYYY-MM-DD
-
 ## Goal
-## What was done (grouped by theme, with file paths)
-## Decisions & root causes (the non-obvious "why")
-## Verification (what was checked and how)
-## Server / environment notes
+## What was done (grouped, with file paths + commit hashes)
+## Decisions & root causes (the non-obvious "why" only)
+## Verification (one line per check: what + result)
+## Server / environment notes (only NEW facts worth keeping)
 ## Follow-ups / known issues
 ```
 
-Keep it factual and compact. No chat transcript — the distilled record.
+Compact and factual. Skip empty sections. Target ≤ 60 lines.
 
-### 3. Update docs
+### 2. Update docs
 
-- Create/append an entry in `docs/sessions/README.md` (index table:
-  date | session | summary).
-- If the session changed project state (new subsystem, new workflow, new
-  conventions), update the matching section of `PROJECT_HANDOFF.md` and any
-  affected doc in `docs/` (e.g. `docs/ui/UI_GUIDELINES.md` for theme work,
-  `docs/upgrades/UPGRADE_HISTORY.md` for upgrades, `CORE_PATCH_REGISTER.md`
-  for new core patches).
-- Update `AGENTS.md` ONLY if a documented rule/workflow itself changed.
+- Append ONE row to `docs/sessions/README.md` (date | session | ≤ 2-line summary).
+- `PROJECT_HANDOFF.md`: only if a durable rule/workflow changed, add ≤ 3 lines
+  to the existing matching section. Skip otherwise.
+- `CORE_PATCH_REGISTER.md`: only if a new core patch was added (should already
+  be done during the work — don't redo it).
+- `AGENTS.md`: only if a documented rule itself changed.
 
-### 4. Commit (threshold rule)
+### 3. Commit (threshold rule)
 
-- Count changes: `git status --short | wc -l` files OR
-  `git diff --stat | tail -1` insertions — **commit when ≥ 50**
-  (files+insertions combined, judgment call on huge generated files).
-- Stage everything relevant EXCEPT: `.vscode/`, machine-local junk, secrets.
-- Commit message: `Session: <title> (<date>) — <one-line summary>`.
-- Push: `git push origin HEAD` (this repo's update workflow relies on the
-  fork being current).
-
-If under 50 changes, report the session log was written but the threshold was
-not met, and ask before committing.
+- Count: `git status --short | wc -l` files + `git diff --shortstat` insertions.
+  Commit + `git push origin HEAD` when ≥ 50 combined.
+- Stage ONLY files this session touched. Never stage: `.vscode/`, secrets,
+  other sessions' in-progress edits, user-owned untracked dirs.
+- Message: `Session: <title> (<date>) — <one-line summary>`.
+- Under 50: report the log was written, threshold not met, ask before committing.
