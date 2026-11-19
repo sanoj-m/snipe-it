@@ -418,7 +418,10 @@ body .select2-container--default.select2-container--disabled .select2-selection_
     color: var(--k-input-disabled-text);
 }
 
-/* dropdown panel */
+/* dropdown panel — merges with the open selection into one connected panel:
+   selection loses its bottom radius, dropdown loses its top border/radius,
+   and the search field reads as a header row (no own box) instead of a
+   second floating input */
 body .select2-dropdown {
     background-color: var(--k-surface);
     border: 1px solid var(--k-border);
@@ -428,30 +431,45 @@ body .select2-dropdown {
 }
 
 body .select2-dropdown--above {
-    border-radius: var(--k-radius-chip);
+    border-radius: var(--k-radius-chip) var(--k-radius-chip) 0 0;
+    border-bottom: 0;
 }
 
 body .select2-dropdown--below {
-    border-radius: var(--k-radius-chip);
+    border-radius: 0 0 var(--k-radius-chip) var(--k-radius-chip);
+    border-top: 0;
+}
+
+body .select2-container--default.select2-container--open.select2-container--below .select2-selection--single,
+body .select2-container--default.select2-container--open.select2-container--below .select2-selection--multiple {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+body .select2-container--default.select2-container--open.select2-container--above .select2-selection--single,
+body .select2-container--default.select2-container--open.select2-container--above .select2-selection--multiple {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 }
 
 body .select2-container--default .select2-search--dropdown .select2-search__field {
-    border: 1px solid var(--k-border);
-    border-radius: var(--k-radius-sm);
+    border: 0;
+    border-bottom: 1px solid var(--k-border);
+    border-radius: 0;
     background-color: var(--k-surface);
     color: var(--k-text);
-    padding: 6px var(--k-space-2);
+    padding: 8px var(--k-space-3);
     outline: none;
     transition: border-color var(--k-motion), box-shadow var(--k-motion);
 }
 
 body .select2-container--default .select2-search--dropdown .select2-search__field:focus {
-    border-color: var(--k-accent);
-    box-shadow: 0 0 0 3px var(--k-accent-ring);
+    border-bottom-color: var(--k-accent);
+    box-shadow: none;
 }
 
 body .select2-search--dropdown {
-    padding: var(--k-space-2);
+    padding: 0;
 }
 
 /* results list */
