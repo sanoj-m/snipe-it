@@ -263,6 +263,7 @@
                                 <li class="killa-global-search-item">
                                     <div class="killa-global-search" id="killaGlobalSearch"
                                          data-endpoint="{{ route('api.killa.search') }}"
+                                         data-full-url="{{ route('killa.search') }}"
                                          data-i18n-loading="{{ trans('killa.global_search.loading') }}"
                                          data-i18n-no-results="{{ trans('killa.global_search.no_results') }}"
                                          data-i18n-error="{{ trans('killa.global_search.error') }}"

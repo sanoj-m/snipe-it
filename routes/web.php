@@ -103,6 +103,15 @@ Route::middleware(['web', 'auth', 'authorize:superuser'])->prefix('oauth')->grou
 });
 
 Route::group(['middleware' => 'auth'], function () {
+    // [killa global-search] KCP-074 BEGIN: full-page results for the header
+    // global search (quick dropdown + endpoint are KCP-061 in routes/api.php).
+    Route::get('search', [App\Http\Controllers\Killa\GlobalSearchController::class, 'page'])
+        ->name('killa.search')
+        ->breadcrumbs(fn (Tabuna\Breadcrumbs\Trail $trail) => $trail->parent('home')
+            ->push(trans('killa.search.title'), route('killa.search'))
+        );
+    // [killa global-search] KCP-074 END
+
     /*
     * Calendar (unified view across every HasCalendarEvents source).
     * Companion API endpoint lives at /api/v1/calendar/events.

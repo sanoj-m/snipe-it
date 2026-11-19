@@ -17,6 +17,7 @@
     var input = document.getElementById('killaGlobalSearchInput');
     var panel = document.getElementById('killaGlobalSearchResults');
     var endpoint = root.getAttribute('data-endpoint');
+    var fullUrl = root.getAttribute('data-full-url') || '';
     var i18n = {
         loading: root.getAttribute('data-i18n-loading') || 'Searching…',
         noResults: root.getAttribute('data-i18n-no-results') || 'No matches',
@@ -136,6 +137,36 @@
                     text.appendChild(subtitle);
                 }
 
+                /* KCP-074: condensed attached-items line on user results —
+                   "3 devices: KLD-001, KLD-002 +1 more · 2 licenses" */
+                if (result.attached) {
+                    var a = result.attached;
+                    var parts = [];
+                    if (a.assets_count > 0) {
+                        var sample = (a.assets_sample || []).join(', ');
+                        var devices = a.assets_count + (a.assets_count === 1 ? ' device' : ' devices');
+                        if (sample) {
+                            devices += ': ' + sample + (a.assets_count > (a.assets_sample || []).length ? ' +' + (a.assets_count - a.assets_sample.length) + ' more' : '');
+                        }
+                        parts.push(devices);
+                    }
+                    if (a.licenses_count > 0) {
+                        parts.push(a.licenses_count + (a.licenses_count === 1 ? ' license' : ' licenses'));
+                    }
+                    if (a.accessories_count > 0) {
+                        parts.push(a.accessories_count + (a.accessories_count === 1 ? ' accessory' : ' accessories'));
+                    }
+                    if (a.consumables_count > 0) {
+                        parts.push(a.consumables_count + (a.consumables_count === 1 ? ' consumable' : ' consumables'));
+                    }
+                    if (parts.length) {
+                        var attached = document.createElement('span');
+                        attached.className = 'kgs-result-attached';
+                        attached.textContent = parts.join(' · ');
+                        text.appendChild(attached);
+                    }
+                }
+
                 link.appendChild(text);
                 section.appendChild(link);
             });
@@ -228,9 +259,15 @@
 
         if (event.key === 'Enter') {
             event.preventDefault();
-            var target = activeIndex >= 0 ? items[activeIndex] : items[0];
-            if (target) {
-                window.location.href = target.href;
+            /* KCP-074: Enter on a highlighted row opens it; otherwise Enter
+               opens the full results page for the current query. */
+            if (activeIndex >= 0 && items[activeIndex]) {
+                window.location.href = items[activeIndex].href;
+                return;
+            }
+            var query = input.value.trim();
+            if (fullUrl && query.length >= 2) {
+                window.location.href = fullUrl + '?q=' + encodeURIComponent(query);
             }
         }
     });

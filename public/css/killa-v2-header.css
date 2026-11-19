@@ -243,6 +243,15 @@ body .kgs-result-subtitle {
     text-overflow: ellipsis;
 }
 
+/* KCP-074: attached-items line on user results (checked-out devices etc.) */
+body .kgs-result-attached {
+    font-size: 10.5px;
+    color: var(--k-info);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 body .kgs-status {
     padding: 14px 12px;
     font-size: 12px;
