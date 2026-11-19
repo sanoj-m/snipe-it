@@ -194,6 +194,13 @@ Notable console commands (~60): `LdapSync`, `LdapTroubleshooter`,
   the server does NOT reach users until `app_version` in `config/version.php`
   is bumped (the deploy script stamps it on full deploys) or the CF cache is
   purged. Verify with `curl -sI <url> | grep cf-cache-status`.
+- **Hot patches are wiped by any full deploy** (`snipeit-apply-update.sh`
+  rsyncs the whole app from a git-archive tarball): a hot-copied file only
+  survives until the next deploy, so commit locally and follow hot patches
+  with a full deploy from HEAD in the same session (learned 2026-11-19 when a
+  morning deploy reverted the incident-desk patch). Long plink remote
+  commands can get path-mangled on this Windows machine — base64-encode the
+  remote command and pipe through `base64 -d | bash`.
 - **LAN access (2026-11-17):** the app also answers at
   `http://asset.ad.killadesign.com` and `http://40.30.20.6` (KCP-050
   `APP_ALT_HOSTS`; nginx `conf.d/snipeit.conf` is the authoritative vhost —
