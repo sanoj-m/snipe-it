@@ -136,6 +136,10 @@ class LicensesController extends Controller
         // absence to false so the flag really flips off. The setter
         // normalizes the truthy branch.
         $license->requestable = $request->input('requestable', false);
+        // [license-spend addon] BEGIN — checkboxes omitted from POST when unchecked
+        $license->is_subscription = $request->input('is_subscription', false);
+        $license->is_ai = $request->input('is_ai', false);
+        // [license-spend addon] END
 
         if ($request->input('redirect_option') === 'back') {
             session()->put(['redirect_option' => 'index']);
@@ -236,6 +240,10 @@ class LicensesController extends Controller
         // Unchecked checkbox is omitted from the POST body; coerce
         // absence to false so unchecking really turns the flag off.
         $license->requestable = $request->input('requestable', false);
+        // [license-spend addon] BEGIN — checkboxes omitted from POST when unchecked
+        $license->is_subscription = $request->input('is_subscription', false);
+        $license->is_ai = $request->input('is_ai', false);
+        // [license-spend addon] END
 
         session()->put(['redirect_option' => $request->input('redirect_option')]);
 

@@ -12,6 +12,8 @@ Multi-DB (MySQL/PostgreSQL/SQLite) compatibility verified by CI.
 | 2026_10_21_100000_killa_add_currency_to_licenses_table | `licenses.currency` | char(3) nullable, after purchase_cost | Yes | Drops column | Per-license currency (KCP-040–043); rates in settings |
 | 2026_10_21_100001_killa_add_exchange_rates_to_settings_table | `settings.currency_exchange_rates` | text nullable (JSON `{USD: 3.67, …}`), after default_currency | Yes | Drops column | `App\Services\Killa\CurrencyConverter`; Renewal Tracker AED equivalents |
 | 2026_10_21_100002_killa_add_location_to_licenses_table | `licenses.location_id` | unsignedBigInteger nullable, after company_id | Yes | Drops column | License location (KLD-CPT / KLD-Headoffice); Renewal Tracker Location column |
+| 2026_11_19_100000_killa_create_license_purchases_table | `license_purchases` | id, indexed `license_id` (no FK), `purchase_date`, nullable `period_start`/`period_end`, `term_months` smallint, `amount`/`amount_aed`/`ai_amount_aed` decimal(14,2), `currency` char(3), `invoice_file`, `notes`, `created_by`, timestamps, softDeletes | Yes (hasTable) | Drops table | License Subscription & Spend Tracking (KCP-067–073); invoices on `local` disk under `private_uploads/licenses/{id}/purchases` |
+| 2026_11_19_100001_killa_add_subscription_flags_to_licenses_table | `licenses.is_subscription`, `licenses.is_ai` | boolean NOT NULL default 0 (after `perpetual`) | Yes (hasColumn up+down) | Drops columns | Subscription + AI flags feeding spend/forecast/AI reports |
 
 ## Package migrations (packages/floating-licenses/database/migrations/)
 
@@ -30,6 +32,8 @@ Multi-DB (MySQL/PostgreSQL/SQLite) compatibility verified by CI.
 - `perpetual` (on licenses) → License model cast/rule/mutator + `isExpired()`, web+API controllers, importer, transformer, edit view.
 - `currency` (on licenses) → License model rule/fillable, license edit form select, `LicensesController` store/update, Renewal Tracker display.
 - `currency_exchange_rates` → `App\Services\Killa\CurrencyConverter`, `Killa\CurrencySettingsController`, `killa/settings/currency` view, Renewal Tracker AED equivalents.
+- `license_purchases` → `App\Models\LicensePurchase` + `License::purchases()` (KCP-067), `Killa\LicensePurchasesController` (CRUD + invoice download), `Killa\LicenseSpendReportController` (yearly/monthly/forecast/AI/attention reports + CSV), `App\Services\Killa\LicenseSpendCalculator`, dashboard widget `killa/dashboard/_license-spend`.
+- `is_subscription` / `is_ai` (on licenses) → License model casts/rules/fillable/mutators (KCP-067), both license edit forms (KCP-069 + killa/licenses/edit), forecast/AI/attention filtering in LicenseSpendCalculator.
 
 ## Collision-risk notes
 

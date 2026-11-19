@@ -104,6 +104,36 @@ Route::group(['prefix' => 'licenses', 'middleware' => ['auth']], function () {
     Route::get('ux-toggle', [\App\Http\Controllers\Killa\LicenseOrderController::class, 'toggleUx'])
         ->name('licenses.ux-toggle');
     // [killa-v2 renewal tracker] / [killa-ux] END
+
+    // [license-spend addon] BEGIN — purchases/renewals per license (Killa-owned controller)
+    Route::get('{license}/purchases/create', [\App\Http\Controllers\Killa\LicensePurchasesController::class, 'create'])
+        ->where('license', '[0-9]+')
+        ->name('licenses.purchases.create')
+        ->breadcrumbs(fn (Trail $trail, License $license) => $trail->parent('licenses.show', $license)
+            ->push(trans('killa.license_spend.add_purchase'), route('licenses.purchases.create', $license)));
+
+    Route::post('{license}/purchases', [\App\Http\Controllers\Killa\LicensePurchasesController::class, 'store'])
+        ->where('license', '[0-9]+')
+        ->name('licenses.purchases.store');
+
+    Route::get('{license}/purchases/{purchase}/edit', [\App\Http\Controllers\Killa\LicensePurchasesController::class, 'edit'])
+        ->where(['license' => '[0-9]+', 'purchase' => '[0-9]+'])
+        ->name('licenses.purchases.edit')
+        ->breadcrumbs(fn (Trail $trail, License $license) => $trail->parent('licenses.show', $license)
+            ->push(trans('killa.license_spend.edit_purchase'), '#'));
+
+    Route::put('{license}/purchases/{purchase}', [\App\Http\Controllers\Killa\LicensePurchasesController::class, 'update'])
+        ->where(['license' => '[0-9]+', 'purchase' => '[0-9]+'])
+        ->name('licenses.purchases.update');
+
+    Route::delete('{license}/purchases/{purchase}', [\App\Http\Controllers\Killa\LicensePurchasesController::class, 'destroy'])
+        ->where(['license' => '[0-9]+', 'purchase' => '[0-9]+'])
+        ->name('licenses.purchases.destroy');
+
+    Route::get('{license}/purchases/{purchase}/invoice', [\App\Http\Controllers\Killa\LicensePurchasesController::class, 'invoice'])
+        ->where(['license' => '[0-9]+', 'purchase' => '[0-9]+'])
+        ->name('licenses.purchases.invoice');
+    // [license-spend addon] END
 });
 
 Route::resource('licenses', Licenses\LicensesController::class, [

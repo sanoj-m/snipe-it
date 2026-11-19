@@ -492,6 +492,13 @@
                                     {{ trans('general.accessory_report') }}
                                 </a>
                             </li>
+                            {{-- [license-spend addon] BEGIN --}}
+                            <li style="--i:10;" {!! (request()->is('reports/license-spend*') ? ' class="active" aria-current="page"' : '') !!}>
+                                <a href="{{ route('reports.license-spend') }}">
+                                    {{ trans('killa.license_spend.report_title') }}
+                                </a>
+                            </li>
+                            {{-- [license-spend addon] END --}}
                         </ul>
                     </li>
                 @endcan

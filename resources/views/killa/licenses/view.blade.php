@@ -152,6 +152,14 @@
                     @endcan
 
                     <x-tabs.files-tab :item="$license" count="{{ $license->uploads()->count() }}"/>
+                    {{-- [license-spend addon] BEGIN --}}
+                    <x-tabs.nav-item
+                            name="purchases"
+                            icon_type="money"
+                            label="{{ trans('killa.license_spend.purchases_tab') }}"
+                            count="{{ $license->purchases()->count() }}"
+                    />
+                    {{-- [license-spend addon] END --}}
                     <x-tabs.history-tab count="{{ $license->history()->count() }}" :model="$license"/>
                     <x-tabs.upload-tab :item="$license"/>
                 </x-slot:tabnav>
@@ -229,6 +237,16 @@
                         <x-table.files object_type="licenses" :object="$license" />
                     </x-tabs.pane>
                     <!-- end files tab pane -->
+
+                    {{-- [license-spend addon] BEGIN --}}
+                    <x-tabs.pane name="purchases">
+                        <x-slot:table_header>
+                            {{ trans('killa.license_spend.purchases_tab') }}
+                        </x-slot:table_header>
+
+                        @include('killa/licenses/purchases/_section')
+                    </x-tabs.pane>
+                    {{-- [license-spend addon] END --}}
 
                 </x-slot:tabpanes>
             </x-tabs>

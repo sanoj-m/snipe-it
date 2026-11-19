@@ -153,6 +153,13 @@
         @endcan
     </div>
 
+    {{-- [license-spend addon] Licenses & Subscriptions widget --}}
+    @if ($licenseSpend)
+        <div class="row dashboard-row-eq k-insights-row">
+            @include('killa/dashboard/_license-spend')
+        </div>
+    @endif
+
     <div class="row dashboard-row-eq k-insights-row">
         @can('view', \App\Models\Asset::class)
             <div class="col-md-8 col-sm-12">

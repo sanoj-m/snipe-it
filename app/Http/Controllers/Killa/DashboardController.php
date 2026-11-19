@@ -15,6 +15,7 @@ use App\Models\License;
 use App\Models\LicenseSeat;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\Killa\LicenseSpendCalculator;
 use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -92,9 +93,18 @@ class DashboardController extends Controller
             ];
         }
 
+        // [license-spend addon] Licenses & Subscriptions widget data
+        $licenseSpend = null;
+        if (Gate::allows('view', License::class)) {
+            $licenseSpend = LicenseSpendCalculator::dashboardStats(
+                License::with('purchases')->get()
+            );
+        }
+
         return view('killa.dashboard', [
             'metrics' => $metrics,
             'assetMovement' => $canViewAssets ? $this->assetMovement() : null,
+            'licenseSpend' => $licenseSpend,
         ]);
     }
 

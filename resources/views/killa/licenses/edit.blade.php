@@ -207,6 +207,21 @@
                         :help_text="trans('admin/licenses/form.perpetual_help')"
                     />
 
+                    {{-- [license-spend addon] BEGIN --}}
+                    <x-form.checkbox-row
+                        name="is_subscription"
+                        :label="trans('killa.license_spend.is_subscription')"
+                        :item="$item"
+                        :help_text="trans('killa.license_spend.is_subscription_help')"
+                    />
+                    <x-form.checkbox-row
+                        name="is_ai"
+                        :label="trans('killa.license_spend.is_ai')"
+                        :item="$item"
+                        :help_text="trans('killa.license_spend.is_ai_help')"
+                    />
+                    {{-- [license-spend addon] END --}}
+
                     <x-form.row
                         :label="trans('admin/licenses/form.termination_date')"
                         name="termination_date"

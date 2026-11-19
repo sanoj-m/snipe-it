@@ -782,6 +782,35 @@ Route::group(['prefix' => 'reports', 'middleware' => ['auth']], function () {
     Route::get('export/licenses', [ReportsController::class, 'exportLicenseReport'])
         ->name('reports/export/licenses');
 
+    // [license-spend addon] BEGIN — License Spend reports (Killa-owned controller)
+    Route::get('license-spend', [\App\Http\Controllers\Killa\LicenseSpendReportController::class, 'index'])
+        ->name('reports.license-spend')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
+            ->push(trans('general.reports'), route('reports.index'))
+            ->push(trans('killa.license_spend.report_title'), route('reports.license-spend')));
+
+    Route::get('license-spend/forecast', [\App\Http\Controllers\Killa\LicenseSpendReportController::class, 'forecast'])
+        ->name('reports.license-spend.forecast')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
+            ->push(trans('general.reports'), route('reports.index'))
+            ->push(trans('killa.license_spend.forecast_title'), route('reports.license-spend.forecast')));
+
+    Route::get('license-spend/ai', [\App\Http\Controllers\Killa\LicenseSpendReportController::class, 'ai'])
+        ->name('reports.license-spend.ai')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
+            ->push(trans('general.reports'), route('reports.index'))
+            ->push(trans('killa.license_spend.ai_title'), route('reports.license-spend.ai')));
+
+    Route::get('license-spend/attention', [\App\Http\Controllers\Killa\LicenseSpendReportController::class, 'attention'])
+        ->name('reports.license-spend.attention')
+        ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')
+            ->push(trans('general.reports'), route('reports.index'))
+            ->push(trans('killa.license_spend.attention_title'), route('reports.license-spend.attention')));
+
+    Route::get('export/license-spend', [\App\Http\Controllers\Killa\LicenseSpendReportController::class, 'export'])
+        ->name('reports.license-spend.export');
+    // [license-spend addon] END
+
     Route::get('accessories', [ReportsController::class, 'getAccessoryReport'])
         ->name('reports/accessories')
         ->breadcrumbs(fn (Trail $trail) => $trail->parent('home')

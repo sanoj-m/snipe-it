@@ -66,6 +66,10 @@ class License extends Depreciable
         'company_id' => 'integer',
         'requestable' => 'boolean',
         'perpetual' => 'boolean', // [perpetual-licenses addon]
+        // [license-spend addon] BEGIN
+        'is_subscription' => 'boolean',
+        'is_ai' => 'boolean',
+        // [license-spend addon] END
     ];
 
     protected $rules = [
@@ -85,6 +89,10 @@ class License extends Depreciable
         'perpetual' => 'nullable|boolean', // [perpetual-licenses addon]
         'currency' => 'nullable|string|size:3', // [killa currency]
         'location_id' => 'nullable|integer|exists:locations,id', // [killa license-location]
+        // [license-spend addon] BEGIN
+        'is_subscription' => 'nullable|boolean',
+        'is_ai' => 'nullable|boolean',
+        // [license-spend addon] END
     ];
 
     /**
@@ -117,6 +125,10 @@ class License extends Depreciable
         'termination_date',
         'min_amt',
         'requestable',
+        // [license-spend addon] BEGIN
+        'is_subscription',
+        'is_ai',
+        // [license-spend addon] END
     ];
 
     use Searchable;
@@ -880,6 +892,29 @@ class License extends Depreciable
     {
         return $this->hasMany(LicenseSeat::class);
     }
+
+    // [license-spend addon] BEGIN
+    public function purchases()
+    {
+        return $this->hasMany(LicensePurchase::class, 'license_id')->orderBy('purchase_date');
+    }
+
+    public function setIsSubscriptionAttribute($value)
+    {
+        if ($value == '') {
+            $value = null;
+        }
+        $this->attributes['is_subscription'] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+
+    public function setIsAiAttribute($value)
+    {
+        if ($value == '') {
+            $value = null;
+        }
+        $this->attributes['is_ai'] = filter_var($value, FILTER_VALIDATE_BOOLEAN);
+    }
+    // [license-spend addon] END
 
     /**
      * Establishes the license -> supplier relationship
