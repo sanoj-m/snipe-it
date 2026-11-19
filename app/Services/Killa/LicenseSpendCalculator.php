@@ -5,7 +5,6 @@ namespace App\Services\Killa;
 use App\Models\License;
 use App\Models\LicensePurchase;
 use Carbon\Carbon;
-use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Collection as SupportCollection;
 
 /**
