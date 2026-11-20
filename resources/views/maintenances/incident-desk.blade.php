@@ -46,6 +46,11 @@
             transform: translateY(-1px);
             box-shadow: 0 0 26px -8px color-mix(in srgb, var(--tile) 50%, transparent);
         }
+        .incident-desk .id-tile--link{ cursor: pointer; }
+        .incident-desk .id-tile--link:focus-visible{ outline: 2px solid var(--tile); outline-offset: 2px; }
+        .incident-desk .id-tile--link.active{
+            box-shadow: 0 0 0 2px var(--tile), 0 0 26px -8px color-mix(in srgb, var(--tile) 50%, transparent);
+        }
         .incident-desk .id-tile-glow{ /* decorative corner blob */
             position: absolute; bottom: -22px; right: -22px; width: 84px; height: 84px;
             border-radius: 50%; background: var(--tile); opacity: .15; filter: blur(22px);
@@ -285,6 +290,13 @@
             <span class="id-tile-number" id="idStatToday">0</span>
             <span class="id-tile-label">{{ trans('admin/incident_desk/general.logged_today') }}</span>
         </div>
+        <div class="id-tile id-tile--link" id="idTileUntagged" style="--tile:#64748b;" role="button" tabindex="0"
+             title="{{ trans('admin/incident_desk/general.untagged_hint') }}">
+            <span class="id-tile-glow" aria-hidden="true"></span>
+            <span class="id-tile-icon" aria-hidden="true"><i class="fas fa-link-slash"></i></span>
+            <span class="id-tile-number" id="idStatUntagged">0</span>
+            <span class="id-tile-label">{{ trans('admin/incident_desk/general.untagged') }}</span>
+        </div>
     </div>
 
     <div class="id-grid">
@@ -377,6 +389,7 @@
                             <div class="filter-tab" data-f="Closed">{{ trans('admin/incident_desk/general.closed') }}</div>
                             <div class="filter-tab" data-f="Open">{{ trans('admin/incident_desk/general.open') }}</div>
                             <div class="filter-tab" data-f="Need Vendor">{{ trans('admin/incident_desk/general.vendor') }}</div>
+                            <div class="filter-tab" data-f="Untagged">{{ trans('admin/incident_desk/general.untagged') }}</div>
                         </div>
                     </div>
                     <div class="count-line" id="idCountLine"></div>
@@ -460,6 +473,7 @@
         document.getElementById('idStatOpen').textContent = tickets.filter(t=>t.status==='Open').length;
         document.getElementById('idStatVendor').textContent = tickets.filter(t=>t.status==='Need Vendor').length;
         document.getElementById('idStatToday').textContent = tickets.filter(t=>(t.created_at||'').slice(0,10)===today).length;
+        document.getElementById('idStatUntagged').textContent = tickets.filter(t=>!t.asset_id).length;
     }
 
     function renderDonut(){
@@ -513,7 +527,8 @@
 
     function renderList(){
         let list = tickets.slice().sort((a,b)=> (b.created_at||'').localeCompare(a.created_at||'') || b.id-a.id);
-        if(currentFilter !== 'All') list = list.filter(t=>t.status===currentFilter);
+        if(currentFilter === 'Untagged') list = list.filter(t=>!t.asset_id);
+        else if(currentFilter !== 'All') list = list.filter(t=>t.status===currentFilter);
         if(currentDate) list = list.filter(t=>(t.created_at||'').slice(0,10)===currentDate);
         if(currentSearch.trim()){
             const q = currentSearch.trim().toLowerCase();
@@ -811,13 +826,27 @@
     });
 
     document.getElementById('idSearchInput').addEventListener('input', (e)=>{ currentSearch = e.target.value; renderList(); });
+    function setFilter(f){
+        currentFilter = f;
+        document.querySelectorAll('#idFilterTabs .filter-tab').forEach(c=>c.classList.toggle('active', c.dataset.f===f));
+        const untaggedTile = document.getElementById('idTileUntagged');
+        if(untaggedTile) untaggedTile.classList.toggle('active', f==='Untagged');
+        renderList();
+    }
+
     document.getElementById('idFilterTabs').addEventListener('click', (e)=>{
         const el = e.target.closest('.filter-tab');
         if(!el) return;
-        document.querySelectorAll('.filter-tab').forEach(c=>c.classList.remove('active'));
-        el.classList.add('active');
-        currentFilter = el.dataset.f;
-        renderList();
+        setFilter(el.dataset.f);
+    });
+
+    const untaggedTile = document.getElementById('idTileUntagged');
+    function toggleUntagged(){
+        setFilter(currentFilter === 'Untagged' ? 'All' : 'Untagged');
+    }
+    untaggedTile.addEventListener('click', toggleUntagged);
+    untaggedTile.addEventListener('keydown', (e)=>{
+        if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleUntagged(); }
     });
     document.getElementById('idDateJump').addEventListener('change', (e)=>{ currentDate = e.target.value; renderList(); renderDonut(); });
 

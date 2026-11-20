@@ -49,4 +49,6 @@ return [
     'today' => 'today',
     'all_time' => 'all time',
     'tickets_shown' => 'ticket(s) shown',
+    'untagged' => 'Untagged',
+    'untagged_hint' => 'Tickets with no device linked — click to filter, click again to clear',
 ];
