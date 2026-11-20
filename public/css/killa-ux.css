@@ -880,3 +880,51 @@ html[data-theme='dark'] .kx {
     .kx-hero { flex-direction: column; }
     .kx-hero-actions { margin-left: 0; }
 }
+
+/* ---------- Compact density variant (.kx-compact) — denser list pages ----------
+   Opt-in: add kx-compact next to .kx on the page wrapper. Same visual
+   language, tighter metrics so large lists (page size 200) fit more on
+   screen. Used by the Licenses index (KCP-003 redesign). */
+.kx-compact { padding: var(--kx-space-4); }
+
+.kx-compact .kx-kpis {
+    gap: var(--kx-space-2);
+    margin-bottom: var(--kx-space-3);
+}
+
+.kx-compact .kx-kpi {
+    display: flex;
+    align-items: baseline;
+    gap: var(--kx-space-2);
+    padding: var(--kx-space-2) var(--kx-space-3);
+}
+
+.kx-compact .kx-kpi-label { margin-bottom: 0; }
+
+.kx-compact .kx-kpi-value { font-size: var(--kx-text-lg); }
+
+.kx-compact .kx-kpi-sub { margin-top: 0; margin-left: auto; text-align: right; }
+
+.kx-compact .kx-toolbar { margin-bottom: var(--kx-space-3); }
+
+.kx-compact .kx-btn { padding: 4px var(--kx-space-2); }
+
+.kx-compact .kx-search input[type='search'],
+.kx-compact .kx-search input[type='text'] { padding: 4px var(--kx-space-2); }
+
+.kx-compact .kx-bulkbar { padding: var(--kx-space-1) var(--kx-space-3); margin-bottom: var(--kx-space-3); }
+
+.kx-compact .kx-groups { gap: var(--kx-space-3); }
+
+.kx-compact .kx-group-head { padding: var(--kx-space-2) var(--kx-space-3); }
+
+.kx-compact .kx-group-head h3 { font-size: var(--kx-text-sm); }
+
+.kx-compact .kx-table th,
+.kx-compact .kx-table td { padding: 3px var(--kx-space-2); }
+
+.kx-compact .kx-icon-btn { width: 24px; height: 24px; }
+
+.kx-compact .kx-seats { min-width: 70px; }
+
+.kx-compact .kx-pagination { margin-top: var(--kx-space-3); }
