@@ -92,18 +92,8 @@ Route::group(['prefix' => 'licenses', 'middleware' => ['auth']], function () {
 
     Route::post('bulk/delete', [Licenses\BulkLicensesController::class, 'destroy'])->name('licenses.bulk.delete');
 
-    // [killa-v2 renewal tracker] / [killa-ux] BEGIN — tracker merged into the
-    // licenses list (KCP-046); keep the old URL as a redirect for bookmarks.
+    // [killa-v2 renewal tracker] keep the old URL as a redirect for bookmarks.
     Route::redirect('renewals', 'licenses')->name('licenses.renewals');
-    // [killa-ux] drag-to-reorder persistence for the redesigned list (KCP-047);
-    // recovers the RenewalTrackerController@reorder endpoint deleted with the
-    // tracker merge.
-    Route::post('reorder', [\App\Http\Controllers\Killa\LicenseOrderController::class, 'reorder'])
-        ->name('licenses.reorder');
-    // [killa-ux] per-session old/new design toggle for the licenses section.
-    Route::get('ux-toggle', [\App\Http\Controllers\Killa\LicenseOrderController::class, 'toggleUx'])
-        ->name('licenses.ux-toggle');
-    // [killa-v2 renewal tracker] / [killa-ux] END
 
     // [license-spend addon] BEGIN — purchases/renewals per license (Killa-owned controller)
     Route::get('{license}/purchases/create', [\App\Http\Controllers\Killa\LicensePurchasesController::class, 'create'])

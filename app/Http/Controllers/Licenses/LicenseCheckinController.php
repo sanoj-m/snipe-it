@@ -40,12 +40,7 @@ class LicenseCheckinController extends Controller
 
         $checkoutLog = $licenseSeat->checkouts()->first();
 
-        // [killa-ux] BEGIN — Killa checkin view, only when the session toggle
-        // flag `killa_licenses_ux` is ON; upstream is default.
-        $view = session('killa_licenses_ux', false) ? 'killa/licenses/checkin' : 'licenses/checkin';
-        // [killa-ux] END
-
-        return view($view, compact('licenseSeat'))
+        return view('licenses/checkin', compact('licenseSeat'))
             ->with('backto', $backTo)
             ->with('checkoutLog', $checkoutLog);
     }

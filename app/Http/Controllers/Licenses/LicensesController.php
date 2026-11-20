@@ -41,16 +41,6 @@ class LicensesController extends Controller
     {
         $this->authorize('view', License::class);
 
-        // [killa-ux] BEGIN — redesigned server-rendered licenses list (KCP-003
-        // amendment), rendered only when the per-session toggle
-        // (licenses.ux-toggle, flag `killa_licenses_ux`) is ON; the upstream
-        // bootstrap-table view below is the default. Data pipeline lives in
-        // App\Support\Killa\LicenseListData.
-        if (session('killa_licenses_ux', false)) {
-            return view('killa/licenses/index', \App\Support\Killa\LicenseListData::forIndex($request));
-        }
-        // [killa-ux] END
-
         return view('licenses/index');
     }
 
@@ -75,12 +65,7 @@ class LicensesController extends Controller
             '0' => 'No',
         ];
 
-        // [killa-ux] BEGIN — Killa form view (KCP-019 amendment), only when the
-        // session toggle flag `killa_licenses_ux` is ON; upstream is default.
-        $view = session('killa_licenses_ux', false) ? 'killa/licenses/edit' : 'licenses/edit';
-        // [killa-ux] END
-
-        return view($view)
+        return view('licenses/edit')
             ->with('depreciation_list', Helper::depreciationList())
             ->with('maintained_list', $maintained_list)
             ->with('item', new License);
@@ -183,12 +168,7 @@ class LicensesController extends Controller
             '0' => 'No',
         ];
 
-        // [killa-ux] BEGIN — Killa form view (KCP-019 amendment), only when the
-        // session toggle flag `killa_licenses_ux` is ON; upstream is default.
-        $view = session('killa_licenses_ux', false) ? 'killa/licenses/edit' : 'licenses/edit';
-        // [killa-ux] END
-
-        return view($view)
+        return view('licenses/edit')
             ->with('item', $license)
             ->with('depreciation_list', Helper::depreciationList())
             ->with('maintained_list', $maintained_list);
@@ -332,12 +312,7 @@ class LicensesController extends Controller
 
         $this->authorize('view', $license);
 
-        // [killa-ux] BEGIN — Killa detail view (KCP-018 amendment), only when
-        // the session toggle flag `killa_licenses_ux` is ON; upstream default.
-        $view = session('killa_licenses_ux', false) ? 'killa/licenses/view' : 'licenses.view';
-        // [killa-ux] END
-
-        return view($view, compact('license'))
+        return view('licenses.view', compact('license'))
             ->with('users_count', $users_count)
             ->with('total_seats_count', $total_seats_count)
             ->with('available_seats_count', $available_seats_count)
@@ -374,12 +349,7 @@ class LicensesController extends Controller
         $license->serial = null;
 
         // Show the page
-        // [killa-ux] BEGIN — Killa form view (KCP-019 amendment), only when the
-        // session toggle flag `killa_licenses_ux` is ON; upstream is default.
-        $view = session('killa_licenses_ux', false) ? 'killa/licenses/edit' : 'licenses/edit';
-        // [killa-ux] END
-
-        return view($view)
+        return view('licenses/edit')
             ->with('depreciation_list', Helper::depreciationList())
             ->with('item', $license)
             ->with('maintained_list', $maintained_list);

@@ -39,9 +39,7 @@
     {{-- [killa-v2 design-toggle] KCP-054: Classic design = genuine stock
          Snipe-IT chrome — the whole v2 overlay layer (fonts, theme, sidebar,
          forms, tables, widgets, overlays, dark) is skipped server-side when
-         the killa_design cookie is 'classic'. killa-ux.css stays loaded in
-         both designs (scoped to .kx wrappers) so the optional licenses
-         redesign keeps its styles. --}}
+         the killa_design cookie is 'classic'. --}}
     @if (request()->cookie('killa_design') !== 'classic')
     {{-- [killa-v2] fonts: self-hosted Inter (UI) + Inter Tight (display), no Google CDN (UI-A-08) --}}
     <link rel="stylesheet" href="{{ url('css/killa-v2-fonts.css') }}?v={{ config('version.app_version') }}">
@@ -57,8 +55,6 @@
     <link rel="stylesheet" href="{{ url('css/killa-v2-overlays.css') }}?v={{ config('version.app_version') }}">
     <link rel="stylesheet" href="{{ url('css/killa-v2-dark.css') }}?v={{ config('version.app_version') }}">
     @endif
-    {{-- [killa-ux] Licenses redesign design system (KCP-048): self-contained layer, only active inside .kx wrapper containers. --}}
-    <link rel="stylesheet" href="{{ url('css/killa-ux.css') }}?v={{ config('version.app_version') }}">
 
     {{-- page level css --}}
     @stack('css')
@@ -656,11 +652,6 @@
                     <div id="{!! (request()->is('*api*') ? 'app' : 'webui') !!}">
                         @yield('content')
                     </div>
-
-                    {{-- [killa-ux] old/new design switch pill on licenses pages (KCP-052) --}}
-                    @if (request()->is('licenses*') && auth()->check() && auth()->user()->can('view', \App\Models\License::class))
-                        @include('killa/licenses/_ux-toggle')
-                    @endif
 
                 </section>
 

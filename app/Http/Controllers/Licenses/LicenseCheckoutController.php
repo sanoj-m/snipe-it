@@ -72,12 +72,7 @@ class LicenseCheckoutController extends Controller
                 $license->id,
             );
 
-            // [killa-ux] BEGIN — Killa checkout view (KCP-020 amendment), only
-            // when session toggle `killa_licenses_ux` is ON; upstream default.
-            $view = session('killa_licenses_ux', false) ? 'killa/licenses/checkout' : 'licenses/checkout';
-            // [killa-ux] END
-
-            return view($view, compact('license'))
+            return view('licenses/checkout', compact('license'))
                 ->with('checkoutRequest', $context['checkoutRequest'])
                 ->with('otherPendingRequests', $context['otherPendingRequests']);
         }
