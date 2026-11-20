@@ -10,10 +10,12 @@
             </div>
             <a href="{{ route('reports.license-spend.attention') }}" class="k-insights-period" data-tooltip="true"
                title="{{ trans('killa.license_spend.attention_title') }}">
+                {{-- [killa-fix-ui] quiet text instead of glowing pills;
+                     the accent only appears when something needs attention --}}
                 @if ($licenseSpend['attention_count'] > 0)
-                    <span class="label label-danger">{{ trans('killa.license_spend.attention_badge', ['count' => number_format($licenseSpend['attention_count'])]) }}</span>
+                    <span style="color: var(--k-accent);">{{ trans('killa.license_spend.attention_badge', ['count' => number_format($licenseSpend['attention_count'])]) }}</span>
                 @else
-                    <span class="label label-success">{{ trans('killa.all_clear') }}</span>
+                    <span>{{ trans('killa.all_clear') }}</span>
                 @endif
             </a>
         </div>

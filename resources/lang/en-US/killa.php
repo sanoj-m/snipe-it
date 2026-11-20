@@ -3,10 +3,10 @@
 return [
     'asset_movement' => 'Asset movement',
     'asset_movement_chart' => 'Line chart of asset checkouts and check-ins for the last 30 days',
-    'asset_movement_description' => 'Checkouts and check-ins over the last 30 days.',
+    'asset_movement_description' => 'Checkouts and check-ins over the last 30 days',
     'asset_status_chart' => 'Doughnut chart of assets by status',
     'chart_unavailable' => 'Chart data could not be loaded. Try again later.',
-    'insights_description' => 'A clearer view of inventory, activity, and work that needs attention.',
+    'insights_description' => 'A clearer view of inventory, activity, and work that needs attention',
     'insights_title' => 'Dashboard',
     'inventory_overview' => 'Inventory overview',
     // [killa lan-switch banner] KCP-060
@@ -195,7 +195,7 @@ return [
         'reason_perpetual_no_cost' => 'Perpetual license with no purchase cost',
         'attention_badge' => ':count need attention',
         'widget_title' => 'Licenses & Subscriptions',
-        'widget_description' => 'Subscription spend, renewals, and items needing attention.',
+        'widget_description' => 'Subscription spend, renewals, and items needing attention',
         'widget_total_licenses' => 'licenses',
         'widget_total_tools' => 'subscription tools',
         'widget_ai' => 'AI solutions',

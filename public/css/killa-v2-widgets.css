@@ -205,10 +205,8 @@ body .fc .fc-list-day-cushion {
 }
 
 body .fc .fc-col-header-cell-cushion {
-    font-size: 11px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    font-size: 12px;
+    font-weight: 500;
     color: var(--k-text-muted);
 }
 
@@ -227,10 +225,9 @@ body .fc .fc-daygrid-day-number {
 
 body .fc .fc-list-day-text,
 body .fc .fc-list-day-side-text {
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+    text-transform: none;
 }
 
 body .fc a {
@@ -702,16 +699,14 @@ body .k-insights-metric-label {
     font-weight: 600;
 }
 
+/* [killa-fix-ui] icon takes the muted text role, no tinted tile — one
+   accent per screen, and the figure carries it, not six competing chips */
 body .k-insights-metric-icon {
     display: inline-flex;
-    flex: 0 0 30px;
+    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
-    width: 30px;
-    height: 30px;
-    background: var(--k-accent-ring);
-    border-radius: var(--k-radius-sm);
-    color: var(--k-accent);
+    color: var(--k-text-muted);
     font-size: 14px;
 }
 
@@ -855,10 +850,8 @@ body .k-insights-chart-center strong {
 }
 
 body .k-insights-chart-center span {
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: .08em;
-    text-transform: uppercase;
+    font-size: 12px;
+    font-weight: 500;
     color: var(--k-text-muted);
 }
 
@@ -914,7 +907,7 @@ body .k-insights-legend-dot.is-checkout {
 }
 
 body .k-insights-legend-dot.is-checkin {
-    background: var(--k-info);
+    background: var(--k-text-muted);
 }
 
 @media (max-width: 767px) {
@@ -943,4 +936,28 @@ body .k-insights-legend-dot.is-checkin {
         break-inside: avoid;
         box-shadow: none;
     }
+}
+
+
+/* [killa-fix-ui] LAN switch banner (KCP-060): quiet surface with a red
+   edge instead of the shouty cyan alert-info strip — it is a notice,
+   not an alarm */
+body #killa-lan-banner.alert-info {
+    background: var(--k-surface);
+    border: 1px solid var(--k-border);
+    border-left: 3px solid var(--k-accent);
+    border-radius: var(--k-radius-sm);
+    box-shadow: var(--k-shadow-1);
+    color: var(--k-text);
+}
+body #killa-lan-banner.alert-info .fa-network-wired {
+    color: var(--k-text-muted);
+}
+body #killa-lan-banner.alert-info .close {
+    color: var(--k-text-muted);
+    opacity: 1;
+    text-shadow: none;
+}
+body #killa-lan-banner.alert-info .close:hover {
+    color: var(--k-text);
 }

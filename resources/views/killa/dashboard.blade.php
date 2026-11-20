@@ -402,8 +402,10 @@
                         {
                             label: '{{ trans('general.checkins') }}',
                             data: assetMovement.checkins,
-                            borderColor: cssVar('--k-info'),
-                            pointBackgroundColor: cssVar('--k-info'),
+                            // [killa-fix-ui] neutral second series — the
+                            // accent belongs to checkouts alone
+                            borderColor: cssVar('--k-text-muted'),
+                            pointBackgroundColor: cssVar('--k-text-muted'),
                             borderWidth: 2,
                             pointRadius: 0,
                             pointHoverRadius: 4,
@@ -483,6 +485,23 @@
                 var statusChartMode = '{{ $snipeSettings->dash_chart_type == 'name' ? 'name' : 'type' }}';
                 var statusLabelMap = @json($statusLabelMap);
                 var hardwareBase = '{{ route('hardware.index') }}';
+
+                // [killa-fix-ui] one accent per chart: Deployed carries the
+                // brand red, every other status steps down the neutral ramp
+                // instead of a rainbow of statuslabel colors
+                var killaDeployedLabel = '{{ trans('general.deployed') }}';
+                var killaNeutralSteps = ['#9ca3af', '#c4c9d1', '#6b7280', '#d9dce1', '#4b5563'];
+                var killaNeutralIndex = 0;
+                var killaSliceColors = (data.labels || []).map(function (label) {
+                    if (label.indexOf(killaDeployedLabel) === 0) return cssVar('--k-accent');
+                    var color = killaNeutralSteps[killaNeutralIndex % killaNeutralSteps.length];
+                    killaNeutralIndex++;
+                    return color;
+                });
+                if (data.datasets && data.datasets[0]) {
+                    data.datasets[0].backgroundColor = killaSliceColors;
+                    data.datasets[0].borderColor = killaSliceColors;
+                }
 
                 new Chart(statusCanvas.getContext('2d'), {
                     type: 'doughnut',
