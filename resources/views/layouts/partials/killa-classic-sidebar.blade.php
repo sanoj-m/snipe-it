@@ -204,6 +204,15 @@
                                             </a>
                                         </li>
                                     @endcan
+                                    {{-- [incident-desk addon] --}}
+                                        @can('view', \App\Models\Asset::class)
+                                            <li{!! (request()->is('maintenances/incident-desk*') ? ' class="active" aria-current="page"' : '') !!}>
+                                                <a href="{{ route('maintenances.incident-desk') }}">
+                                                    <i class="fas fa-life-ring fa-fw text-grey" aria-hidden="true"></i>
+                                                    {{ trans('admin/incident_desk/general.incident_desk') }}
+                                            </a>
+                                        </li>
+                                    @endcan
                                 </ul>
                                 </li>
                             @endif
