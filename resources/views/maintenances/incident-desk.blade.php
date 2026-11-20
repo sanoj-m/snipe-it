@@ -28,10 +28,10 @@
 
         /* ---------- header stat tiles (full-width strip) ---------- */
         .incident-desk .id-tiles{
-            display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px;
+            display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px;
             margin-bottom: 18px;
         }
-        @media (max-width: 1100px){
+        @media (max-width: 1200px){
             .incident-desk .id-tiles{ grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
         }
         .incident-desk .id-tile{
