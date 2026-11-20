@@ -54,13 +54,11 @@
                                 @break
 
                             @case('licenses')
-                                @php($canViewKeys = Gate::allows('viewKeys', \App\Models\License::class))
+                                {{-- [killa no-license-keys] KCP-077: product key column
+                                     removed — Killa no longer tracks license keys. --}}
                                 <thead>
                                     <tr>
                                         <th scope="col">{{ trans('general.name') }}</th>
-                                        @if ($canViewKeys)
-                                            <th scope="col">{{ trans('admin/licenses/form.license_key') }}</th>
-                                        @endif
                                         <th scope="col">{{ trans('admin/hardware/form.checkout_date') }}</th>
                                     </tr>
                                 </thead>
@@ -68,13 +66,10 @@
                                     @forelse ($items as $license)
                                         <tr>
                                             <td><a href="{{ route('licenses.show', $license->id) }}">{{ $license->name }}</a></td>
-                                            @if ($canViewKeys)
-                                                <td>{{ $license->serial }}</td>
-                                            @endif
                                             <td>{{ $license->pivot?->created_at ? \App\Helpers\Helper::getFormattedDateObject($license->pivot->created_at, 'date', false) : '' }}</td>
                                         </tr>
                                     @empty
-                                        <tr><td colspan="{{ $canViewKeys ? 3 : 2 }}">{{ trans('admin/users/message.nothing_currently_assigned') }}</td></tr>
+                                        <tr><td colspan="2">{{ trans('admin/users/message.nothing_currently_assigned') }}</td></tr>
                                     @endforelse
                                 </tbody>
                                 @break
