@@ -45,7 +45,7 @@ class LicensePurchasesTest extends TestCase
         ]);
 
         $this->actingAs(User::factory()->superuser()->create())
-            ->get(route('licenses.purchases.edit', [$license, $purchase]))
+            ->get(route('licenses.purchases.edit', ['license' => $license, 'purchase' => $purchase]))
             ->assertOk();
     }
 
@@ -136,7 +136,7 @@ class LicensePurchasesTest extends TestCase
         ]);
 
         $this->actingAs(User::factory()->superuser()->create())
-            ->put(route('licenses.purchases.update', [$license, $purchase]), [
+            ->put(route('licenses.purchases.update', ['license' => $license, 'purchase' => $purchase]), [
                 'purchase_date' => '2026-02-01',
                 'amount_aed' => 250,
             ])
@@ -154,7 +154,7 @@ class LicensePurchasesTest extends TestCase
         ]);
 
         $this->actingAs(User::factory()->superuser()->create())
-            ->delete(route('licenses.purchases.destroy', [$license, $purchase]))
+            ->delete(route('licenses.purchases.destroy', ['license' => $license, 'purchase' => $purchase]))
             ->assertRedirect(route('licenses.show', $license->id));
 
         $this->assertSoftDeleted($purchase);
@@ -170,7 +170,7 @@ class LicensePurchasesTest extends TestCase
         ]);
 
         $this->actingAs(User::factory()->superuser()->create())
-            ->get(route('licenses.purchases.edit', [$license, $purchase]))
+            ->get(route('licenses.purchases.edit', ['license' => $license, 'purchase' => $purchase]))
             ->assertNotFound();
     }
 
@@ -191,7 +191,7 @@ class LicensePurchasesTest extends TestCase
         Storage::disk('local')->assertExists($purchase->invoice_file);
 
         $this->actingAs(User::factory()->superuser()->create())
-            ->get(route('licenses.purchases.invoice', [$license, $purchase]))
+            ->get(route('licenses.purchases.invoice', ['license' => $license, 'purchase' => $purchase]))
             ->assertOk();
     }
 
@@ -205,7 +205,7 @@ class LicensePurchasesTest extends TestCase
         ]);
 
         $this->actingAs(User::factory()->create())
-            ->get(route('licenses.purchases.invoice', [$license, $purchase]))
+            ->get(route('licenses.purchases.invoice', ['license' => $license, 'purchase' => $purchase]))
             ->assertForbidden();
     }
 }

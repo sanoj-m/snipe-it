@@ -45,10 +45,11 @@ class LicenseSpendReportTest extends TestCase
         $license = License::factory()->create();
         $this->purchase($license);
 
-        $this->actingAs(User::factory()->superuser()->create())
+        $response = $this->actingAs(User::factory()->superuser()->create())
             ->get(route('reports.license-spend.export'))
-            ->assertOk()
-            ->assertHeader('Content-Type', 'text/csv');
+            ->assertOk();
+
+        $this->assertStringContainsString('text/csv', $response->headers->get('Content-Type'));
     }
 
     public function test_yearly_spend_is_cash_basis()

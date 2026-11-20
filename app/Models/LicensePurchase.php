@@ -68,6 +68,27 @@ class LicensePurchase extends Model
         'notes' => 'nullable|string',
     ];
 
+    /**
+     * Date setters store the raw Y-m-d value. Eloquent's default setAttribute
+     * would convert date-castable values to the datetime format
+     * (Y-m-d H:i:s), which then fails this model's date_format:Y-m-d
+     * validation rules (same pattern as SnipeModel::setPurchaseDateAttribute).
+     */
+    public function setPurchaseDateAttribute($value)
+    {
+        $this->attributes['purchase_date'] = ($value == '') ? null : $value;
+    }
+
+    public function setPeriodStartAttribute($value)
+    {
+        $this->attributes['period_start'] = ($value == '') ? null : $value;
+    }
+
+    public function setPeriodEndAttribute($value)
+    {
+        $this->attributes['period_end'] = ($value == '') ? null : $value;
+    }
+
     public function license(): BelongsTo
     {
         return $this->belongsTo(License::class, 'license_id');
