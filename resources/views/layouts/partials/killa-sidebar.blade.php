@@ -194,8 +194,17 @@
                                 <i class="fas fa-chevron-right ks-chevron" aria-hidden="true"></i>
                             </a>
                             <ul class="ks-sub">
+                            {{-- [incident-desk addon] first item in the Maintenances submenu --}}
                                 @can('view', \App\Models\Asset::class)
-                                    <li style="--i:0;"{!! (request()->is('maintenances') ? ' class="active" aria-current="page"' : '') !!}>
+                                    <li style="--i:0;"{!! (request()->is('maintenances/incident-desk*') ? ' class="active" aria-current="page"' : '') !!}>
+                                        <a href="{{ route('maintenances.incident-desk') }}">
+                                            <i class="fas fa-life-ring fa-fw text-grey" aria-hidden="true"></i>
+                                            {{ trans('admin/incident_desk/general.incident_desk') }}
+                                    </a>
+                                </li>
+                            @endcan
+                                @can('view', \App\Models\Asset::class)
+                                    <li style="--i:1;"{!! (request()->is('maintenances') ? ' class="active" aria-current="page"' : '') !!}>
                                     <a href="{{ route('maintenances.index') }}">
                                         <x-icon type="circle" class="text-grey fa-fw"/>
                                         {{ trans('general.list_all') }}
@@ -203,19 +212,10 @@
                                 </li>
                             @endcan
                                 @can('index', \App\Models\MaintenanceType::class)
-                                    <li style="--i:1;"{!! (request()->is('maintenance-types*') ? ' class="active" aria-current="page"' : '') !!}>
+                                    <li style="--i:2;"{!! (request()->is('maintenance-types*') ? ' class="active" aria-current="page"' : '') !!}>
                                         <a href="{{ route('maintenance-types.index') }}">
                                             <x-icon type="circle" class="text-grey fa-fw"/>
                                             {{ trans('admin/maintenance_types/general.maintenance_types') }}
-                                    </a>
-                                </li>
-                            @endcan
-                            {{-- [incident-desk addon] --}}
-                                @can('view', \App\Models\Asset::class)
-                                    <li style="--i:2;"{!! (request()->is('maintenances/incident-desk*') ? ' class="active" aria-current="page"' : '') !!}>
-                                        <a href="{{ route('maintenances.incident-desk') }}">
-                                            <i class="fas fa-life-ring fa-fw text-grey" aria-hidden="true"></i>
-                                            {{ trans('admin/incident_desk/general.incident_desk') }}
                                     </a>
                                 </li>
                             @endcan
