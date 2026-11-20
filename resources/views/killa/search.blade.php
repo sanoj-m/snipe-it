@@ -46,7 +46,94 @@
         }
         .killa-search-page .chip:hover{ border-color: var(--k-accent, #E63B2E); color: var(--k-accent, #E63B2E); text-decoration: none; }
         .killa-search-page .empty-note{ padding: 28px 16px; text-align: center; color: var(--k-text-muted, #6b7280); font-size: 13px; }
+
+        /* KCP-074 narrowed search: scope tabs + filter panel + chips */
+        .killa-search-page .ks-tabs{
+            display: flex; gap: 4px; flex-wrap: wrap; margin: 14px 0 12px;
+            border-bottom: 1px solid var(--k-border, #e5e7eb); padding-bottom: 0;
+        }
+        .killa-search-page .ks-tab{
+            padding: 8px 14px; font-size: 12.5px; font-weight: 600;
+            color: var(--k-text-muted, #6b7280); text-decoration: none;
+            border: 1px solid transparent; border-bottom: none;
+            border-radius: var(--k-radius-sm, 6px) var(--k-radius-sm, 6px) 0 0;
+        }
+        .killa-search-page .ks-tab:hover{ color: var(--k-text, #1f2933); background: var(--k-hover-tint, #f3f4f6); }
+        .killa-search-page .ks-tab.active{
+            color: var(--k-accent, #E63B2E);
+            border-color: var(--k-border, #e5e7eb);
+            background: var(--k-surface, #fff);
+            box-shadow: inset 0 -2px 0 var(--k-accent, #E63B2E);
+        }
+        .killa-search-page .ks-filters{ display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-end; }
+        .killa-search-page .ks-filter-field{ min-width: 150px; flex: 1; }
+        .killa-search-page .ks-filter-field label{
+            display: block; font-size: 11px; font-weight: 600; text-transform: uppercase;
+            letter-spacing: .05em; color: var(--k-text-muted, #6b7280); margin-bottom: 3px;
+        }
+        .killa-search-page .ks-filter-field.narrow{ min-width: 110px; flex: 0 1 130px; }
+        .killa-search-page .ks-filter-actions{ display: flex; gap: 8px; align-items: center; }
+        .killa-search-page .ks-check{ display: flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--k-text, #1f2933); padding-bottom: 7px; }
+        .killa-search-page .ks-group-label{
+            font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em;
+            color: var(--k-text-muted, #6b7280); width: 100%; margin-bottom: -2px;
+        }
+        .killa-search-page .ks-chips{ display: flex; gap: 6px; flex-wrap: wrap; align-items: center; margin-bottom: 12px; }
+        .killa-search-page .ks-chips-label{ font-size: 12px; color: var(--k-text-muted, #6b7280); }
+        .killa-search-page .ks-chip{
+            display: inline-flex; align-items: center; gap: 7px; padding: 3px 6px 3px 10px; font-size: 12px;
+            border: 1px solid color-mix(in srgb, var(--k-accent, #E63B2E) 30%, transparent);
+            border-radius: var(--k-radius-pill, 999px);
+            background: color-mix(in srgb, var(--k-accent, #E63B2E) 8%, var(--k-surface, #fff));
+            color: var(--k-accent, #E63B2E);
+        }
+        .killa-search-page .ks-chip a{
+            color: inherit; font-weight: 700; text-decoration: none; padding: 0 3px;
+            border-radius: 50%; line-height: 1;
+        }
+        .killa-search-page .ks-chip a:hover{ color: var(--k-accent-hover, #c93024); }
     </style>
+
+    @php
+        $scopeLabels = [
+            'all' => trans('killa.search.scope_all'),
+            'assets' => trans('general.assets'),
+            'users' => trans('general.users'),
+            'licenses' => trans('general.licenses'),
+            'accessories' => trans('general.accessories'),
+            'consumables' => trans('general.consumables'),
+            'components' => trans('general.components'),
+            'categories' => trans('general.categories'),
+        ];
+        $statusLabels = [
+            'RTD' => trans('killa.search.filter_status_rtd'),
+            'Deployed' => trans('killa.search.filter_status_deployed'),
+            'Pending' => trans('killa.search.filter_status_pending'),
+        ];
+        $baseQuery = ['q' => $q];
+        $currentQuery = request()->query();
+        $chipDefs = [];
+        if ($filters['category'] !== '') {
+            $catName = is_numeric($filters['category'])
+                ? ($assetCategories->firstWhere('id', (int) $filters['category'])?->name ?? $filters['category'])
+                : $filters['category'];
+            $chipDefs['category'] = trans('killa.search.filter_category').': '.$catName;
+        }
+        if ($filters['status'] !== '') {
+            $chipDefs['status'] = $statusLabels[$filters['status']];
+        }
+        foreach (['cpu', 'graphics', 'ram'] as $specKey) {
+            if ($filters[$specKey] !== '') {
+                $chipDefs[$specKey] = trans('killa.search.filter_'.$specKey).': '.$filters[$specKey];
+            }
+        }
+        if ($filters['department'] > 0) {
+            $chipDefs['department'] = trans('killa.search.filter_department').': '.($departments->firstWhere('id', $filters['department'])?->name ?? $filters['department']);
+        }
+        if ($filters['has_items']) {
+            $chipDefs['has_items'] = trans('killa.search.filter_has_items');
+        }
+    @endphp
 
     <div class="ks-head">
         <div>
@@ -56,18 +143,119 @@
             @endif
         </div>
         <form class="ks-form" method="get" action="{{ route('killa.search') }}" role="search">
+            <input type="hidden" name="scope" value="{{ $scope }}">
+            @foreach (['category', 'status', 'cpu', 'graphics', 'ram', 'department'] as $keepKey)
+                @if ($filters[$keepKey] !== '' && $filters[$keepKey] !== 0)
+                    <input type="hidden" name="{{ $keepKey }}" value="{{ $filters[$keepKey] }}">
+                @endif
+            @endforeach
+            @if ($filters['has_items'])
+                <input type="hidden" name="has_items" value="1">
+            @endif
             <input type="search" name="q" class="form-control" value="{{ $q }}" placeholder="{{ trans('killa.global_search.placeholder') }}" autofocus>
             <button type="submit" class="btn btn-primary">{{ trans('killa.search.title') }}</button>
         </form>
     </div>
 
-    @if ($q === '')
+    <div class="ks-tabs" role="tablist">
+        @foreach ($scopes as $scopeKey)
+            <a class="ks-tab{{ $scope === $scopeKey ? ' active' : '' }}" role="tab" aria-selected="{{ $scope === $scopeKey ? 'true' : 'false' }}"
+               href="{{ route('killa.search', array_filter(array_merge($currentQuery, ['scope' => $scopeKey]), fn ($v) => $v !== '' && $v !== 0 && $v !== null)) }}">{{ $scopeLabels[$scopeKey] }}</a>
+        @endforeach
+    </div>
+
+    @if (in_array($scope, ['all', 'assets', 'users'], true))
+        <div class="box box-default">
+            <div class="box-body">
+                <form class="ks-filters" method="get" action="{{ route('killa.search') }}">
+                    <input type="hidden" name="q" value="{{ $q }}">
+                    <input type="hidden" name="scope" value="{{ $scope }}">
+
+                    @if (in_array($scope, ['all', 'assets'], true))
+                        <div class="ks-group-label">{{ trans('general.assets') }}</div>
+                        <div class="ks-filter-field">
+                            <label for="fCategory">{{ trans('killa.search.filter_category') }}</label>
+                            <select id="fCategory" name="category" class="form-control">
+                                <option value="">{{ trans('killa.search.filter_any') }}</option>
+                                @foreach ($assetCategories as $assetCategory)
+                                    <option value="{{ $assetCategory->id }}"{{ (string) $filters['category'] === (string) $assetCategory->id || $filters['category'] === $assetCategory->name ? ' selected' : '' }}>{{ $assetCategory->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="ks-filter-field narrow">
+                            <label for="fStatus">{{ trans('killa.search.filter_status') }}</label>
+                            <select id="fStatus" name="status" class="form-control">
+                                <option value="">{{ trans('killa.search.filter_any') }}</option>
+                                @foreach ($statusLabels as $statusValue => $statusLabel)
+                                    <option value="{{ $statusValue }}"{{ $filters['status'] === $statusValue ? ' selected' : '' }}>{{ $statusLabel }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        @if (isset($specColumns['CPU']))
+                            <div class="ks-filter-field narrow">
+                                <label for="fCpu">{{ trans('killa.search.filter_cpu') }}</label>
+                                <input type="text" id="fCpu" name="cpu" class="form-control" value="{{ $filters['cpu'] }}" placeholder="i9">
+                            </div>
+                        @endif
+                        @if (isset($specColumns['Graphics']))
+                            <div class="ks-filter-field narrow">
+                                <label for="fGraphics">{{ trans('killa.search.filter_graphics') }}</label>
+                                <input type="text" id="fGraphics" name="graphics" class="form-control" value="{{ $filters['graphics'] }}" placeholder="RTX">
+                            </div>
+                        @endif
+                        @if (isset($specColumns['RAM']))
+                            <div class="ks-filter-field narrow">
+                                <label for="fRam">{{ trans('killa.search.filter_ram') }}</label>
+                                <input type="text" id="fRam" name="ram" class="form-control" value="{{ $filters['ram'] }}" placeholder="128">
+                            </div>
+                        @endif
+                    @endif
+
+                    @if (in_array($scope, ['all', 'users'], true))
+                        <div class="ks-group-label">{{ trans('general.users') }}</div>
+                        <div class="ks-filter-field">
+                            <label for="fDepartment">{{ trans('killa.search.filter_department') }}</label>
+                            <select id="fDepartment" name="department" class="form-control">
+                                <option value="0">{{ trans('killa.search.filter_any') }}</option>
+                                @foreach ($departments as $department)
+                                    <option value="{{ $department->id }}"{{ $filters['department'] === $department->id ? ' selected' : '' }}>{{ $department->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <label class="ks-check">
+                            <input type="checkbox" name="has_items" value="1"{{ $filters['has_items'] ? ' checked' : '' }}>
+                            {{ trans('killa.search.filter_has_items') }}
+                        </label>
+                    @endif
+
+                    <div class="ks-filter-actions">
+                        <button type="submit" class="btn btn-primary">{{ trans('killa.search.filter_apply') }}</button>
+                        <a class="btn btn-default" href="{{ route('killa.search', array_filter(['q' => $q, 'scope' => $scope === 'all' ? '' : $scope])) }}">{{ trans('killa.search.filter_clear') }}</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    @endif
+
+    @if ($chipDefs !== [])
+        <div class="ks-chips">
+            <span class="ks-chips-label">{{ trans('killa.search.filter_active') }}</span>
+            @foreach ($chipDefs as $chipKey => $chipLabel)
+                <span class="ks-chip">
+                    {{ $chipLabel }}
+                    <a href="{{ route('killa.search', array_filter(array_merge($currentQuery, [$chipKey => null]), fn ($v) => $v !== '' && $v !== 0 && $v !== null)) }}" aria-label="{{ trans('general.delete') }}">&times;</a>
+                </span>
+            @endforeach
+        </div>
+    @endif
+
+    @if ($q === '' && $chipDefs === [])
         <div class="box box-default">
             <div class="box-body empty-note">{{ trans('killa.search.empty_query') }}</div>
         </div>
     @elseif ($sections === [])
         <div class="box box-default">
-            <div class="box-body empty-note">{{ trans('killa.search.no_results', ['query' => $q]) }}</div>
+            <div class="box-body empty-note">{{ $q !== '' ? trans('killa.search.no_results', ['query' => $q]) : trans('killa.search.no_results_filtered') }}</div>
         </div>
     @else
         @foreach ($sections as $section)

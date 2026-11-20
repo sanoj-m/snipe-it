@@ -230,6 +230,10 @@ class GlobalSearchController extends Controller
      * search/display (custom-field columns on assets), category browsing
      * (a query matching a category name also lists its assets), and rich user
      * sections with everything checked out to them.
+     *
+     * KCP-074 amendment (narrowed search): GET-driven scope tab + narrowing
+     * filters — asset category/status/spec fields, user department / has-
+     * items toggle. All filters are plain GET params so views are shareable.
      */
     public function page(Request $request): View
     {
@@ -237,32 +241,121 @@ class GlobalSearchController extends Controller
         $specColumns = $this->specColumns();
         $sections = [];
 
-        if (mb_strlen($q) >= 2) {
-            $like = self::likePattern($q);
+        $scopes = ['all', 'assets', 'users', 'licenses', 'accessories', 'consumables', 'components', 'categories'];
+        $scope = in_array($request->input('scope'), $scopes, true) ? $request->input('scope') : 'all';
 
+        // Narrowing filters (all optional, all shareable GET params)
+        $filters = [
+            'category' => trim((string) $request->input('category', '')),
+            'status' => in_array($request->input('status'), ['RTD', 'Deployed', 'Pending'], true) ? $request->input('status') : '',
+            'cpu' => trim((string) $request->input('cpu', '')),
+            'graphics' => trim((string) $request->input('graphics', '')),
+            'ram' => trim((string) $request->input('ram', '')),
+            'department' => (int) $request->input('department', 0),
+            'has_items' => $request->input('has_items') === '1',
+        ];
+        $hasAssetFilters = (bool) array_filter([$filters['category'], $filters['status'], $filters['cpu'], $filters['graphics'], $filters['ram']]);
+        $hasUserFilters = $filters['department'] > 0 || $filters['has_items'];
+
+        // Narrowed asset/user searches run even without a q term; group
+        // searches still require 2 chars.
+        $runAssets = in_array($scope, ['all', 'assets'], true) && (mb_strlen($q) >= 2 || $hasAssetFilters);
+        $runUsers = in_array($scope, ['all', 'users'], true) && (mb_strlen($q) >= 2 || $hasUserFilters);
+        $like = self::likePattern($q !== '' ? $q : '');
+
+        $assetCategories = Category::where('category_type', 'asset')->orderBy('name')->get(['id', 'name']);
+        $departments = Department::orderBy('name')->get(['id', 'name']);
+
+        if ($runAssets && Gate::allows('index', Asset::class)) {
+            $columns = ['asset_tag', 'name', 'serial', 'order_number', 'notes'];
+
+            if ($specColumns !== []) {
+                $columns = array_merge($columns, array_values($specColumns));
+            }
+
+            $assetsQuery = Company::scopeCompanyables(Asset::query())
+                ->with('model.category', 'assignedTo', 'status');
+
+            if (mb_strlen($q) >= 2) {
+                $assetsQuery->where(function (Builder $sub) use ($columns, $like) {
+                    foreach ($columns as $i => $column) {
+                        $sub->{$i === 0 ? 'where' : 'orWhere'}($column, 'LIKE', $like);
+                    }
+                });
+            }
+
+            $this->applyAssetFilters($assetsQuery, $filters, $specColumns);
+
+            $assets = $assetsQuery->orderBy('id', 'desc')->limit(50)->get();
+
+            if ($assets->isNotEmpty()) {
+                $sections[] = [
+                    'key' => 'assets',
+                    'label' => trans('general.assets'),
+                    'results' => $assets,
+                ];
+            }
+        }
+
+        if ($runUsers && Gate::allows('index', User::class)) {
+            $usersQuery = Company::scopeCompanyables(User::query())
+                ->with([
+                    'department', 'manager', 'userloc',
+                    'assets.model', 'licenses', 'accessories', 'consumables',
+                ])
+                ->withCount(['assets', 'licenses', 'accessories', 'consumables']);
+
+            if (mb_strlen($q) >= 2) {
+                $usersQuery->where(function (Builder $sub) use ($like) {
+                    $sub->where('first_name', 'LIKE', $like)
+                        ->orWhere('last_name', 'LIKE', $like)
+                        ->orWhere('username', 'LIKE', $like)
+                        ->orWhere('email', 'LIKE', $like)
+                        ->orWhere('employee_num', 'LIKE', $like);
+                });
+            }
+
+            if ($filters['department'] > 0) {
+                $usersQuery->where('department_id', $filters['department']);
+            }
+
+            if ($filters['has_items']) {
+                $usersQuery->where(function (Builder $sub) {
+                    $sub->whereHas('assets')->orWhereHas('licenses')->orWhereHas('accessories')->orWhereHas('consumables');
+                });
+            }
+
+            $users = $usersQuery->orderBy('id', 'desc')->limit(10)->get();
+
+            if ($users->isNotEmpty()) {
+                $sections[] = [
+                    'key' => 'users',
+                    'label' => trans('general.users'),
+                    'results' => $users,
+                ];
+            }
+        }
+
+        if (mb_strlen($q) >= 2) {
             foreach ($this->groups() as $key => $spec) {
+                // Assets and users have their own richer pipelines above.
+                if (in_array($key, ['assets', 'users'], true)) {
+                    continue;
+                }
+
+                if ($scope !== 'all' && $scope !== $key) {
+                    continue;
+                }
+
+                if ($scope === 'all' && $key === 'categories') {
+                    // categories section renders below via the same loop; keep it
+                }
+
                 if (! Gate::allows($spec['ability'], $spec['model'])) {
                     continue;
                 }
 
-                $columns = $spec['columns'];
-
-                if ($key === 'assets' && $specColumns !== []) {
-                    $columns = array_merge($columns, array_values($specColumns));
-                }
-
-                $results = $this->queryGroup($spec, $like, 25, $columns);
-
-                if ($key === 'users' && $results->isNotEmpty()) {
-                    $results->load([
-                        'department', 'manager', 'userloc',
-                        'assets.model', 'licenses', 'accessories', 'consumables',
-                    ])->loadCount(['assets', 'licenses', 'accessories', 'consumables']);
-                }
-
-                if ($key === 'assets' && $results->isNotEmpty()) {
-                    $results->load('model.category', 'assignedTo', 'status');
-                }
+                $results = $this->queryGroup($spec, $like, 25);
 
                 if ($results->isEmpty()) {
                     continue;
@@ -278,16 +371,17 @@ class GlobalSearchController extends Controller
 
             // Category browsing: a query that matches category names also
             // surfaces the assets inside those categories.
-            if (Gate::allows('view', Category::class) && Gate::allows('index', Asset::class)) {
+            if (in_array($scope, ['all', 'assets'], true) && Gate::allows('view', Category::class) && Gate::allows('index', Asset::class)) {
                 $matchedCategories = Category::where('name', 'LIKE', $like)->orderBy('name')->limit(5)->get();
 
                 if ($matchedCategories->isNotEmpty()) {
-                    $categoryAssets = Company::scopeCompanyables(Asset::query())
+                    $categoryAssetsQuery = Company::scopeCompanyables(Asset::query())
                         ->whereHas('model', fn (Builder $query) => $query->whereIn('category_id', $matchedCategories->pluck('id')))
-                        ->with('model.category', 'assignedTo', 'status')
-                        ->orderBy('asset_tag')
-                        ->limit(50)
-                        ->get();
+                        ->with('model.category', 'assignedTo', 'status');
+
+                    $this->applyAssetFilters($categoryAssetsQuery, $filters, $specColumns);
+
+                    $categoryAssets = $categoryAssetsQuery->orderBy('asset_tag')->limit(50)->get();
 
                     if ($categoryAssets->isNotEmpty()) {
                         $sections[] = [
@@ -304,7 +398,50 @@ class GlobalSearchController extends Controller
             'q' => $q,
             'sections' => $sections,
             'specColumns' => $specColumns,
+            'scope' => $scope,
+            'scopes' => $scopes,
+            'filters' => $filters,
+            'assetCategories' => $assetCategories,
+            'departments' => $departments,
         ]);
+    }
+
+    /**
+     * Shared narrowing for the two asset queries (direct + category browsing).
+     * Category accepts an id or an exact-ish name so shareable links can use
+     * either (/search?category=4 or ?category=Laptop).
+     *
+     * @param  array<string, mixed>  $filters
+     * @param  array<string, string>  $specColumns
+     */
+    private function applyAssetFilters(Builder $query, array $filters, array $specColumns): void
+    {
+        if ($filters['category'] !== '') {
+            if (is_numeric($filters['category'])) {
+                $query->whereHas('model', fn (Builder $sub) => $sub->where('category_id', (int) $filters['category']));
+            } else {
+                $query->whereHas('model.category', fn (Builder $sub) => $sub->where('name', 'LIKE', self::likePattern($filters['category'])));
+            }
+        }
+
+        switch ($filters['status']) {
+            case 'Deployed':
+                $query->whereNotNull('assets.assigned_to');
+                break;
+            case 'RTD':
+                $query->whereNull('assets.assigned_to')
+                    ->whereHas('status', fn (Builder $sub) => $sub->where('deployable', 1)->where('pending', 0)->where('archived', 0));
+                break;
+            case 'Pending':
+                $query->whereHas('status', fn (Builder $sub) => $sub->where('deployable', 0)->where('pending', 1)->where('archived', 0));
+                break;
+        }
+
+        foreach (['cpu' => 'CPU', 'graphics' => 'Graphics', 'ram' => 'RAM'] as $filterKey => $specName) {
+            if ($filters[$filterKey] !== '' && isset($specColumns[$specName])) {
+                $query->where($specColumns[$specName], 'LIKE', self::likePattern($filters[$filterKey]));
+            }
+        }
     }
 
     /**
