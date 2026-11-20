@@ -75,7 +75,10 @@ if ! grep -q 'snipe-it/floating-licenses' composer.lock; then
 fi
 
 echo "==> Composer install"
-if ! sudo -u $WEBUSER composer install --no-dev --prefer-dist --no-interaction; then
+# Cap composer's PHP memory: the server is a 2 GB LXC container with no swap,
+# and an unbounded composer install can OOM-kill MariaDB/php-fpm and take the
+# whole box down. Better a failed deploy than a dead server.
+if ! sudo -u $WEBUSER COMPOSER_MEMORY_LIMIT=768M composer install --no-dev --prefer-dist --no-interaction; then
     echo "!! composer install failed (usually github.com API rate limit on the"
     echo "!! laravel-scim-server VCS repo). Continuing — vendor/ is unchanged"
     echo "!! from the previous deploy. If this release added new dependencies,"
@@ -85,7 +88,7 @@ fi
 
 echo "==> Regenerate package manifest + autoloader"
 rm -f bootstrap/cache/packages.php bootstrap/cache/services.php
-sudo -u $WEBUSER composer dump-autoload
+sudo -u $WEBUSER COMPOSER_MEMORY_LIMIT=768M composer dump-autoload
 sudo -u $WEBUSER $PHP artisan package:discover
 
 echo "==> Migrate + caches"
