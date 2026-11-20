@@ -53,16 +53,8 @@
 
                 <x-input.minimum-quantity :item="$item"/>
 
-                @can('viewKeys', $item)
-                    <x-form.row
-                        :label="trans('admin/licenses/form.license_key')"
-                        :$item
-                        name="serial"
-                        type="textarea"
-                        :rows="5"
-                        input_div_class="col-md-7"
-                    />
-                @endcan
+                {{-- [killa no-license-keys] KCP-077: upstream product key (serial) form
+                     row removed — Killa no longer tracks license keys. --}}
 
                 <x-input.manufacturer-select
                     :label="trans('general.manufacturer')"

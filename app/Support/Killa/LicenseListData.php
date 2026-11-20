@@ -40,7 +40,6 @@ class LicenseListData
             $like = '%'.$search.'%';
             $query->where(function ($q) use ($like) {
                 $q->where('licenses.name', 'LIKE', $like)
-                    ->orWhere('licenses.serial', 'LIKE', $like)
                     ->orWhereHas('category', fn ($cq) => $cq->where('name', 'LIKE', $like))
                     ->orWhereHas('manufacturer', fn ($mq) => $mq->where('name', 'LIKE', $like));
             });
@@ -212,8 +211,8 @@ class LicenseListData
     }
 
     /**
-     * @return array{license: License, id: int, sort_order: int|null, name: string, serial: string|null,
-     *               product_key: string|null, license_type: string,
+     * @return array{license: License, id: int, sort_order: int|null, name: string,
+     *               license_type: string,
      *               manufacturer: string|null, manufacturer_url: string|null,
      *               company: string|null, company_url: string|null,
      *               supplier: string|null, supplier_url: string|null,
@@ -276,8 +275,6 @@ class LicenseListData
             $perUserCost = $license->purchase_cost !== null ? Helper::formatCurrencyOutput($license->purchase_cost) : null;
         }
 
-        $canViewKeys = \Illuminate\Support\Facades\Gate::allows('viewKeys', $license);
-
         $fmtDate = fn ($date) => $date ? (Helper::getFormattedDateObject($date, 'date')['formatted'] ?? null) : null;
 
         return [
@@ -285,10 +282,6 @@ class LicenseListData
             'id' => $license->id,
             'sort_order' => $license->sort_order !== null ? (int) $license->sort_order : null,
             'name' => $license->name,
-            'serial' => $license->serial,
-            'product_key' => $license->serial
-                ? ($canViewKeys ? $license->serial : License::PRODUCT_KEY_MASK)
-                : null,
             'license_type' => $floating
                 ? trans('floating-licenses::floating.type_floating')
                 : trans('floating-licenses::floating.type_fixed'),

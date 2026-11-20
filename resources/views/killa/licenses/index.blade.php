@@ -21,7 +21,6 @@
         'id' => ['label' => trans('general.id'), 'default' => false, 'num' => true],
         'license_type' => ['label' => trans('floating-licenses::floating.license_type'), 'default' => true],
         'company' => ['label' => trans('admin/companies/table.title'), 'default' => false],
-        'product_key' => ['label' => trans('admin/licenses/form.license_key'), 'default' => true],
         'expiration_date' => ['label' => trans('admin/licenses/form.expiration'), 'default' => true],
         'days' => ['label' => trans('killa.renewals.days_to_expire'), 'default' => true, 'num' => true],
         'term' => ['label' => trans('killa.renewals.term'), 'default' => false],
@@ -55,7 +54,7 @@
     ];
 @endphp
 <x-container>
-<div class="kx">
+<div class="kx kx-compact">
 
     {{-- KPI strip --}}
     <div class="kx-kpis" role="region" aria-label="{{ trans('killa.licenses_ux.title') }}">
@@ -217,11 +216,6 @@
                                         <td data-col="company" class="kx-hide">
                                             @if ($row['company'])
                                                 <a href="{{ $row['company_url'] }}">{{ $row['company'] }}</a>
-                                            @else — @endif
-                                        </td>
-                                        <td data-col="product_key" @class(['kx-hide' => ! $kxColumns['product_key']['default']])>
-                                            @if ($row['product_key'])
-                                                <code class="kx-key">{{ \Illuminate\Support\Str::limit($row['product_key'], 40) }}</code>
                                             @else — @endif
                                         </td>
                                         <td data-col="expiration_date" @class(['kx-hide' => ! $kxColumns['expiration_date']['default']])>

@@ -57,17 +57,6 @@
                         :selected="old('manufacturer_id', $item->manufacturer_id)"
                     />
 
-                    @can('viewKeys', $item)
-                        <x-form.row
-                            :label="trans('admin/licenses/form.license_key')"
-                            :$item
-                            name="serial"
-                            type="textarea"
-                            :rows="5"
-                            input_div_class="col-md-7"
-                        />
-                    @endcan
-
                     <x-form.row
                         :label="trans('admin/licenses/form.to_name')"
                         :$item

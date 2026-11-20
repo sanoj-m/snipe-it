@@ -57,14 +57,10 @@ class LicensePresenter extends Presenter
                 'title' => trans('admin/companies/table.title'),
                 'visible' => false,
                 'formatter' => 'companiesLinkObjFormatter',
-            ], [
-                'field' => 'product_key',
-                'scope' => 'col',
-                'searchable' => true,
-                'sortable' => true,
-                'title' => trans('admin/licenses/form.license_key'),
-                'formatter' => 'licenseKeyFormatter',
-            ], [
+            ],
+            // [killa no-license-keys] KCP-077: upstream 'product_key' column
+            // removed — Killa no longer tracks license keys.
+            [
                 'field' => 'expiration_date',
                 'scope' => 'col',
                 'searchable' => true,
@@ -484,14 +480,8 @@ class LicensePresenter extends Presenter
                 'title' => trans('general.name'),
                 'formatter' => 'licensesLinkObjFormatter',
             ],
-            [
-                'field' => 'license.serial',
-                'scope' => 'col',
-                'searchable' => true,
-                'sortable' => true,
-                'title' => trans('admin/licenses/form.license_key'),
-                'formatter' => 'licenseKeyFormatter',
-            ],
+            // [killa no-license-keys] KCP-077: upstream 'license.serial' column
+            // removed — Killa no longer tracks license keys.
             [
                 'field' => 'expiration_date',
                 'scope' => 'col',

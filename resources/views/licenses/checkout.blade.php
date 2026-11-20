@@ -51,15 +51,8 @@
                         <x-form.static :label="trans('general.category')">{!! $license->category->present()->formattedNameLink !!}</x-form.static>
                     @endif
 
-                    @if ($license->serial)
-                        @can('viewKeys', $license)
-                            <x-form.static :label="trans('admin/licenses/form.license_key')">
-                                <x-copy-to-clipboard copy_what="license_key">
-                                    <code>{!! nl2br(e($license->serial)) !!}</code>
-                                </x-copy-to-clipboard>
-                            </x-form.static>
-                        @endcan
-                    @endif
+                    {{-- [killa no-license-keys] KCP-077: upstream product key (serial)
+                         static removed — Killa no longer tracks license keys. --}}
 
                     @include ('partials.forms.checkout-selector', ['user_select' => 'true', 'asset_select' => 'true', 'location_select' => 'false'])
                     <x-input.user-select

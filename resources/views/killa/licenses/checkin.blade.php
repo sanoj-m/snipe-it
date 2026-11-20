@@ -2,7 +2,8 @@
 
 {{-- [killa-ux] Redesigned license checkin. Focused card layout; every
      upstream element preserved verbatim (statics, checked-out-from context,
-     license key w/ viewKeys gate, notes field, redirect footer). --}}
+     notes field, redirect footer). The product key static was removed — Killa
+     no longer tracks license keys (KCP-077). --}}
 
 @section('title')
      {{ trans('admin/licenses/general.checkin') }}
@@ -38,16 +39,6 @@
                 :checkout-date="$checkoutLog?->created_at"
                 :checkout-by="$checkoutLog?->adminuser"
             />
-
-            @if ($licenseSeat->license->serial)
-                @can('viewKeys', $licenseSeat->license)
-                    <x-form.static :label="trans('admin/licenses/form.license_key')">
-                        <x-copy-to-clipboard copy_what="license_key">
-                            <code>{!! nl2br(e($licenseSeat->license->serial)) !!}</code>
-                        </x-copy-to-clipboard>
-                    </x-form.static>
-                @endcan
-            @endif
 
             <x-form.row
                 :label="trans('general.checkin_note')"

@@ -36,15 +36,8 @@
                 :checkout-by="$checkoutLog?->adminuser"
             />
 
-            @if ($licenseSeat->license->serial)
-                @can('viewKeys', $licenseSeat->license)
-                    <x-form.static :label="trans('admin/licenses/form.license_key')">
-                        <x-copy-to-clipboard copy_what="license_key">
-                            <code>{!! nl2br(e($licenseSeat->license->serial)) !!}</code>
-                        </x-copy-to-clipboard>
-                    </x-form.static>
-                @endcan
-            @endif
+            {{-- [killa no-license-keys] KCP-077: upstream product key (serial)
+                 static removed — Killa no longer tracks license keys. --}}
 
             <x-form.row
                 :label="trans('general.checkin_note')"
