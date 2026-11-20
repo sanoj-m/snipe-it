@@ -943,12 +943,13 @@ body .k-insights-legend-dot.is-checkin {
    edge instead of the shouty cyan alert-info strip — it is a notice,
    not an alarm */
 body #killa-lan-banner.alert-info {
-    background: var(--k-surface);
+    /* !important: AdminLTE's skin sets .alert-info bg/color with !important */
+    background-color: var(--k-surface) !important;
     border: 1px solid var(--k-border);
     border-left: 3px solid var(--k-accent);
     border-radius: var(--k-radius-sm);
     box-shadow: var(--k-shadow-1);
-    color: var(--k-text);
+    color: var(--k-text) !important;
 }
 body #killa-lan-banner.alert-info .fa-network-wired {
     color: var(--k-text-muted);
