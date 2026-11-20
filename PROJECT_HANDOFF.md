@@ -209,6 +209,13 @@ Notable console commands (~60): `LdapSync`, `LdapTroubleshooter`,
   can bypass Cloudflare entirely. Office-WAN-IP users see a "switch to local"
   banner (`KILLA_LAN_WAN_IPS`/`KILLA_LAN_URL`, KCP-060) whose button carries
   the session over via a 60s signed handoff (KCP-063).
+- **Ops constraint (2026-11-19):** the production host is a **2 GB LXC, no swap** —
+  `cp -a` / large rsync of the app dir stalls the box (SSH dies, site 502; twice, both
+  needing a panel reboot). Never bulk-copy the app directory. Test gates without local PHP:
+  phpunit phar + throwaway MySQL DB (`snipeit_killa_test`) in /opt/snipe-it with
+  `.env.testing`, `config:clear` before / `config:cache` after (deploy rsync deletes
+  `.env.testing`; prod composer install is --no-dev so no phpunit; suite discovery fatals
+  on `Unit/LdapTest` phpmock — pass test file paths directly).
 
 ## 10. Constraints & traps for anyone proposing changes
 
