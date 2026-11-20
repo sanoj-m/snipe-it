@@ -61,6 +61,12 @@ class IncidentTicket extends Model
 
     /**
      * Resolve a free-typed requester name to an app user, if one matches.
+     * Tries the name as written (full name / username / display name), then
+     * a normalized variant: parenthetical nicknames, middle initials, and
+     * honorific prefixes stripped ("Gao Qi (Chloe)" → "Gao Qi",
+     * "Sukhvir M. Verma" → "Sukhvir Verma", "Ma. Teresita Garma" →
+     * "Teresita Garma"). Deliberately conservative — no fuzzy matching, so
+     * near-miss spellings stay unmatched rather than guessing wrong.
      */
     public static function resolveRequesterUserId(?string $name): ?int
     {
@@ -70,10 +76,29 @@ class IncidentTicket extends Model
             return null;
         }
 
-        $user = User::whereRaw("LOWER(TRIM(CONCAT_WS(' ', first_name, last_name))) = ?", [mb_strtolower($name)])
-            ->orWhereRaw('LOWER(username) = ?', [mb_strtolower($name)])
-            ->first();
+        $candidates = [$name];
 
-        return $user?->id;
+        $stripped = trim(preg_replace('/\s*\([^)]*\)/', '', $name));
+        $stripped = trim(preg_replace('/\b[A-Z]\.\s+/', '', $stripped));
+        $stripped = trim(preg_replace('/^(Mr|Mrs|Ms|Miss|Dr|Ma)\.\s+/i', '', $stripped));
+
+        if ($stripped !== '' && mb_strtolower($stripped) !== mb_strtolower($name)) {
+            $candidates[] = $stripped;
+        }
+
+        foreach ($candidates as $candidate) {
+            $lower = mb_strtolower($candidate);
+
+            $user = User::whereRaw("LOWER(TRIM(CONCAT_WS(' ', first_name, last_name))) = ?", [$lower])
+                ->orWhereRaw('LOWER(username) = ?', [$lower])
+                ->orWhereRaw('LOWER(display_name) = ?', [$lower])
+                ->first();
+
+            if ($user) {
+                return $user->id;
+            }
+        }
+
+        return null;
     }
 }
