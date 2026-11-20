@@ -141,6 +141,26 @@ class IncidentDeskController extends Controller
         return response()->json(['status' => 'ok']);
     }
 
+    /**
+     * The user's currently checked-out device (most recent checkout), used
+     * by the file-a-ticket form to pre-fill the device picker.
+     */
+    public function userDevice(User $user): JsonResponse
+    {
+        $this->authorize('view', Asset::class);
+
+        $asset = Asset::where('assigned_to', $user->id)
+            ->where('assigned_type', User::class)
+            ->orderByDesc('last_checkout')
+            ->orderByDesc('updated_at')
+            ->with('model')
+            ->first();
+
+        return response()->json([
+            'device' => $asset ? ['id' => $asset->id, 'text' => $asset->present()->fullName] : null,
+        ]);
+    }
+
     private function serializeTicket(IncidentTicket $ticket): array
     {
         return [

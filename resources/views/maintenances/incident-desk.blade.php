@@ -411,6 +411,7 @@
         store:   @json(route('maintenances.incident-desk.tickets.store')),
         update:  @json(url('maintenances/incident-desk/tickets')),
         destroy: @json(url('maintenances/incident-desk/tickets')),
+        userDevice: @json(url('maintenances/incident-desk/user-device')),
     };
     const CSRF = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
     const BASE_URL = (document.querySelector('meta[name="baseUrl"]') || {}).content || '/';
@@ -757,8 +758,23 @@
         activeStatus = el.dataset.s;
     });
 
-    document.getElementById('idSubmitBtn').addEventListener('click', async ()=>{
-        const msg = document.getElementById('idFormMsg');
+    /* Auto-suggest the requester's checked-out device when the device
+       picker is still empty; the technician can change or clear it. */
+    if(window.jQuery){
+        jQuery('#idRequesterSelect').on('change', async function(){
+            const uid = jQuery(this).val();
+            const assetSel = jQuery('#idAssetSelect');
+            if(!uid || (assetSel.val() && assetSel.val() !== '')) return;
+            try{
+                const res = await api(URLS.userDevice + '/' + uid);
+                if(res.device){
+                    assetSel.append(new Option(res.device.text, res.device.id, true, true)).trigger('change');
+                }
+            }catch(e){ /* no device or lookup failed — leave the picker empty */ }
+        });
+    }
+
+    document.getElementById('idSubmitBtn').addEventListener('click', async ()=>{        const msg = document.getElementById('idFormMsg');
         const requesterOption = document.querySelector('#idRequesterSelect option:checked');
         const requester = requesterOption && requesterOption.value
             ? requesterOption.textContent.trim().replace(/\s*\(.*$/, '')

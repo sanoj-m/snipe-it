@@ -247,6 +247,9 @@ Route::group(['middleware' => ['auth']], function () {
     Route::get('maintenances/incident-desk/tickets', [IncidentDeskController::class, 'tickets'])
         ->name('maintenances.incident-desk.tickets');
 
+    Route::get('maintenances/incident-desk/user-device/{user}', [IncidentDeskController::class, 'userDevice'])
+        ->name('maintenances.incident-desk.user-device');
+
     Route::post('maintenances/incident-desk/tickets', [IncidentDeskController::class, 'store'])
         ->name('maintenances.incident-desk.tickets.store');
 
