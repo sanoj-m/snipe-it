@@ -63,7 +63,7 @@
                     {{-- [license-spend addon] BEGIN --}}
                     <x-tabs.nav-item
                             name="purchases"
-                            icon_type="money"
+                            icon_type="purchase_order"
                             label="{{ trans('killa.license_spend.purchases_tab') }}"
                             count="{{ $license->purchases()->count() }}"
                     />

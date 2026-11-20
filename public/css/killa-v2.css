@@ -2296,3 +2296,42 @@ body .kadmin-text .kadmin-help {
         grid-template-columns: 1fr;
     }
 }
+
+/* ==========================================================================
+   [killa-v2 labeled-tabs] (2026-11-19) — x-tabs nav items render icon-only
+   with the text label in a .sr-only span (tooltips on hover). Surface the
+   label next to the icon on desktop for readable, self-explanatory tabs and
+   polish the bar: icon+label+count pills with a quiet hover tint, keeping
+   the existing accent-underline active state. Mobile (xs) keeps the
+   icon+label span the component already renders, so the sr-only span stays
+   hidden there to avoid duplicate text.
+   ========================================================================== */
+@media (min-width: 768px) {
+    body .nav-tabs-custom > .nav-tabs > li > a {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        border-radius: var(--k-radius-sm) var(--k-radius-sm) 0 0;
+    }
+
+    body .nav-tabs-custom > .nav-tabs > li > a > .sr-only {
+        position: static;
+        width: auto;
+        height: auto;
+        margin: 0;
+        overflow: visible;
+        clip: auto;
+        clip-path: none;
+        white-space: nowrap;
+        font-size: 12.5px;
+    }
+
+    body .nav-tabs-custom > .nav-tabs > li > a:hover {
+        background-color: var(--k-hover-tint);
+    }
+
+    /* count badge sits inside the pill, optically aligned with the label */
+    body .nav-tabs-custom > .nav-tabs > li > a > .badge {
+        margin-left: 1px;
+    }
+}
