@@ -241,4 +241,6 @@ To suggest a modification here you must know:
 
 Work sessions are logged in `docs/sessions/` (index: `docs/sessions/README.md`),
 maintained by the `skills/saver` skill (session log → docs update → commit at
-≥50 changes). Latest: 2026-10-24 Licenses reorder, ground-up redesign & classic toggle.
+≥50 changes). Latest: 2026-11-20 killa-ux licenses redesign REMOVED in full
+(owner decision) — classic bootstrap-table views are the only licenses UI;
+Incident Desk first in the Maintenances submenu.
